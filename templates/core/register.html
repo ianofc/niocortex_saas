@@ -1,4 +1,6 @@
-<h1>Registro - NioCortex Lumina (Conta Freemium)</h1>
+{% extends 'core/professor_dashboard_base.html' %} 
+{% block content %}
+   {% endblock %}<h1>Registro - NioCortex Lumina (Conta Freemium)</h1>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
