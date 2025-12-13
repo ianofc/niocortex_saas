@@ -1,0 +1,52 @@
+{% extends 'core/professor_dashboard_base.html' %}
+
+{% block content %}
+<div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2>Turma: {{ turma.nome }} ({{ turma.ano_letivo }})</h2>
+        <div>
+            <a href="{% url 'pedagogical:editar_turma' turma.id %}">Editar Turma</a> | 
+            <a href="{% url 'pedagogical:lista_turmas' %}">Voltar para Lista</a>
+        </div>
+    </div>
+
+    <hr>
+
+    <h3>Alunos Matriculados</h3>
+    
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div style="margin-bottom: 15px;">
+        <a href="{% url 'pedagogical:adicionar_aluno' turma.id %}" class="btn btn-primary">
+            + Adicionar Aluno
+        </a>
+    </div>
+
+    {% if alunos %}
+        <ul>
+            {% for aluno in alunos %}
+                <li style="margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">
+                    <strong>{{ aluno.nome }}</strong> 
+                    {% if aluno.matricula_id %}
+                        <span style="color: #666;">(Matrícula: {{ aluno.matricula_id }})</span>
+                    {% endif %}
+                    <br>
+                    <small>Nascimento: {{ aluno.data_nascimento|default:"Não informado" }}</small>
+                    <div style="font-size: 0.9em;">
+                        <a href="{% url 'pedagogical:editar_aluno' aluno.id %}">Editar</a> |
+                        <a href="{% url 'pedagogical:excluir_aluno' aluno.id %}" style="color: red;">Remover</a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum aluno matriculado nesta turma.</p>
+    {% endif %}
+</div>
+{% endblock %}

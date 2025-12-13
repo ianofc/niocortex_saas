@@ -1,0 +1,54 @@
+{% extends 'core/professor_dashboard_base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Minhas Turmas</h2>
+    
+    <div style="margin-bottom: 20px;">
+        <a href="{% url 'pedagogical:criar_turma' %}" class="btn btn-primary">
+            + Nova Turma
+        </a>
+    </div>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if turmas %}
+        <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Nome da Turma</th>
+                    <th>Ano Letivo</th>
+                    <th>Alunos</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for turma in turmas %}
+                <tr>
+                    <td>
+                        <a href="{% url 'pedagogical:detalhe_turma' turma.id %}">
+                            <strong>{{ turma.nome }}</strong>
+                        </a>
+                    </td>
+                    <td>{{ turma.ano_letivo }}</td>
+                    <td>{{ turma.alunos.count }}</td>
+                    <td>
+                        <a href="{% url 'pedagogical:detalhe_turma' turma.id %}">Ver</a> |
+                        <a href="{% url 'pedagogical:editar_turma' turma.id %}">Editar</a> |
+                        <a href="{% url 'pedagogical:excluir_turma' turma.id %}" style="color: red;">Excluir</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Você ainda não possui turmas cadastradas.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'core/professor_dashboard_base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Adicionar Aluno</h2>
+    <h3>Turma: {{ turma.nome }}</h3>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        {% if form.errors %}
+            <div class="alert alert-error">Verifique os erros abaixo.</div>
+        {% endif %}
+
+        {% for field in form %}
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% for error in field.errors %}
+                    <div style="color: red">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div style="margin-top: 20px;">
+            <button type="submit" class="btn btn-success">Matricular Aluno</button>
+            <a href="{% url 'pedagogical:detalhe_turma' turma.id %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
