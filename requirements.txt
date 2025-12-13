@@ -1,0 +1,13 @@
+# Dependências do Framework Django (Core Service)
+Django>=4.2
+psycopg2-binary>=2.9.9    # Conexão com PostgreSQL (Supabase)
+dj-database-url>=2.1.0    # Leitura da DATABASE_URL do .env
+python-dotenv>=1.0.1      # Carregamento do ficheiro .env
+
+# Futuras dependências para o Django (Serão adicionadas mais tarde)
+# djangorestframework>=3.14.0 # Para criar APIs seguras
+
+# Dependências para o Micro-Serviço FastAPI (Serão instaladas na Fase 3)
+# fastapi>=0.110.0
+# uvicorn>=0.29.0
+# pydantic>=2.7.1
