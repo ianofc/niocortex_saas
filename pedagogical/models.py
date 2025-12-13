@@ -1,7 +1,7 @@
 # niocortex_saas/pedagogical/models.py
 
 from django.db import models
-from django.conf import settings # 1. Importe settings em vez de CustomUser direto
+from django.conf import settings  # <--- IMPORTAÇÃO CORRETA (1)
 from core.models import School
 from uuid import uuid4
 
@@ -27,7 +27,9 @@ class Turma(models.Model):
     nome = models.CharField(max_length=100)
     ano_letivo = models.IntegerField()
     
-    # 2. Use settings.AUTH_USER_MODEL (referência string segura)
+    # REFERÊNCIA SEGURA AO USUÁRIO (2)
+    # Em vez de CustomUser, usamos a string de configuração do Django.
+    # Isso evita o erro de "AppRegistryNotReady" ou Circular Import.
     autor = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
         on_delete=models.CASCADE, 
