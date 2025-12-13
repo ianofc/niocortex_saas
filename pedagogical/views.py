@@ -90,7 +90,40 @@ def adicionar_aluno(request, turma_id):
 # (Implementar editar_aluno e excluir_aluno seguindo a mesma lógica de tenant_id)
 @login_required
 def editar_aluno(request, aluno_id):
-    pass # Implementação similar
+    # 1. Busca segura: Garante que o aluno pertence ao tenant do usuário logado
+    aluno = get_object_or_404(Aluno, id=aluno_id, tenant_id=request.user.tenant_id)
+    turma_id = aluno.turma.id  # Guardamos o ID para redirecionar depois
+
+    if request.method == 'POST':
+        form = AlunoForm(request.POST, instance=aluno)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Dados do aluno atualizados com sucesso.")
+            # Redireciona de volta para a lista de alunos daquela turma
+            return redirect('pedagogical:detalhe_turma', turma_id=turma_id)
+    else:
+        form = AlunoForm(instance=aluno)
+    
+    # Reutilizamos o template de formulário de alunos
+    return render(request, 'pedagogical/alunos/form.html', {
+        'form': form, 
+        'turma': aluno.turma, 
+        'titulo': f'Editar {aluno.nome}'
+    })
+
 @login_required
 def excluir_aluno(request, aluno_id):
-    pass # Implementação similar
+    # 1. Busca segura: Garante que o aluno pertence ao tenant
+    aluno = get_object_or_404(Aluno, id=aluno_id, tenant_id=request.user.tenant_id)
+    turma_id = aluno.turma.id  # Guardamos o ID para redirecionar depois
+
+    if request.method == 'POST':
+        aluno.delete()
+        messages.success(request, "Aluno removido com sucesso.")
+        return redirect('pedagogical:detalhe_turma', turma_id=turma_id)
+    
+    # Renderiza uma página de confirmação antes de excluir
+    return render(request, 'pedagogical/alunos/confirmar_exclusao.html', {
+        'objeto': aluno,
+        'voltar_para': turma_id  # Contexto útil para criar um botão "Cancelar" no template
+    })
