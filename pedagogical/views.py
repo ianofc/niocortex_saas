@@ -1,135 +1,222 @@
+# niocortex/pedagogical/views.py
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.exceptions import ValidationError, PermissionDenied
+from django.http import JsonResponse
+
+# Models e Forms
 from .models import Turma, Aluno
 from .forms import TurmaForm, AlunoForm
-from django.contrib.auth.decorators import login_required
+
+# Services
 from .services import PedagogicalService
+from core.services.ai_client import AIClient  # Cliente para o FastAPI (IA)
+
+# --- TURMAS ---
 
 @login_required
 def listar_turmas_view(request):
     """ Exibe as turmas do professor (Free ou Corp) """
     try:
-        # O Serviço decide quais turmas mostrar baseado no usuário
+        # O Serviço blinda o acesso: só retorna dados do tenant atual
         turmas = PedagogicalService.list_turmas(request.user)
     except Exception as e:
         messages.error(request, f"Erro ao carregar turmas: {e}")
         turmas = []
 
-    return render(request, 'pedagogical/listar_turmas.html', {'turmas': turmas})
+    return render(request, 'pedagogical/turmas/listar_turmas.html', {'turmas': turmas})
 
 @login_required
 def criar_turma_view(request):
-    """ Cria nova turma com validação de limites via Serviço """
+    """ Cria nova turma delegando validação de limites ao Serviço """
     if request.method == 'POST':
-        # Aqui usamos um Form do Django para validar os campos básicos (nome, ano)
-        # Supondo que você tenha criado um TurmaForm em forms.py
         form = TurmaForm(request.POST) 
         if form.is_valid():
             try:
-                # O Serviço injeta o tenant_id e checa limites
+                # O Serviço injeta o tenant_id e checa limites (ex: máx 5 turmas no Free)
                 PedagogicalService.create_turma(request.user, form.cleaned_data)
                 messages.success(request, "Turma criada com sucesso!")
                 return redirect('pedagogical:listar_turmas')
-            except Exception as e:
-                # Captura erro de limite (ValidationError) do serviço
+            except ValidationError as e:
+                # Captura erro de negócio (limite atingido)
                 messages.error(request, str(e))
+            except Exception as e:
+                messages.error(request, "Erro inesperado ao criar turma.")
     else:
         form = TurmaForm()
 
-    return render(request, 'pedagogical/criar_turma.html', {'form': form})
+    return render(request, 'pedagogical/turmas/form_turma.html', {
+        'form': form,
+        'titulo': 'Nova Turma',
+        'btn_texto': 'Criar Turma'
+    })
 
 @login_required
 def detalhe_turma(request, turma_id):
-    # get_object_or_404 respeitando o tenant
-    turma = get_object_or_404(Turma, id=turma_id, tenant_id=request.user.tenant_id)
-    alunos = turma.alunos.all()
+    """ Exibe o painel da turma (Dashboard da Turma) """
+    try:
+        # Busca segura via serviço
+        turma = PedagogicalService.get_turma(request.user, turma_id)
+        # Ordenação alfabética dos alunos
+        alunos = turma.alunos.all().order_by('nome')
+    except PermissionDenied:
+        messages.error(request, "Você não tem permissão para acessar esta turma.")
+        return redirect('pedagogical:listar_turmas')
+
     return render(request, 'pedagogical/turmas/detalhe.html', {'turma': turma, 'alunos': alunos})
 
 @login_required
 def editar_turma(request, turma_id):
-    turma = get_object_or_404(Turma, id=turma_id, tenant_id=request.user.tenant_id)
+    """ Edita dados básicos da turma """
+    try:
+        turma = PedagogicalService.get_turma(request.user, turma_id)
+    except PermissionDenied:
+        return redirect('pedagogical:listar_turmas')
+
     if request.method == 'POST':
         form = TurmaForm(request.POST, instance=turma)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Turma atualizada.")
-            return redirect('pedagogical:lista_turmas')
+            form.save() # O tenant_id já existe, seguro salvar direto
+            messages.success(request, "Turma atualizada com sucesso.")
+            return redirect('pedagogical:detalhe_turma', turma_id=turma.id)
     else:
         form = TurmaForm(instance=turma)
-    return render(request, 'pedagogical/turmas/form.html', {'form': form, 'titulo': f'Editar {turma.nome}'})
+    
+    return render(request, 'pedagogical/turmas/form_turma.html', {
+        'form': form, 
+        'titulo': f'Editar {turma.nome}',
+        'btn_texto': 'Salvar Alterações'
+    })
 
 @login_required
 def excluir_turma(request, turma_id):
-    turma = get_object_or_404(Turma, id=turma_id, tenant_id=request.user.tenant_id)
+    """ Exclui turma e seus dados associados """
+    try:
+        turma = PedagogicalService.get_turma(request.user, turma_id)
+    except PermissionDenied:
+        return redirect('pedagogical:listar_turmas')
+
     if request.method == 'POST':
         turma.delete()
-        messages.success(request, "Turma excluída.")
-        return redirect('pedagogical:lista_turmas')
+        messages.success(request, "Turma excluída permanentemente.")
+        return redirect('pedagogical:listar_turmas')
+    
     return render(request, 'pedagogical/turmas/confirmar_exclusao.html', {'objeto': turma})
 
 # --- ALUNOS ---
 
 @login_required
 def adicionar_aluno(request, turma_id):
-    turma = get_object_or_404(Turma, id=turma_id, tenant_id=request.user.tenant_id)
-    
-    # Limite de Alunos por Turma (Regra Freemium)
-    if request.user.role == 'PROFESSOR_FREE' and turma.alunos.count() >= 20:
-        messages.error(request, "Limite de 20 alunos por turma atingido no plano Gratuito.")
-        return redirect('pedagogical:detalhe_turma', turma_id=turma.id)
+    """ 
+    Adiciona aluno delegando a regra de negócio (limite 20 alunos) ao Serviço.
+    """
+    try:
+        turma = PedagogicalService.get_turma(request.user, turma_id)
+    except PermissionDenied:
+        messages.error(request, "Turma não encontrada.")
+        return redirect('pedagogical:listar_turmas')
 
     if request.method == 'POST':
-        form = AlunoForm(request.POST)
+        # Passamos 'request.user' para o form filtrar apenas turmas desse professor
+        form = AlunoForm(request.user, request.POST) 
         if form.is_valid():
-            aluno = form.save(commit=False)
-            aluno.tenant_id = request.user.tenant_id # 🚨 CRÍTICO
-            aluno.turma = turma
-            aluno.save()
-            messages.success(request, "Aluno matriculado.")
-            return redirect('pedagogical:detalhe_turma', turma_id=turma.id)
+            try:
+                # O Serviço cuida do tenant_id e do limite do plano
+                PedagogicalService.add_aluno(
+                    request.user, 
+                    turma_id, 
+                    form.cleaned_data
+                )
+                messages.success(request, "Aluno matriculado com sucesso!")
+                return redirect('pedagogical:detalhe_turma', turma_id=turma.id)
+            
+            except ValidationError as e:
+                messages.error(request, str(e))
+            except Exception as e:
+                messages.error(request, f"Erro ao matricular: {e}")
     else:
-        form = AlunoForm()
+        form = AlunoForm(request.user, initial={'turma': turma})
     
-    return render(request, 'pedagogical/alunos/form.html', {'form': form, 'turma': turma})
+    return render(request, 'pedagogical/alunos/form_aluno.html', {
+        'form': form, 
+        'titulo': 'Novo Aluno',
+        'subtitulo': f'Adicionando em: {turma.nome}'
+    })
 
-# (Implementar editar_aluno e excluir_aluno seguindo a mesma lógica de tenant_id)
 @login_required
 def editar_aluno(request, aluno_id):
-    # 1. Busca segura: Garante que o aluno pertence ao tenant do usuário logado
+    """ Edita dados do aluno """
+    # Busca segura usando tenant_id do usuário (ainda não implementado no Service, usando ORM direto)
     aluno = get_object_or_404(Aluno, id=aluno_id, tenant_id=request.user.tenant_id)
-    turma_id = aluno.turma.id  # Guardamos o ID para redirecionar depois
+    turma_origem_id = aluno.turma.id
 
     if request.method == 'POST':
-        form = AlunoForm(request.POST, instance=aluno)
+        form = AlunoForm(request.user, request.POST, instance=aluno)
         if form.is_valid():
             form.save()
-            messages.success(request, "Dados do aluno atualizados com sucesso.")
-            # Redireciona de volta para a lista de alunos daquela turma
-            return redirect('pedagogical:detalhe_turma', turma_id=turma_id)
+            messages.success(request, "Dados do aluno atualizados.")
+            return redirect('pedagogical:detalhe_turma', turma_id=turma_origem_id)
     else:
-        form = AlunoForm(instance=aluno)
+        form = AlunoForm(request.user, instance=aluno)
     
-    # Reutilizamos o template de formulário de alunos
-    return render(request, 'pedagogical/alunos/form.html', {
+    return render(request, 'pedagogical/alunos/form_aluno.html', {
         'form': form, 
-        'turma': aluno.turma, 
         'titulo': f'Editar {aluno.nome}'
     })
 
 @login_required
 def excluir_aluno(request, aluno_id):
-    # 1. Busca segura: Garante que o aluno pertence ao tenant
+    """ Remove um aluno """
     aluno = get_object_or_404(Aluno, id=aluno_id, tenant_id=request.user.tenant_id)
-    turma_id = aluno.turma.id  # Guardamos o ID para redirecionar depois
+    turma_id = aluno.turma.id
 
     if request.method == 'POST':
         aluno.delete()
         messages.success(request, "Aluno removido com sucesso.")
         return redirect('pedagogical:detalhe_turma', turma_id=turma_id)
     
-    # Renderiza uma página de confirmação antes de excluir
     return render(request, 'pedagogical/alunos/confirmar_exclusao.html', {
         'objeto': aluno,
-        'voltar_para': turma_id  # Contexto útil para criar um botão "Cancelar" no template
+        'voltar_para': turma_id
     })
+
+# --- INTEGRAÇÃO COM IA (API INTERNA) ---
+
+@login_required
+def analisar_desempenho_aluno(request, aluno_id):
+    """
+    Endpoint AJAX para solicitar análise do aluno ao microsserviço de IA.
+    """
+    if request.method != "POST":
+        return JsonResponse({"status": "error", "message": "Método não permitido"}, status=405)
+
+    try:
+        # 1. Busca segura do aluno
+        aluno = get_object_or_404(Aluno, id=aluno_id, tenant_id=request.user.tenant_id)
+        
+        # 2. Prepara dados para o FastAPI (Simulação de métricas por enquanto)
+        # Futuramente: Buscar do GradebookService
+        dados_preparados = {
+            "nome": aluno.nome,
+            "turma": aluno.turma.nome,
+            "media": 7.0, # Placeholder
+            "frequencia": 90.0, # Placeholder
+            "notas": [], 
+            "obs": ["Solicitação de análise manual pelo professor"]
+        }
+
+        # 3. Chama o Serviço de IA
+        resultado_ia = AIClient.analisar_aluno(dados_preparados)
+
+        if "error" in resultado_ia:
+            return JsonResponse({"status": "error", "message": resultado_ia["error"]}, status=503)
+
+        return JsonResponse({
+            "status": "success",
+            "data": resultado_ia
+        })
+
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)

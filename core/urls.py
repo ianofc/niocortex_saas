@@ -1,4 +1,4 @@
-# niocortex_saas/core/urls.py
+# niocortex/core/urls.py
 
 from django.urls import path
 from . import views
@@ -6,16 +6,20 @@ from . import views
 app_name = 'core'
 
 urlpatterns = [
-    # Autenticação
-    path('register/', views.register_view, name='register'),
+    # --- AUTENTICAÇÃO ---
     path('login/', views.login_view, name='login'),
+    path('register/', views.register_view, name='register'),
     path('logout/', views.logout_view, name='logout'),
-    
-    # Redirecionamento de Dashboard (A Home principal após login)
+
+    # --- DASHBOARDS (ROUTER) ---
+    # A rota 'dashboard' é o cérebro que decide para onde o usuário vai
     path('dashboard/', views.dashboard_router_view, name='dashboard'),
     
-    # Rotas base para Redirecionamento (PLACEHOLDERS)
-    path('professor/dashboard/', views.professor_dashboard, name='professor_dashboard'),
-    path('aluno/dashboard/', views.aluno_dashboard, name='aluno_dashboard'),
-    path('admin_corp/', views.corporate_admin_dashboard, name='corporate_admin_dashboard'),
+    # Rotas específicas (protegidas por @login_required e verificação de Role)
+    path('dashboard/professor/', views.professor_dashboard, name='professor_dashboard'),
+    path('dashboard/aluno/', views.aluno_dashboard, name='aluno_dashboard'),
+    path('dashboard/gestao/', views.corporate_dashboard, name='corporate_dashboard'),
+    
+    # Rota index opcional (pode redirecionar para login ou dashboard)
+    path('', views.login_view, name='index'), 
 ]
