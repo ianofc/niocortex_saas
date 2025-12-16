@@ -1,4 +1,48 @@
-<h1>Dashboard do Professor ({{ user.role }})</h1>
-<p>Olá, {{ user.username }}. Seu Tenant ID: {{ user.tenant_id }}</p>
-<p>Aqui você verá suas turmas e poderá usar a IA ({% if "FREE" in user.role %}LIMITADO{% else %}ILIMITADO{% endif %}).</p>
-<p><a href="{% url 'core:logout' %}">Sair</a></p>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>NioCortex | Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <nav class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center sticky top-0 z-50">
+        <div class="font-black text-xl tracking-tight">
+            NioCortex<span class="text-[#6200EA]">.</span>
+        </div>
+
+        <div class="flex items-center gap-4">
+            {% include "components/god_mode_menu.html" %}
+            
+            <div class="h-6 w-px bg-gray-200"></div>
+
+            <div class="text-sm text-right">
+                <p class="font-bold">{{ user.username }}</p>
+                <p class="text-xs text-gray-500">{{ user.get_role_display }}</p>
+            </div>
+            
+            <a href="{% url 'core:logout' %}" class="text-red-500 hover:bg-red-50 p-2 rounded-lg" title="Sair">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto p-6">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="p-4 mb-4 rounded-lg bg-blue-100 text-blue-800 border border-blue-200">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}
+            <h1>Conteúdo Padrão</h1>
+        {% endblock %}
+    </main>
+
+</body>
+</html>

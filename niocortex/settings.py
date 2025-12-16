@@ -64,6 +64,9 @@ DATABASES = {
 # Diz ao Django para usar o modelo CustomUser do nosso app 'core'
 AUTH_USER_MODEL = 'core.CustomUser'
 
+# 🚨 DEFINIÇÃO DE ROTAS (ESSENCIAL PARA O FUNCIONAMENTO)
+ROOT_URLCONF = 'niocortex.urls'
+
 # ----------------------------------------------------
 # OUTRAS CONFIGURAÇÕES
 # ----------------------------------------------------

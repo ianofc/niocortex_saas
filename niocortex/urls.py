@@ -6,10 +6,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    # Redireciona a raiz (/) para o login
     path('', lambda request: redirect(reverse('core:login')), name='home'),
+    
     path('admin/', admin.site.urls),
     
-    # Apps
-    path('auth/', include('core.urls')), # Prefixo auth/ para login/registro
-    path('pedagogico/', include('pedagogical.urls')), # 🚨 NOVA ROTA
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # 🚨 ALTERAÇÃO AQUI: Mudamos de 'auth/' para '' (string vazia)
+    # Isso faz as rotas do core (login, dashboard, etc.) ficarem na raiz do site.
+    path('', include('core.urls')), 
+    
+    path('pedagogico/', include('pedagogical.urls')),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

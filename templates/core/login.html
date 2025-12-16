@@ -1,16 +1,37 @@
-{% extends 'core/professor_dashboard_base.html' %} 
-{% block content %}
-   {% endblock %}
-   
-   <h1>Login - NioCortex Lumina</h1>
-{% if messages %}
-    {% for message in messages %}
-        <p style="color:red;">{{ message }}</p>
-    {% endfor %}
-{% endif %}
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Entrar</button>
-</form>
-<p>Novo usuário? <a href="{% url 'core:register' %}">Crie sua conta freemium</a></p>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - NioCortex</title>
+    <style>
+        body { font-family: sans-serif; padding: 2rem; max-width: 400px; margin: 0 auto; }
+        .error { color: red; background: #ffeeee; padding: 10px; border: 1px solid red; }
+        button { padding: 10px 20px; cursor: pointer; }
+        input { width: 100%; padding: 8px; margin: 5px 0 15px; }
+    </style>
+</head>
+<body>
+
+    <h1>🔐 Login - NioCortex</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="error">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        
+        {{ form.as_p }}
+        
+        <button type="submit">Entrar na Plataforma</button>
+    </form>
+
+    <hr>
+    <p>Ainda não tem conta?</p>
+    <a href="{% url 'core:register' %}">Criar conta Professor/Aluno (Freemium)</a>
+
+</body>
+</html>
