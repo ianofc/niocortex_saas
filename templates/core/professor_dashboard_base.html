@@ -2,46 +2,122 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>NioCortex | Dashboard</title>
+    <title>NioCortex | Sala dos Professores</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-50 text-gray-800 font-sans">
 
     <nav class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center sticky top-0 z-50">
-        <div class="font-black text-xl tracking-tight">
-            NioCortex<span class="text-[#6200EA]">.</span>
+        <div class="flex items-center gap-2">
+            <div class="font-black text-xl tracking-tight text-slate-800">
+                NioCortex<span class="text-[#6200EA]">.</span>
+            </div>
+            {% if is_freemium %}
+                <span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Free Edition</span>
+            {% else %}
+                <span class="bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">{{ user.school.nome }}</span>
+            {% endif %}
         </div>
 
         <div class="flex items-center gap-4">
             {% include "components/god_mode_menu.html" %}
-            
-            <div class="h-6 w-px bg-gray-200"></div>
 
-            <div class="text-sm text-right">
-                <p class="font-bold">{{ user.username }}</p>
-                <p class="text-xs text-gray-500">{{ user.get_role_display }}</p>
+            <div class="text-right hidden md:block">
+                <p class="text-sm font-bold">{{ user.first_name|default:user.username }}</p>
+                <p class="text-xs text-gray-500">Professor(a)</p>
             </div>
             
-            <a href="{% url 'core:logout' %}" class="text-red-500 hover:bg-red-50 p-2 rounded-lg" title="Sair">
+            <a href="{% url 'core:logout' %}" class="text-gray-400 hover:text-red-500 transition-colors" title="Sair">
                 <i class="fas fa-sign-out-alt"></i>
             </a>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto p-6">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="p-4 mb-4 rounded-lg bg-blue-100 text-blue-800 border border-blue-200">
-                    {{ message }}
+    <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
+        
+        <aside class="lg:col-span-1 space-y-6">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 text-center">
+                <div class="w-20 h-20 bg-slate-200 rounded-full mx-auto mb-3 flex items-center justify-center text-2xl">
+                    ✏️
                 </div>
-            {% endfor %}
-        {% endif %}
+                <h2 class="font-bold text-lg">Prof. {{ user.last_name|default:user.username }}</h2>
+                <p class="text-xs text-gray-500 mb-4">
+                    {% if is_freemium %}Gestão Individual{% else %}Docente Corporativo{% endif %}
+                </p>
+                <button class="w-full bg-[#6200EA] text-white py-2 rounded-lg text-sm font-bold hover:bg-[#5000BF] transition">
+                    <i class="fas fa-plus mr-1"></i> Nova Turma
+                </button>
+            </div>
 
-        {% block content %}
-            <h1>Conteúdo Padrão</h1>
-        {% endblock %}
+            {% if is_freemium %}
+            <div class="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-xl p-5 text-white shadow-lg relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 bg-white/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-white/20 transition"></div>
+                
+                <h3 class="font-bold text-lg mb-1 relative z-10">Leve para sua Escola</h3>
+                <p class="text-indigo-100 text-xs mb-4 relative z-10 leading-relaxed">
+                    Desbloqueie recursos ilimitados para você e seus colegas. Indique sua coordenação.
+                </p>
+                <button class="w-full bg-white text-indigo-700 py-2 rounded-lg text-xs font-bold shadow hover:bg-gray-50 transition relative z-10">
+                    Indicar Instituição
+                </button>
+            </div>
+            {% endif %}
+        </aside>
+
+        <section class="lg:col-span-3 space-y-6">
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="p-4 rounded-lg {% if message.tags == 'error' %}bg-red-50 text-red-700{% else %}bg-green-50 text-green-700{% endif %} border border-current text-sm font-medium">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="flex justify-between items-end">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800">Minhas Turmas</h1>
+                    <p class="text-sm text-slate-500">Gerencie seus diários e alunos.</p>
+                </div>
+                <div class="text-sm text-slate-400">
+                    Ano Letivo <strong>2025</strong>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                
+                <div class="bg-white p-5 rounded-xl border border-gray-200 hover:border-[#6200EA] transition cursor-pointer group shadow-sm hover:shadow-md">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold uppercase">
+                            Matemática
+                        </div>
+                        <i class="fas fa-ellipsis-v text-gray-300 hover:text-gray-600"></i>
+                    </div>
+                    <h3 class="font-bold text-lg text-slate-800 group-hover:text-[#6200EA] transition">
+                        9º Ano B
+                    </h3>
+                    <p class="text-xs text-gray-400 mb-4">32 Alunos • Manhã</p>
+                    
+                    <div class="flex gap-2 mt-2">
+                        <a href="#" class="flex-1 bg-slate-50 text-slate-600 py-1.5 rounded text-xs font-bold text-center hover:bg-slate-100">
+                            Chamada
+                        </a>
+                        <a href="#" class="flex-1 bg-slate-50 text-slate-600 py-1.5 rounded text-xs font-bold text-center hover:bg-slate-100">
+                            Notas
+                        </a>
+                    </div>
+                </div>
+
+                <div class="border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center p-8 text-gray-400 min-h-[200px]">
+                    <i class="fas fa-chalkboard text-3xl mb-2 opacity-50"></i>
+                    <p class="text-sm">Nenhuma turma ativa.</p>
+                </div>
+
+            </div>
+
+        </section>
     </main>
 
 </body>

@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NioCortex | Gestão Educacional{% endblock %}</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
+
+    <script>
+        // Configuração do Tailwind com as cores da marca NioCortex
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        indigo: {
+                            50: '#f3e8ff', 100: '#e9d5ff', 200: '#d8b4fe', 300: '#c084fc',
+                            400: '#a855f7', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6200EA',
+                            800: '#5b21b6', 900: '#4c1d95', 950: '#2e1065'
+                        }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Scrollbar e Glassmorphism herdados do projeto original */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: rgba(98, 0, 234, 0.2); border-radius: 10px; }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.5); }
+        .dark .glass { background: rgba(17, 24, 39, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen dark:bg-[#0f111a] dark:text-slate-100 transition-colors duration-500">
+
+    <div class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+        <div class="absolute inset-0 bg-gradient-to-b from-indigo-50/50 via-white to-slate-100/50 dark:from-slate-900 dark:via-[#0f111a] dark:to-black"></div>
+    </div>
+
+    <nav class="sticky top-4 z-50 mx-4 lg:mx-8 rounded-2xl glass shadow-sm transition-all duration-300">
+        <div class="px-4 sm:px-6">
+            <div class="flex justify-between h-16 items-center">
+                
+                <div class="flex items-center">
+                    <a href="{% url 'core:dashboard' %}" class="flex items-center gap-3 group">
+                        <div class="relative w-9 h-9 flex items-center justify-center">
+                            <div class="absolute inset-0 bg-[#6200EA] rounded-xl rotate-6 group-hover:rotate-12 transition-transform duration-300 opacity-20"></div>
+                            <i class="fas fa-brain text-[#6200EA] relative z-10 text-xl"></i>
+                        </div>
+                        <span class="font-black text-xl tracking-tight text-slate-800 dark:text-white">
+                            NioCortex<span class="text-[#6200EA]">.</span>
+                        </span>
+                    </a>
+                </div>
+
+                {% if user.is_authenticated %}
+                <div class="hidden md:flex items-center gap-1 bg-slate-100/50 dark:bg-slate-800/50 p-1.5 rounded-xl border border-white/20 backdrop-blur-sm">
+                    <a href="{% url 'core:dashboard' %}" class="w-10 h-10 flex items-center justify-center rounded-lg text-slate-500 hover:bg-white hover:text-[#6200EA] transition-all" title="Dashboard">
+                        <i class="fas fa-chart-pie"></i>
+                    </a>
+                    <a href="{% url 'pedagogical:listar_turmas' %}" class="w-10 h-10 flex items-center justify-center rounded-lg text-slate-500 hover:bg-white hover:text-[#6200EA] transition-all" title="Turmas">
+                        <i class="fas fa-chalkboard"></i>
+                    </a>
+                    </div>
+
+                <div class="hidden md:flex items-center gap-3">
+                    <div class="text-right">
+                        <p class="text-xs font-bold text-slate-700 dark:text-white">{{ user.username }}</p>
+                        <p class="text-[10px] text-slate-500 uppercase">{{ user.get_role_display }}</p>
+                    </div>
+                    <a href="{% url 'core:logout' %}" class="w-9 h-9 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition">
+                        <i class="fas fa-sign-out-alt text-xs"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow py-8 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            {% if messages %}
+                <div class="mb-8 space-y-4">
+                    {% for message in messages %}
+                        <div class="flex items-center p-4 rounded-2xl shadow-lg backdrop-blur-md border 
+                            {% if message.tags == 'success' %} bg-emerald-50/90 border-emerald-200 text-emerald-800
+                            {% elif message.tags == 'error' %} bg-red-50/90 border-red-200 text-red-800
+                            {% else %} bg-blue-50/90 border-blue-200 text-blue-800 {% endif %}">
+                            <i class="fas fa-info-circle text-lg mr-3 opacity-80"></i>
+                            <div class="text-sm font-bold">{{ message }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+</body>
+</html>

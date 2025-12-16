@@ -3,35 +3,41 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Turma, Aluno
 from .forms import TurmaForm, AlunoForm
+from django.contrib.auth.decorators import login_required
+from .services import PedagogicalService
 
 @login_required
-def lista_turmas(request):
-    # O Manager 'for_tenant' garante que só vejo MINHAS turmas
-    turmas = Turma.objects.for_tenant(request.user.tenant_id)
-    return render(request, 'pedagogical/turmas/lista.html', {'turmas': turmas})
+def listar_turmas_view(request):
+    """ Exibe as turmas do professor (Free ou Corp) """
+    try:
+        # O Serviço decide quais turmas mostrar baseado no usuário
+        turmas = PedagogicalService.list_turmas(request.user)
+    except Exception as e:
+        messages.error(request, f"Erro ao carregar turmas: {e}")
+        turmas = []
+
+    return render(request, 'pedagogical/listar_turmas.html', {'turmas': turmas})
 
 @login_required
-def criar_turma(request):
-    # Verifica limite do plano Free (Lógica de Negócio)
-    if request.user.role == 'PROFESSOR_FREE':
-        count = Turma.objects.for_tenant(request.user.tenant_id).count()
-        if count >= 3: # Exemplo: Limite de 3 turmas no Free
-            messages.error(request, "Limite de turmas atingido no plano Gratuito.")
-            return redirect('pedagogical:lista_turmas')
-
+def criar_turma_view(request):
+    """ Cria nova turma com validação de limites via Serviço """
     if request.method == 'POST':
-        form = TurmaForm(request.POST)
+        # Aqui usamos um Form do Django para validar os campos básicos (nome, ano)
+        # Supondo que você tenha criado um TurmaForm em forms.py
+        form = TurmaForm(request.POST) 
         if form.is_valid():
-            turma = form.save(commit=False)
-            turma.tenant_id = request.user.tenant_id # 🚨 CRÍTICO
-            turma.autor = request.user
-            turma.save()
-            messages.success(request, "Turma criada com sucesso!")
-            return redirect('pedagogical:lista_turmas')
+            try:
+                # O Serviço injeta o tenant_id e checa limites
+                PedagogicalService.create_turma(request.user, form.cleaned_data)
+                messages.success(request, "Turma criada com sucesso!")
+                return redirect('pedagogical:listar_turmas')
+            except Exception as e:
+                # Captura erro de limite (ValidationError) do serviço
+                messages.error(request, str(e))
     else:
         form = TurmaForm()
-    
-    return render(request, 'pedagogical/turmas/form.html', {'form': form, 'titulo': 'Nova Turma'})
+
+    return render(request, 'pedagogical/criar_turma.html', {'form': form})
 
 @login_required
 def detalhe_turma(request, turma_id):
