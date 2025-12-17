@@ -3,7 +3,7 @@
 {% block title %}Todos os Alunos - NioCortex{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
+<div class="space-y-6 animate-fade-in-down">
     
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -53,9 +53,11 @@
 
                         <td class="px-6 py-4">
                             {% if aluno.turma %}
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+                            <a href="{% url 'pedagogical:detalhe_turma' aluno.turma.id %}" 
+                               class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-indigo-50 hover:text-[#6200EA] transition-colors"
+                               title="Ir para a turma">
                                 {{ aluno.turma.nome }}
-                            </span>
+                            </a>
                             {% else %}
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400">
                                 Sem Turma
@@ -65,15 +67,26 @@
 
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <a href="#" 
+                                
+                                <a href="{% url 'pedagogical:editar_aluno' aluno.id %}" 
                                    class="p-2 text-gray-400 hover:text-[#6200EA] hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors" 
-                                   title="Editar">
+                                   title="Editar Dados">
                                     <i class="fas fa-pen"></i>
                                 </a>
-                                <button class="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-lg transition-colors" 
-                                   title="Análise IA">
+
+                                <button id="btn-ia-{{ aluno.id }}" 
+                                        onclick="solicitarAnaliseIA('{{ aluno.id }}')"
+                                        class="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-lg transition-colors" 
+                                        title="Analisar Desempenho com IA">
                                     <i class="fas fa-robot"></i>
                                 </button>
+
+                                <a href="{% url 'pedagogical:excluir_aluno' aluno.id %}" 
+                                   class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors" 
+                                   title="Excluir Aluno">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+
                             </div>
                         </td>
                     </tr>
@@ -104,4 +117,7 @@
         {% endif %}
     </div>
 </div>
+
+{% include "components/modal_ia.html" %}
+
 {% endblock %}

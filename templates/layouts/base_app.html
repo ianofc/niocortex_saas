@@ -11,8 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
 
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
     <script>
-        // Configuração do Tailwind com as cores da marca NioCortex
         tailwind.config = {
             darkMode: 'class',
             theme: {
@@ -29,18 +30,13 @@
             }
         }
     </script>
-    <style>
-        /* Scrollbar e Glassmorphism herdados do projeto original */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-thumb { background: rgba(98, 0, 234, 0.2); border-radius: 10px; }
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.5); }
-        .dark .glass { background: rgba(17, 24, 39, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); }
-    </style>
 </head>
 <body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen dark:bg-[#0f111a] dark:text-slate-100 transition-colors duration-500">
 
     <div class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
         <div class="absolute inset-0 bg-gradient-to-b from-indigo-50/50 via-white to-slate-100/50 dark:from-slate-900 dark:via-[#0f111a] dark:to-black"></div>
+        <div class="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-purple-400/20 dark:bg-purple-900/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-blob"></div>
+        <div class="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-400/20 dark:bg-indigo-900/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-blob animation-delay-2000"></div>
     </div>
 
     <nav class="sticky top-4 z-50 mx-4 lg:mx-8 rounded-2xl glass shadow-sm transition-all duration-300">
@@ -67,12 +63,14 @@
                     <a href="{% url 'pedagogical:listar_turmas' %}" class="w-10 h-10 flex items-center justify-center rounded-lg text-slate-500 hover:bg-white hover:text-[#6200EA] transition-all" title="Turmas">
                         <i class="fas fa-chalkboard"></i>
                     </a>
-                    </div>
+                </div>
 
                 <div class="hidden md:flex items-center gap-3">
                     <div class="text-right">
                         <p class="text-xs font-bold text-slate-700 dark:text-white">{{ user.username }}</p>
-                        <p class="text-[10px] text-slate-500 uppercase">{{ user.get_role_display }}</p>
+                        <p class="text-[10px] text-slate-500 uppercase">
+                            {{ user.role|default:"Usuário" }}
+                        </p>
                     </div>
                     <a href="{% url 'core:logout' %}" class="w-9 h-9 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition">
                         <i class="fas fa-sign-out-alt text-xs"></i>
@@ -89,7 +87,7 @@
             {% if messages %}
                 <div class="mb-8 space-y-4">
                     {% for message in messages %}
-                        <div class="flex items-center p-4 rounded-2xl shadow-lg backdrop-blur-md border 
+                        <div class="alert-dismissible flex items-center p-4 rounded-2xl shadow-lg backdrop-blur-md border animate-fade-in-down transition-opacity duration-500
                             {% if message.tags == 'success' %} bg-emerald-50/90 border-emerald-200 text-emerald-800
                             {% elif message.tags == 'error' %} bg-red-50/90 border-red-200 text-red-800
                             {% else %} bg-blue-50/90 border-blue-200 text-blue-800 {% endif %}">
@@ -103,6 +101,10 @@
             {% block content %}{% endblock %}
         </div>
     </main>
+
+    <script src="{% static 'js/script.js' %}" defer></script>
+    
+    {% block scripts %}{% endblock %}
 
 </body>
 </html>

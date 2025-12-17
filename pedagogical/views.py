@@ -14,7 +14,9 @@ from .forms import TurmaForm, AlunoForm
 from .services import PedagogicalService
 from core.services.ai_client import AIClient  # Cliente para o FastAPI (IA)
 
-# --- TURMAS ---
+# ----------------------------------------------------------------------
+# GESTÃO DE TURMAS
+# ----------------------------------------------------------------------
 
 @login_required
 def listar_turmas_view(request):
@@ -26,6 +28,7 @@ def listar_turmas_view(request):
         messages.error(request, f"Erro ao carregar turmas: {e}")
         turmas = []
 
+    # ATENÇÃO: Nome do arquivo ajustado para o que está na sua pasta
     return render(request, 'pedagogical/turmas/listar_turmas.html', {'turmas': turmas})
 
 @login_required
@@ -47,7 +50,8 @@ def criar_turma_view(request):
     else:
         form = TurmaForm()
 
-    return render(request, 'pedagogical/turmas/form_turma.html', {
+    # ATENÇÃO: Nome do arquivo ajustado para 'form_turmas.html'
+    return render(request, 'pedagogical/turmas/form_turmas.html', {
         'form': form,
         'titulo': 'Nova Turma',
         'btn_texto': 'Criar Turma'
@@ -65,7 +69,8 @@ def detalhe_turma(request, turma_id):
         messages.error(request, "Você não tem permissão para acessar esta turma.")
         return redirect('pedagogical:listar_turmas')
 
-    return render(request, 'pedagogical/turmas/detalhe.html', {'turma': turma, 'alunos': alunos})
+    # ATENÇÃO: Nome do arquivo ajustado para 'detalhar_turmas.html'
+    return render(request, 'pedagogical/turmas/detalhar_turmas.html', {'turma': turma, 'alunos': alunos})
 
 @login_required
 def editar_turma(request, turma_id):
@@ -84,7 +89,8 @@ def editar_turma(request, turma_id):
     else:
         form = TurmaForm(instance=turma)
     
-    return render(request, 'pedagogical/turmas/form_turma.html', {
+    # Reutiliza 'form_turmas.html'
+    return render(request, 'pedagogical/turmas/form_turmas.html', {
         'form': form, 
         'titulo': f'Editar {turma.nome}',
         'btn_texto': 'Salvar Alterações'
@@ -103,9 +109,12 @@ def excluir_turma(request, turma_id):
         messages.success(request, "Turma excluída permanentemente.")
         return redirect('pedagogical:listar_turmas')
     
-    return render(request, 'pedagogical/turmas/confirmar_exclusao.html', {'objeto': turma})
+    # ATENÇÃO: Nome do arquivo ajustado para 'exclusao_turmas.html'
+    return render(request, 'pedagogical/turmas/exclusao_turmas.html', {'objeto': turma})
 
-# --- ALUNOS ---
+# ----------------------------------------------------------------------
+# GESTÃO DE ALUNOS
+# ----------------------------------------------------------------------
 
 @login_required
 def adicionar_aluno(request, turma_id):
@@ -137,9 +146,11 @@ def adicionar_aluno(request, turma_id):
             except Exception as e:
                 messages.error(request, f"Erro ao matricular: {e}")
     else:
+        # Pré-seleciona a turma no formulário
         form = AlunoForm(request.user, initial={'turma': turma})
     
-    return render(request, 'pedagogical/alunos/form_aluno.html', {
+    # ATENÇÃO: Nome do arquivo ajustado para 'form_alunos.html'
+    return render(request, 'pedagogical/alunos/form_alunos.html', {
         'form': form, 
         'titulo': 'Novo Aluno',
         'subtitulo': f'Adicionando em: {turma.nome}'
@@ -148,7 +159,7 @@ def adicionar_aluno(request, turma_id):
 @login_required
 def editar_aluno(request, aluno_id):
     """ Edita dados do aluno """
-    # Busca segura usando tenant_id do usuário (ainda não implementado no Service, usando ORM direto)
+    # Busca manual por enquanto (TODO: mover para Service.get_aluno no futuro para centralizar)
     aluno = get_object_or_404(Aluno, id=aluno_id, tenant_id=request.user.tenant_id)
     turma_origem_id = aluno.turma.id
 
@@ -161,7 +172,8 @@ def editar_aluno(request, aluno_id):
     else:
         form = AlunoForm(request.user, instance=aluno)
     
-    return render(request, 'pedagogical/alunos/form_aluno.html', {
+    # Reutiliza 'form_alunos.html'
+    return render(request, 'pedagogical/alunos/form_alunos.html', {
         'form': form, 
         'titulo': f'Editar {aluno.nome}'
     })
@@ -177,17 +189,21 @@ def excluir_aluno(request, aluno_id):
         messages.success(request, "Aluno removido com sucesso.")
         return redirect('pedagogical:detalhe_turma', turma_id=turma_id)
     
-    return render(request, 'pedagogical/alunos/confirmar_exclusao.html', {
+    # ATENÇÃO: Nome do arquivo ajustado para 'exclusao_alunos.html'
+    return render(request, 'pedagogical/alunos/exclusao_alunos.html', {
         'objeto': aluno,
         'voltar_para': turma_id
     })
 
-# --- INTEGRAÇÃO COM IA (API INTERNA) ---
+# ----------------------------------------------------------------------
+# API / IA (Integração com FastAPI)
+# ----------------------------------------------------------------------
 
 @login_required
 def analisar_desempenho_aluno(request, aluno_id):
     """
     Endpoint AJAX para solicitar análise do aluno ao microsserviço de IA.
+    Retorna JSON para ser consumido pelo frontend (Modal).
     """
     if request.method != "POST":
         return JsonResponse({"status": "error", "message": "Método não permitido"}, status=405)
@@ -200,11 +216,11 @@ def analisar_desempenho_aluno(request, aluno_id):
         # Futuramente: Buscar do GradebookService
         dados_preparados = {
             "nome": aluno.nome,
-            "turma": aluno.turma.nome,
-            "media": 7.0, # Placeholder
-            "frequencia": 90.0, # Placeholder
-            "notas": [], 
-            "obs": ["Solicitação de análise manual pelo professor"]
+            "turma": aluno.turma.nome if aluno.turma else "Sem Turma",
+            "media": 7.5, # Placeholder: Calcular média real
+            "frequencia": 88.0, # Placeholder: Calcular frequência real
+            "notas": [7.0, 8.0], # Placeholder: Histórico recente
+            "obs": ["Solicitação manual de análise via dashboard."]
         }
 
         # 3. Chama o Serviço de IA

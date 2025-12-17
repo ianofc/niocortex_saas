@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     # 🚨 NOSSOS APPS/SERVIÇOS
     'core.apps.CoreConfig',          # Core: Autenticação, Tenancy (CRÍTICO)
     'pedagogical.apps.PedagogicalConfig', # Pedagógico: Turma, Aluno, Planos (DADOS)
-    # Futuros: 'financial', 'crm_sales', etc.
+    'financial',                     # Financeiro: ERP, Contratos, Faturas
+    # Futuros: 'crm_sales', etc.
 ]
 
 MIDDLEWARE = [
