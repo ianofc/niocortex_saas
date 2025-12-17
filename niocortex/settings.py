@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'financial',                        # Financeiro: Contratos, Boletos, Compras, Patrimônio
     'crm_sales',                        # CRM: Captação de Alunos, Funil
     'hr',                               # RH: Funcionários, Departamentos, Cargos
+    'secretariat',                      # Secretariado: Atendimento, Agendamentos, Documentos
 ]
 
 # ----------------------------------------------------

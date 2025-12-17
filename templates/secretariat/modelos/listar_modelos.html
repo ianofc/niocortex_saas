@@ -1,0 +1,65 @@
+{% extends "layouts/base_app.html" %}
+
+{% block title %}Modelos de Documentos{% endblock %}
+
+{% block content %}
+<div class="space-y-6 animate-fade-in-down">
+    
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <span class="bg-indigo-100 text-indigo-600 p-1.5 rounded-lg text-lg">
+                    <i class="fas fa-file-alt"></i>
+                </span>
+                Modelos de Documentos
+            </h1>
+            <p class="text-sm text-gray-500 mt-1">Crie e edite templates (Declarações, Contratos, Históricos).</p>
+        </div>
+        <div class="flex gap-2">
+            <a href="{% url 'secretariat:selecionar_aluno' %}" class="btn-secondary">
+                <i class="fas fa-print"></i> Emitir Documento
+            </a>
+            <a href="{% url 'secretariat:criar_modelo' %}" class="btn-primary">
+                <i class="fas fa-plus"></i> Novo Modelo
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <table class="w-full text-left">
+            <thead class="bg-gray-50 dark:bg-gray-700/50 text-xs uppercase text-gray-500 font-semibold">
+                <tr>
+                    <th class="px-6 py-4">Título</th>
+                    <th class="px-6 py-4">Tipo</th>
+                    <th class="px-6 py-4">Status</th>
+                    <th class="px-6 py-4 text-right">Ações</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                {% for modelo in modelos %}
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition">
+                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ modelo.titulo }}</td>
+                    <td class="px-6 py-4">
+                        <span class="badge badge-neutral">{{ modelo.get_tipo_display }}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if modelo.ativo %}
+                            <span class="badge badge-success">Ativo</span>
+                        {% else %}
+                            <span class="badge badge-danger">Inativo</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <button class="btn-ghost" title="Editar Template">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="p-6 text-center text-gray-500">Nenhum modelo criado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

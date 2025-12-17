@@ -29,4 +29,6 @@ urlpatterns = [
 
     path('accounts/', include('core.urls')),  # Inclui rotas de autenticação personalizadas
 
+    path('secretaria/', include('secretariat.urls')),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
