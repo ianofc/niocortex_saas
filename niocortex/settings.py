@@ -1,27 +1,31 @@
-# niocortex_saas/niocortex/settings.py
+# niocortex/settings.py
 
 import os
 from pathlib import Path
-from dotenv import load_dotenv 
-import dj_database_url 
+from dotenv import load_dotenv
+import dj_database_url
 
-# Carrega o .env na raiz do projeto
-load_dotenv() 
+# ----------------------------------------------------
+# 1. CARREGAMENTO DE VARIÁVEIS DE AMBIENTE
+# ----------------------------------------------------
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ----------------------------------------------------
-# CONFIGURAÇÃO DE SEGURANÇA E DEBUG (AJUSTE CONFORME AMBIENTE)
+# 2. SEGURANÇA E DEBUG
 # ----------------------------------------------------
 
-SECRET_KEY = os.getenv('SECRET_KEY', 'your-fallback-secret-key-for-dev')
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key-change-in-prod')
+
+# Nunca deixar True em produção sem os devidos cuidados
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
 
 # ----------------------------------------------------
-# INSTALLED APPS
+# 3. INSTALLED APPS (MÓDULOS DO SISTEMA)
 # ----------------------------------------------------
 
 INSTALLED_APPS = [
@@ -32,16 +36,22 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    # 🚨 NOSSOS APPS/SERVIÇOS
-    'core.apps.CoreConfig',          # Core: Autenticação, Tenancy (CRÍTICO)
-    'pedagogical.apps.PedagogicalConfig', # Pedagógico: Turma, Aluno, Planos (DADOS)
-    'financial',                     # Financeiro: ERP, Contratos, Faturas
-    # Futuros: 'crm_sales', etc.
+
+    # 🚨 NOSSOS APPS/SERVIÇOS (Ordem de dependência importa)
+    'core.apps.CoreConfig',             # Core: Autenticação, Tenancy, Base
+    'pedagogical.apps.PedagogicalConfig', # Pedagógico: Alunos, Turmas, Notas
+    'financial',                        # Financeiro: Contratos, Boletos, Compras, Patrimônio
+    'crm_sales',                        # CRM: Captação de Alunos, Funil
+    'hr',                               # RH: Funcionários, Departamentos, Cargos
 ]
+
+# ----------------------------------------------------
+# 4. MIDDLEWARE
+# ----------------------------------------------------
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Recomendado para servir estáticos em produção
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -50,33 +60,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# ----------------------------------------------------
-# BANCO DE DADOS (PostgreSQL/Supabase)
-# ----------------------------------------------------
-
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL'),
-        conn_max_age=600 # Reutiliza conexões ativas
-    )
-}
-
-# 🚨 CUSTOM USER MODEL (CRÍTICO)
-# Diz ao Django para usar o modelo CustomUser do nosso app 'core'
-AUTH_USER_MODEL = 'core.CustomUser'
-
-# 🚨 DEFINIÇÃO DE ROTAS (ESSENCIAL PARA O FUNCIONAMENTO)
 ROOT_URLCONF = 'niocortex.urls'
 
 # ----------------------------------------------------
-# OUTRAS CONFIGURAÇÕES
+# 5. TEMPLATES E FRONTEND
 # ----------------------------------------------------
 
-# Templates (Jinja2 compatível)
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'], # Pasta templates global
+        'DIRS': [BASE_DIR / 'templates'], # Pasta global de templates
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -89,16 +82,63 @@ TEMPLATES = [
     },
 ]
 
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = 'static/'
-# Adicione a pasta 'static' na raiz de cada app
-STATICFILES_DIRS = [
-    BASE_DIR / "static", 
+WSGI_APPLICATION = 'niocortex.wsgi.application'
+
+# ----------------------------------------------------
+# 6. BANCO DE DADOS (PostgreSQL / Supabase)
+# ----------------------------------------------------
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3'), # Fallback para SQLite se não houver URL
+        conn_max_age=600,
+        ssl_require=os.getenv('DB_SSL', 'False') == 'True' # Ajuste para True em Prod
+    )
+}
+
+# ----------------------------------------------------
+# 7. AUTENTICAÇÃO E MODELO DE USUÁRIO
+# ----------------------------------------------------
+
+AUTH_USER_MODEL = 'core.CustomUser'
+
+# Validadores de senha padrão
+AUTH_PASSWORD_VALIDATORS = [
+    { 'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
+    { 'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },
+    { 'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', },
+    { 'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', },
 ]
 
-# Logo após STATIC_URL
+# ----------------------------------------------------
+# 8. INTERNACIONALIZAÇÃO (PT-BR)
+# ----------------------------------------------------
+
+LANGUAGE_CODE = 'pt-br'
+TIME_ZONE = 'America/Sao_Paulo'
+USE_I18N = True
+USE_TZ = True
+
+# ----------------------------------------------------
+# 9. ARQUIVOS ESTÁTICOS E MÍDIA
+# ----------------------------------------------------
+
+# CSS, JavaScript, Images
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [ BASE_DIR / "static" ]
+STATIC_ROOT = BASE_DIR / "staticfiles" # Onde o collectstatic junta os arquivos
+
+# Uploads de Usuário (Fotos, Documentos)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Default primary key field type
+# ----------------------------------------------------
+# 10. CONFIGURAÇÕES ADICIONAIS
+# ----------------------------------------------------
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Configuração de Login
+LOGIN_URL = 'core:login'
+LOGIN_REDIRECT_URL = 'core:dashboard'
+LOGOUT_REDIRECT_URL = 'core:login'

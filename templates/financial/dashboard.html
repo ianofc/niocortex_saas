@@ -1,0 +1,122 @@
+{% extends "layouts/base_app.html" %}
+
+{% block title %}Financeiro - Dashboard{% endblock %}
+
+{% block content %}
+<div class="space-y-6 animate-fade-in-down">
+    
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <span class="bg-emerald-100 text-emerald-600 p-2 rounded-lg text-lg">
+                    <i class="fas fa-chart-line"></i>
+                </span>
+                Gestão Financeira
+            </h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Visão geral de receitas e inadimplência.</p>
+        </div>
+        
+        <div class="flex gap-2">
+            <a href="{% url 'financial:listar_contratos' %}" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition font-medium">
+                <i class="fas fa-file-contract mr-1"></i> Contratos
+            </a>
+            <a href="{% url 'financial:criar_contrato' %}" class="px-4 py-2 bg-[#6200EA] text-white rounded-xl hover:bg-[#5000BF] shadow-lg shadow-purple-500/20 transition font-medium">
+                <i class="fas fa-plus mr-1"></i> Novo Contrato
+            </a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase">A Receber (Pendente)</p>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1">R$ {{ total_a_receber|floatformat:2 }}</h3>
+                </div>
+                <div class="p-2 bg-amber-50 text-amber-600 rounded-lg">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase">Total Recebido</p>
+                    <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">R$ {{ total_recebido|floatformat:2 }}</h3>
+                </div>
+                <div class="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase">Boletos Vencidos</p>
+                    <h3 class="text-2xl font-bold text-red-600 dark:text-red-400 mt-1">{{ inadimplencia }}</h3>
+                </div>
+                <div class="p-2 bg-red-50 text-red-600 rounded-lg">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase">Contratos Ativos</p>
+                    <h3 class="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">{{ total_contratos }}</h3>
+                </div>
+                <div class="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800">
+            <h3 class="font-bold text-gray-800 dark:text-white">Últimos Lançamentos</h3>
+            <a href="{% url 'financial:listar_boletos' %}" class="text-sm text-[#6200EA] hover:underline">Ver todos</a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50 dark:bg-gray-700/50 text-xs uppercase text-gray-500 font-semibold">
+                    <tr>
+                        <th class="px-6 py-3">Descrição</th>
+                        <th class="px-6 py-3">Aluno</th>
+                        <th class="px-6 py-3">Vencimento</th>
+                        <th class="px-6 py-3">Valor</th>
+                        <th class="px-6 py-3 text-right">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                    {% for boleto in boletos_recentes %}
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition">
+                        <td class="px-6 py-3 font-medium text-gray-900 dark:text-white">{{ boleto.descricao }}</td>
+                        <td class="px-6 py-3 text-sm text-gray-600 dark:text-gray-300">{{ boleto.contrato.aluno.nome }}</td>
+                        <td class="px-6 py-3 text-sm">{{ boleto.vencimento|date:"d/m/Y" }}</td>
+                        <td class="px-6 py-3 text-sm font-mono">R$ {{ boleto.valor }}</td>
+                        <td class="px-6 py-3 text-right">
+                            {% if boleto.status == 'PAGO' %}
+                                <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-bold">PAGO</span>
+                            {% elif boleto.status == 'VENCIDO' %}
+                                <span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-bold">VENCIDO</span>
+                            {% else %}
+                                <span class="px-2 py-1 bg-amber-100 text-amber-700 rounded text-xs font-bold">PENDENTE</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-8 text-center text-gray-500">Nenhum lançamento recente.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

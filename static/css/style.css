@@ -1,33 +1,107 @@
-/* --- Scrollbar Moderna (Estilo NioCortex) --- */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-::-webkit-scrollbar-thumb {
-    background: rgba(98, 0, 234, 0.2); /* Roxo da marca */
-    border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(98, 0, 234, 0.5);
+/* static/css/style.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --------------------------------------------------
+   COMPONENTES GLOBAIS NIOCORTEX (Refatorado)
+   --------------------------------------------------
+*/
+
+@layer components {
+    /* Inputs, Selects e Textareas Padronizados */
+    .form-input, 
+    .form-select, 
+    .form-textarea {
+        @apply w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-700
+               placeholder-gray-400
+               focus:ring-2 focus:ring-[#6200EA] focus:border-transparent outline-none transition-all duration-200
+               disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed
+               dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder-gray-500;
+    }
+
+    /* Checkboxes e Radios */
+    .form-checkbox, 
+    .form-radio {
+        @apply h-5 w-5 text-[#6200EA] border-gray-300 rounded focus:ring-[#6200EA] 
+               dark:bg-gray-700 dark:border-gray-600 dark:checked:bg-[#6200EA]
+               cursor-pointer transition-colors duration-200;
+    }
+
+    /* Labels */
+    .form-label {
+        @apply block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5;
+    }
+
+    /* --- Botões Padrão (Hierarquia Visual) --- */
+    
+    /* Primário: Ação Principal (Salvar, Criar, Confirmar) */
+    .btn-primary {
+        @apply inline-flex items-center justify-center gap-2 px-6 py-2.5 
+               bg-[#6200EA] hover:bg-[#5000BF] text-white font-bold rounded-xl 
+               shadow-lg shadow-purple-500/20 transition-all transform hover:-translate-y-0.5
+               active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
+    }
+
+    /* Secundário: Ação Alternativa (Cancelar, Voltar, Detalhes) */
+    .btn-secondary {
+        @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 
+               bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600
+               text-gray-700 dark:text-gray-200 font-medium rounded-xl 
+               hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors
+               active:bg-gray-100 dark:active:bg-gray-500;
+    }
+    
+    /* Perigo: Ações Destrutivas (Excluir, Bloquear) */
+    .btn-danger {
+        @apply inline-flex items-center justify-center gap-2 px-4 py-2
+               bg-red-50 text-red-600 hover:bg-red-100 rounded-lg border border-transparent
+               dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40 dark:border-red-900/30
+               font-medium transition-colors active:scale-95;
+    }
+
+    /* Sucesso: Ações Positivas (Aprovar, Pagar) */
+    .btn-success {
+        @apply inline-flex items-center justify-center gap-2 px-4 py-2
+               bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg border border-transparent
+               dark:bg-emerald-900/20 dark:text-emerald-400 dark:hover:bg-emerald-900/40 dark:border-emerald-900/30
+               font-medium transition-colors active:scale-95;
+    }
+    
+    /* Ghost: Botões sutis (ícones em tabelas) */
+    .btn-ghost {
+        @apply p-2 text-gray-400 hover:text-[#6200EA] hover:bg-indigo-50 
+               dark:hover:bg-indigo-900/30 rounded-lg transition-colors cursor-pointer;
+    }
+
+    /* --- Badges (Etiquetas de Status) --- */
+    .badge {
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold border;
+    }
+    .badge-success { @apply bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800; }
+    .badge-warning { @apply bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800; }
+    .badge-danger  { @apply bg-red-50 text-red-700 border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800; }
+    .badge-info    { @apply bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800; }
+    .badge-neutral { @apply bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600; }
 }
 
-/* --- Glassmorphism (Efeito de vidro) --- */
-.glass {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.6);
+/* --------------------------------------------------
+   UTILITÁRIOS E ANIMAÇÕES
+   --------------------------------------------------
+*/
+
+/* --- Animações de Entrada --- */
+.animate-fade-in-down {
+    animation: fadeInDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.dark .glass {
-    background: rgba(17, 24, 39, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+@keyframes fadeInDown {
+    0% { opacity: 0; transform: translateY(-12px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
-/* --- Animações de Background (Blobs) --- */
+/* --- Animações de Background (Blobs Decorativos) --- */
 @keyframes blob {
     0% { transform: translate(0px, 0px) scale(1); }
     33% { transform: translate(30px, -50px) scale(1.1); }
@@ -43,38 +117,37 @@
     animation-delay: 2s;
 }
 
-/* --- Utilitários de UI --- */
-.animate-fade-in-down {
-    animation: fadeInDown 0.4s ease-out;
+/* --- Scrollbar Moderna (Estilo NioCortex) --- */
+/* Chrome, Safari, Edge */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.5); /* gray-400 com opacidade */
+    border-radius: 10px;
+    border: 2px solid transparent; /* Cria margem visual */
+    background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(98, 0, 234, 0.6); /* #6200EA */
 }
 
-@keyframes fadeInDown {
-    0% { opacity: 0; transform: translateY(-10px); }
-    100% { opacity: 1; transform: translateY(0); }
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
 }
 
-/* Estado de Loading para Botões */
-.btn-loading {
-    pointer-events: none;
-    opacity: 0.7;
-    cursor: wait;
-}
-
-/* Transições Suaves para o Modal */
-#modal-backdrop {
-    transition: opacity 0.3s ease-out;
-}
-
-#modal-panel {
-    transition: all 0.3s ease-out;
-}
-
-/* Scrollbar para o conteúdo interno do modal */
+/* Scrollbar interna customizada (ex: Modais, Listas) */
 .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(0,0,0,0.05);
+    background: rgba(0,0,0,0.02);
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
     background: #cbd5e1; /* slate-300 */
@@ -83,3 +156,73 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #94a3b8; /* slate-400 */
 }
+
+/* --- Glassmorphism (Vidro) --- */
+.glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.dark .glass {
+    background: rgba(17, 24, 39, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* --- Utilitários de UI --- */
+
+/* Estado de Loading para Botões (Adicionar via JS) */
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+    opacity: 0.8;
+}
+.btn-loading::after {
+    content: "";
+    position: absolute;
+    width: 1.25em;
+    height: 1.25em;
+    top: 50%;
+    left: 50%;
+    margin-top: -0.625em;
+    margin-left: -0.625em;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+    color: white; /* Cor do spinner (ajustar conforme botão) */
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Transições Suaves para Modais */
+#modal-backdrop {
+    transition: opacity 0.3s ease-out;
+}
+
+#modal-panel {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); /* Curva mais natural */
+}
+
+/* Tooltips simples (data-title) */
+[data-title]:hover::after {
+    content: attr(data-title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 8px;
+    background-color: #1f2937;
+    color: white;
+    font-size: 11px;
+    border-radius: 4px;
+    white-space: nowrap;
+    z-index: 50;
+    margin-bottom: 6px;
+    opacity: 0;
+    animation: fadeIn 0.2s forwards;
+}
+@keyframes fadeIn { to { opacity: 1; } }

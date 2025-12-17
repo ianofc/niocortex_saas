@@ -16,4 +16,17 @@ urlpatterns = [
     path('', include('core.urls')), 
     
     path('pedagogico/', include('pedagogical.urls')),
+
+    path('rh/', include('hr.urls')),
+
+    path('financial/', include('financial.urls')),
+
+    path('crm/', include('crm_sales.urls')),
+
+    path('admin/', admin.site.urls),
+
+    path('accounts/', include('django.contrib.auth.urls')),
+
+    path('accounts/', include('core.urls')),  # Inclui rotas de autenticação personalizadas
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
