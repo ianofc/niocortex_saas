@@ -1,60 +1,81 @@
-# fastapi_service/main.py
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, Depends, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from .schemas import (
-    AlunoPerformanceInput, AnalisePedagogicaOutput,
-    GerarProvaInput, ProvaGeradaOutput
-)
-from .services.ai import gerar_analise_aluno, gerar_prova_ia
+import os
 import logging
 
 # Configuração de Logs
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("ioconscius")
+
+# --- IMPORTAÇÃO DOS LÓBULOS CEREBRAIS (ROUTERS) ---
+# Certifique-se de que estes arquivos existem na pasta 'routers/'
+from routers import education, chat, proactive, judge
 
 app = FastAPI(
-    title="NioCortex AI Service",
-    description="Micro-serviço de Inteligência Artificial para Educação",
-    version="1.0.0"
+    title="IO CONSCIOS API",
+    description="The Soul OS & Pedagogical Brain for NioCortex",
+    version="2.1.0 (Full Brain Enabled)"
 )
 
-# CORS (Permitir que o Django local acesse)
+# --- CONFIGURAÇÃO DE SEGURANÇA (CORS) ---
+# Permite que o Django (NioCortex) converse com o FastAPI
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8000", "http://127.0.0.1:8000"],
+    allow_origins=["*"], # Em produção, restrinja para o domínio do Django
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# --- AUTENTICAÇÃO ENTRE SISTEMAS (SERVICE TOKEN) ---
+async def verify_token(x_service_token: str = Header(...)):
+    """
+    Garante que apenas o NioCortex (que tem o segredo) possa acessar o Cérebro.
+    """
+    expected_token = os.getenv("SERVICE_TOKEN_SECRET", "dev-secret")
+    if x_service_token != expected_token:
+        logger.warning("Tentativa de acesso não autorizado ao IO CONSCIOS.")
+        raise HTTPException(status_code=403, detail="Acesso negado ao Cérebro.")
+
+# --- HEALTH CHECK (MONITORAMENTO) ---
 @app.get("/")
 def health_check():
-    return {"status": "ok", "service": "NioCortex AI"}
+    return {
+        "status": "active", 
+        "system": "IO CONSCIOS", 
+        "modules": ["Education", "Chat", "Proactive", "Judge"],
+        "mode": os.getenv("APP_ENV", "guerrilla")
+    }
 
-# --- ENDPOINTS ---
+# --- REGISTRO DOS LÓBULOS (COM PROTEÇÃO) ---
 
-@app.post("/api/v1/analise/aluno", response_model=AnalisePedagogicaOutput)
-async def analisar_aluno(payload: AlunoPerformanceInput):
-    """
-    Gera uma análise pedagógica completa baseada em notas e frequência.
-    """
-    try:
-        logger.info(f"Analisando aluno: {payload.nome_aluno}")
-        resultado = await gerar_analise_aluno(payload.model_dump())
-        return resultado
-    except Exception as e:
-        logger.error(f"Erro na IA: {str(e)}")
-        raise HTTPException(status_code=500, detail="Falha ao processar análise de IA.")
+# 1. Módulo Educacional (Copiloto Pedagógico)
+app.include_router(
+    education.router, 
+    dependencies=[Depends(verify_token)]
+)
 
-@app.post("/api/v1/gerar/prova", response_model=ProvaGeradaOutput)
-async def gerar_prova(payload: GerarProvaInput):
-    """
-    Cria uma prova completa com gabarito e explicação.
-    """
-    try:
-        logger.info(f"Gerando prova sobre: {payload.tema}")
-        resultado = await gerar_prova_ia(payload.model_dump())
-        return resultado
-    except Exception as e:
-        logger.error(f"Erro na IA: {str(e)}")
-        raise HTTPException(status_code=500, detail="Falha na geração da prova.")
+# 2. Módulo de Chat Universal (Agentes: Professor, Pai, Admin)
+app.include_router(
+    chat.router, 
+    dependencies=[Depends(verify_token)]
+)
+
+# 3. Módulo Proativo (O Observador/Guardião)
+app.include_router(
+    proactive.router, 
+    dependencies=[Depends(verify_token)]
+)
+
+# 4. Módulo Juiz (Segurança e Moderação)
+app.include_router(
+    judge.router, 
+    dependencies=[Depends(verify_token)]
+)
+
+if __name__ == "__main__":
+    import uvicorn
+    # Roda na porta 8001 para não conflitar com o Django (8000)
+    # ou 8000 se estiver em container isolado via Docker
+    port = int(os.getenv("PORT", 8001))
+    uvicorn.run(app, host="0.0.0.0", port=port)

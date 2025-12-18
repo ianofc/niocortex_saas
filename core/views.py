@@ -1,14 +1,17 @@
 # niocortex_saas/core/views.py
 
+import json
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib import messages
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
+from django.views.decorators.http import require_POST
 
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from .models import CustomUser
+from core.services.ai_client import AIClient # Importação do Cérebro
 
 # --- AUTENTICAÇÃO E REGISTRO ---
 
@@ -129,3 +132,46 @@ def corporate_dashboard(request):
         return HttpResponseForbidden("Acesso restrito à gestão escolar.")
         
     return render(request, 'core/corporate_dashboard.html', {'user': request.user})
+
+# --- INTEGRAÇÃO COM IO CONSCIOS (AJAX / API INTERNA) ---
+
+@login_required
+@require_POST
+def api_check_conscios(request):
+    """
+    Endpoint chamado periodicamente pelo JS (widget flutuante) para ver se o Conscios quer falar.
+    Essa view atua como Proxy seguro entre o Browser e o FastAPI.
+    """
+    try:
+        data = json.loads(request.body)
+        path = data.get('path', '/')
+        
+        # Aqui podemos injetar metadados reais do contexto do usuário
+        # Ex: Se estiver na tela de notas, buscar a média da turma para o Conscios analisar
+        meta = {} 
+        
+        # Chama o serviço de IA
+        resultado = AIClient.check_proactive_thought(request.user, path, meta)
+        
+        return JsonResponse(resultado)
+    except Exception as e:
+        # Falha silenciosa para não quebrar a UX
+        return JsonResponse({"should_speak": False, "error": str(e)})
+
+@login_required
+@require_POST
+def api_chat_conscios(request):
+    """
+    Endpoint para interação direta via chat (Janela do Widget).
+    """
+    try:
+        data = json.loads(request.body)
+        mensagem = data.get('message', '')
+        
+        if not mensagem:
+            return JsonResponse({'reply': 'Por favor, digite algo.'})
+
+        resultado = AIClient.chat_universal(mensagem, request.user)
+        return JsonResponse(resultado)
+    except Exception as e:
+        return JsonResponse({'reply': 'Erro de conexão com o Conscios.'}, status=500)
