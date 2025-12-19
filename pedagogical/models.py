@@ -5,15 +5,11 @@ from django.conf import settings
 from django.utils import timezone
 import uuid
 
-# Seus models existentes (Turma, Aluno) devem ser mantidos/importados
-# Vou assumir que eles já existem ou recriá-los brevemente para contexto
-
 class Turma(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tenant_id = models.UUIDField(editable=False, db_index=True)
     nome = models.CharField(max_length=100)
     ano_letivo = models.IntegerField(default=timezone.now().year)
-    # Outros campos da turma...
 
     def __str__(self):
         return self.nome
@@ -21,12 +17,21 @@ class Turma(models.Model):
 class Aluno(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tenant_id = models.UUIDField(editable=False, db_index=True)
+    
+    # Campos Pessoais (Adicionados para corrigir o FieldError)
     nome = models.CharField(max_length=255)
-    turma = models.ForeignKey(Turma, on_delete=models.SET_NULL, null=True, related_name='alunos')
-    # Outros campos...
+    matricula_id = models.CharField(max_length=50, blank=True, null=True, help_text="Código ou número de chamada")
+    email = models.EmailField(blank=True, null=True, help_text="Email do aluno ou responsável")
+    telefone_responsavel = models.CharField(max_length=20, blank=True, null=True)
+    
+    # Relacionamentos
+    turma = models.ForeignKey(Turma, on_delete=models.SET_NULL, null=True, blank=True, related_name='alunos')
+    
+    # Meta
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.nome
+        return f"{self.nome} ({self.matricula_id or 'S/M'})"
 
 # --- MIGRAÇÃO DO LEGADO CORTEX (ADAPTADO PARA DJANGO) ---
 

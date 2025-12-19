@@ -67,32 +67,36 @@ def logout_view(request):
 
 # --- ROUTER DE DASHBOARDS (O Cérebro da Navegação) ---
 
+# niocortex/core/views.py
+
 @login_required
 def dashboard_router_view(request):
     """
-    Direciona o usuário para a interface correta baseada em sua Role e Tipo de Tenant.
+    Direciona o usuário para a interface correta baseada em sua Role.
     """
     user = request.user
     role = user.role
     
     # 1. Super Admin (Infraestrutura)
-    if role == 'ADMIN' or user.is_superuser:
-        return redirect('admin:index') # Ou um dashboard customizado de métricas SaaS
+    # CORREÇÃO: Removemos 'or user.is_superuser' para permitir que você teste as outras telas.
+    # Agora, só vai para o admin se a ROLE for explicitamente 'ADMIN'.
+    if role == 'ADMIN':
+        return redirect('admin:index') 
         
     # 2. Gestão Escolar (Corporate)
     elif role in ['DIRECAO', 'SECRETARIA', 'COORDENACAO']:
         return redirect('core:corporate_dashboard')
         
     # 3. Professores (Corporate ou Free)
-    elif 'PROFESSOR' in role:
+    elif 'PROFESSOR' in role: # Pega PROFESSOR_CORP e PROFESSOR_FREE
         return redirect('core:professor_dashboard')
         
-    # 4. Alunos (Corporate ou Free/Homeschooling)
-    elif 'ALUNO' in role:
+    # 4. Alunos (Corporate ou Free)
+    elif 'ALUNO' in role: # Pega ALUNO_CORP e ALUNO_FREE
         return redirect('core:aluno_dashboard')
         
-    # Fallback de Segurança
-    messages.warning(request, "Perfil não identificado. Contate o suporte.")
+    # Fallback
+    messages.warning(request, "Perfil não identificado. Redirecionando para login.")
     logout(request)
     return redirect('core:login')
 

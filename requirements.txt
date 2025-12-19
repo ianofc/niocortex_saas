@@ -17,3 +17,5 @@ pydantic>=2.7.1
 Pillow>=10.0.0
 
 python-dateutil>=2.8.2
+
+whitenoise>=6.5.0

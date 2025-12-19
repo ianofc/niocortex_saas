@@ -39,17 +39,17 @@
         <div class="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-400/20 dark:bg-indigo-900/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-blob animation-delay-2000"></div>
     </div>
 
-    <nav class="sticky top-4 z-50 mx-4 lg:mx-8 rounded-2xl glass shadow-sm transition-all duration-300">
+    <nav class="sticky z-50 mx-4 transition-all duration-300 shadow-sm top-4 lg:mx-8 rounded-2xl glass">
         <div class="px-4 sm:px-6">
-            <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center justify-between h-16">
                 
                 <div class="flex items-center">
                     <a href="{% url 'core:dashboard' %}" class="flex items-center gap-3 group">
-                        <div class="relative w-9 h-9 flex items-center justify-center">
+                        <div class="relative flex items-center justify-center w-9 h-9">
                             <div class="absolute inset-0 bg-[#6200EA] rounded-xl rotate-6 group-hover:rotate-12 transition-transform duration-300 opacity-20"></div>
                             <i class="fas fa-brain text-[#6200EA] relative z-10 text-xl"></i>
                         </div>
-                        <span class="font-black text-xl tracking-tight text-slate-800 dark:text-white">
+                        <span class="text-xl font-black tracking-tight text-slate-800 dark:text-white">
                             NioCortex<span class="text-[#6200EA]">.</span>
                         </span>
                     </a>
@@ -65,15 +65,15 @@
                     </a>
                 </div>
 
-                <div class="hidden md:flex items-center gap-3">
+                <div class="items-center hidden gap-3 md:flex">
                     <div class="text-right">
                         <p class="text-xs font-bold text-slate-700 dark:text-white">{{ user.username }}</p>
                         <p class="text-[10px] text-slate-500 uppercase">
                             {{ user.role|default:"Usuário" }}
                         </p>
                     </div>
-                    <a href="{% url 'core:logout' %}" class="w-9 h-9 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition">
-                        <i class="fas fa-sign-out-alt text-xs"></i>
+                    <a href="{% url 'core:logout' %}" class="flex items-center justify-center text-red-500 transition rounded-full w-9 h-9 bg-red-50 hover:bg-red-100">
+                        <i class="text-xs fas fa-sign-out-alt"></i>
                     </a>
                 </div>
                 {% endif %}
@@ -81,8 +81,8 @@
         </div>
     </nav>
 
-    <main class="flex-grow py-8 relative z-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <main class="relative z-10 flex-grow py-8">
+        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
             
             {% if messages %}
                 <div class="mb-8 space-y-4">
@@ -91,7 +91,7 @@
                             {% if message.tags == 'success' %} bg-emerald-50/90 border-emerald-200 text-emerald-800
                             {% elif message.tags == 'error' %} bg-red-50/90 border-red-200 text-red-800
                             {% else %} bg-blue-50/90 border-blue-200 text-blue-800 {% endif %}">
-                            <i class="fas fa-info-circle text-lg mr-3 opacity-80"></i>
+                            <i class="mr-3 text-lg fas fa-info-circle opacity-80"></i>
                             <div class="text-sm font-bold">{{ message }}</div>
                         </div>
                     {% endfor %}
@@ -101,6 +101,8 @@
             {% block content %}{% endblock %}
         </div>
     </main>
+
+    {% include "components/conscios_widget.html" %}
 
     <script src="{% static 'js/script.js' %}" defer></script>
     
