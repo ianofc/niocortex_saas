@@ -1,17 +1,56 @@
 # niocortex/financial/views.py
 
+import json
+import mercadopago
+from django.conf import settings
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import ValidationError, PermissionDenied
 
-# Models e Forms
-from .models import ContratoAluno, BoletoAluno
-from .forms import ContratoAlunoForm, GerarBoletoForm
-from .services import FinancialService
+# Models e Forms Locais
+from .models import ContratoAluno, BoletoAluno, Fornecedor, Patrimonio, Transacao
+from .forms import ContratoAlunoForm, GerarBoletoForm, FornecedorForm, PatrimonioForm
+from .services import FinancialService, liberar_acesso_pos_pagamento
 
-from .models import Fornecedor, Patrimonio
-from .forms import FornecedorForm, PatrimonioForm
+# ----------------------------------------------------------------------
+# WEBHOOKS & INTEGRAÇÕES (MERCADO PAGO)
+# ----------------------------------------------------------------------
+
+@csrf_exempt # Importante: Webhooks não têm token CSRF
+def mercadopago_webhook(request):
+    """
+    Recebe notificações de pagamento do Mercado Pago.
+    Libera o acesso ao sistema se o pagamento for aprovado.
+    """
+    topic = request.GET.get('topic') or request.GET.get('type')
+    resource_id = request.GET.get('id') or request.GET.get('data.id')
+
+    if topic == 'payment':
+        try:
+            sdk = mercadopago.SDK(settings.MERCADO_PAGO_ACCESS_TOKEN)
+            payment_info = sdk.payment().get(resource_id)
+            payment = payment_info['response']
+            
+            # O 'external_reference' é o ID da nossa Transacao que mandamos na criação
+            transacao_id = payment.get('external_reference')
+            status = payment.get('status')
+
+            if status == 'approved' and transacao_id:
+                # Chama o serviço que libera os lóbulos e envia e-mail
+                sucesso = liberar_acesso_pos_pagamento(transacao_id)
+                if sucesso:
+                    print(f"Pagamento {resource_id} Aprovado! Recursos liberados.")
+                else:
+                    print(f"Pagamento {resource_id} Aprovado, mas erro ao liberar ou já liberado.")
+                    
+        except Exception as e:
+            print(f"Erro no webhook MP: {e}")
+            return HttpResponse(status=500)
+
+    return HttpResponse(status=200)
 
 # ----------------------------------------------------------------------
 # GESTÃO DE PATRIMÓNIO E ALMOXARIFADO
@@ -53,6 +92,10 @@ def novo_patrimonio(request):
         'titulo': 'Tombamento de Património'
     })
 
+# ----------------------------------------------------------------------
+# GESTÃO DE FORNECEDORES
+# ----------------------------------------------------------------------
+
 @login_required
 def listar_fornecedores(request):
     fornecedores = Fornecedor.objects.filter(tenant_id=request.user.tenant_id)
@@ -78,7 +121,7 @@ def novo_fornecedor(request):
     })
 
 # ----------------------------------------------------------------------
-# DASHBOARD
+# DASHBOARD FINANCEIRO
 # ----------------------------------------------------------------------
 
 @login_required

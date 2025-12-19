@@ -1,6 +1,8 @@
 # niocortex_saas/core/views.py
 
 import json
+import mercadopago
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib import messages
@@ -8,10 +10,34 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, JsonResponse
 from django.views.decorators.http import require_POST
+from financial.models import Transacao
 
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from .models import CustomUser
 from core.services.ai_client import AIClient # Importação do Cérebro
+
+# niocortex/core/views.py (Adicione estas funções)
+
+def index(request):
+    """ Landing Page (Aurora UI) """
+    # Se o usuário já estiver logado, manda direto pro dashboard
+    if request.user.is_authenticated:
+        return redirect('core:dashboard')
+    return render(request, 'public/landing_page.html')
+
+def pricing(request):
+    """ Página de Planos """
+    return render(request, 'public/pricing.html')
+
+def contact(request):
+    """ Página de Contato """
+    return render(request, 'public/contact.html')
+
+def demo(request):
+    """ Página de Demonstração Interativa """
+    return render(request, 'public/demo.html')
+
+# ... (Mantenha as outras views: login_view, register_view, dashboard, etc.) ...
 
 # --- AUTENTICAÇÃO E REGISTRO ---
 
@@ -179,3 +205,94 @@ def api_chat_conscios(request):
         return JsonResponse(resultado)
     except Exception as e:
         return JsonResponse({'reply': 'Erro de conexão com o Conscios.'}, status=500)
+
+def checkout(request):
+    """
+    Página de Checkout.
+    Recebe parâmetros via GET da página de preços.
+    Ex: /checkout/?plano=Sinapse+Pro&ciclo=Mensal&price=29,90
+    """
+    # Captura os dados da URL ou define valores padrão caso acessem direto
+    plano = request.GET.get('plano', 'Córtex Essential')
+    ciclo = request.GET.get('ciclo', 'Mensal')
+    preco = request.GET.get('price', '199,00')
+
+    context = {
+        'plan_name': plano,
+        'cycle': ciclo,
+        'price': preco
+    }
+    
+    return render(request, 'public/checkout.html', context)
+
+def processar_pagamento(request):
+    if request.method == 'POST':
+        # 1. Capturar dados do formulário
+        nome = request.POST.get('name')
+        email = request.POST.get('email')
+        doc = request.POST.get('document')
+        phone = request.POST.get('phone')
+        
+        plano_nome = request.POST.get('plan_name')
+        ciclo = request.POST.get('cycle')
+        preco_str = request.POST.get('price', '0').replace('.', '').replace(',', '.') # Formata 29,90 para 29.90
+        preco = float(preco_str)
+
+        # 2. Criar registro no banco de dados (Status Pendente)
+        transacao = Transacao.objects.create(
+            nome_cliente=nome,
+            email_cliente=email,
+            cpf_cnpj=doc,
+            telefone=phone,
+            plano=plano_nome,
+            ciclo=ciclo,
+            valor=preco
+        )
+
+        # 3. Configurar SDK do Mercado Pago
+        sdk = mercadopago.SDK(settings.MERCADO_PAGO_ACCESS_TOKEN)
+
+        # 4. Criar Dados da Preferência
+        preference_data = {
+            "items": [
+                {
+                    "title": f"NioCortex - {plano_nome} ({ciclo})",
+                    "quantity": 1,
+                    "unit_price": preco,
+                    "currency_id": "BRL"
+                }
+            ],
+            "payer": {
+                "name": nome,
+                "email": email,
+                "identification": {
+                    "type": "CPF" if len(doc) <= 14 else "CNPJ",
+                    "number": ''.join(filter(str.isdigit, doc)) # Remove pontuação
+                }
+            },
+            "back_urls": {
+                # URLs para onde o usuário volta após pagar
+                "success": request.build_absolute_uri('/checkout/sucesso/'),
+                "failure": request.build_absolute_uri('/checkout/erro/'),
+                "pending": request.build_absolute_uri('/checkout/pendente/')
+            },
+            "auto_return": "approved",
+            "external_reference": str(transacao.id) # Linkamos o ID do nosso banco
+        }
+
+        # 5. Gerar Preferência
+        preference_response = sdk.preference().create(preference_data)
+        preference = preference_response["response"]
+
+        # 6. Atualizar transação com o ID do MP
+        transacao.mercado_pago_id = preference['id']
+        transacao.save()
+
+        # 7. Redirecionar para o Checkout do Mercado Pago
+        # O 'init_point' é a URL segura do MP
+        return redirect(preference['init_point'])
+
+    return redirect('core:pricing')
+
+def checkout_sucesso(request):
+    return render(request, 'public/sucesso.html')

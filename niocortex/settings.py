@@ -24,6 +24,9 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
 
+# Importante para Webhooks (Ngrok) e Produção
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000,https://*.ngrok-free.app').split(',')
+
 # ----------------------------------------------------
 # 3. INSTALLED APPS (MÓDULOS DO SISTEMA)
 # ----------------------------------------------------
@@ -37,13 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # 🚨 NOSSOS APPS/SERVIÇOS (Ordem de dependência importa)
-    'core.apps.CoreConfig',             # Core: Autenticação, Tenancy, Base
-    'pedagogical.apps.PedagogicalConfig', # Pedagógico: Alunos, Turmas, Notas
-    'financial',                        # Financeiro: Contratos, Boletos, Compras, Patrimônio
-    'crm_sales',                        # CRM: Captação de Alunos, Funil
-    'hr',                               # RH: Funcionários, Departamentos, Cargos
-    'secretariat',                      # Secretariado: Atendimento, Agendamentos, Documentos
+    # 🚨 NOSSOS APPS/SERVIÇOS
+    'core.apps.CoreConfig',           # Autenticação, Tenancy, Base
+    'pedagogical.apps.PedagogicalConfig', # Alunos, Turmas, Notas
+    'financial',                      # Contratos, Boletos, Mercado Pago
+    'crm_sales',                      # Captação de Alunos, Funil
+    'hr',                             # RH: Funcionários
+    'secretariat',                    # Documentos
 ]
 
 # ----------------------------------------------------
@@ -52,7 +55,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # Recomendado para servir estáticos em produção
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Servir estáticos
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -91,9 +94,9 @@ WSGI_APPLICATION = 'niocortex.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3'), # Fallback para SQLite se não houver URL
+        default=os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3'),
         conn_max_age=600,
-        ssl_require=os.getenv('DB_SSL', 'False') == 'True' # Ajuste para True em Prod
+        ssl_require=os.getenv('DB_SSL', 'False') == 'True'
     )
 }
 
@@ -103,7 +106,6 @@ DATABASES = {
 
 AUTH_USER_MODEL = 'core.CustomUser'
 
-# Validadores de senha padrão
 AUTH_PASSWORD_VALIDATORS = [
     { 'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
     { 'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },
@@ -124,22 +126,46 @@ USE_TZ = True
 # 9. ARQUIVOS ESTÁTICOS E MÍDIA
 # ----------------------------------------------------
 
-# CSS, JavaScript, Images
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [ BASE_DIR / "static" ]
-STATIC_ROOT = BASE_DIR / "staticfiles" # Onde o collectstatic junta os arquivos
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Uploads de Usuário (Fotos, Documentos)
+# Configuração do Whitenoise para produção
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # ----------------------------------------------------
-# 10. CONFIGURAÇÕES ADICIONAIS
+# 10. INTEGRAÇÕES EXTERNAS (Pagamento & Email)
+# ----------------------------------------------------
+
+# Mercado Pago
+MERCADO_PAGO_ACCESS_TOKEN = os.getenv('MERCADO_PAGO_ACCESS_TOKEN')
+
+# E-mail (SMTP)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
+
+# Para teste local (imprime no terminal se não tiver SMTP configurado)
+if DEBUG and not EMAIL_HOST_USER:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# ----------------------------------------------------
+# 11. CONFIGURAÇÕES GERAIS
 # ----------------------------------------------------
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Configuração de Login
 LOGIN_URL = 'core:login'
 LOGIN_REDIRECT_URL = 'core:dashboard'
 LOGOUT_REDIRECT_URL = 'core:login'

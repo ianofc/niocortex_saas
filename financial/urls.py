@@ -31,4 +31,6 @@ urlpatterns = [
     
     # Ação 3: Baixar Boleto (Registrar Pagamento)
     path('boletos/baixar/<uuid:boleto_id>/', views.baixar_boleto, name='baixar_boleto'),
+
+    path('webhook/mercadopago/', views.mercadopago_webhook, name='mp_webhook'),
 ]
