@@ -1,0 +1,150 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br" class="scroll-smooth bg-[#F0F2F5]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda Escolar | NioStudent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'], display: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        nio: { 50: '#f2f0ff', 500: '#7c3aed', 600: '#6d28d9' },
+                        lumina: { cyan: '#00E5FF', pink: '#FF2E93' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.5); }
+        .glass-card { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.4); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .neural-bg { background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 30px 30px; }
+        .calendar-day:hover { background-color: #f1f5f9; cursor: pointer; transform: scale(1.05); transition: all 0.2s; }
+        .calendar-today { background-color: #7c3aed; color: white; border-radius: 12px; }
+        .calendar-today:hover { background-color: #6d28d9; }
+    </style>
+</head>
+<body class="text-slate-800 font-sans antialiased min-h-screen relative bg-[#F0F2F5]">
+
+    <div class="absolute inset-0 neural-bg opacity-30 pointer-events-none"></div>
+
+    <nav class="sticky top-0 z-40 w-full px-6 py-3 glass-panel shadow-sm flex justify-between items-center">
+        <a href="{% url 'core:aluno_dashboard' %}" class="flex items-center gap-2 hover:opacity-80 transition">
+            <div class="w-8 h-8 bg-nio-600 rounded-lg flex items-center justify-center text-white font-bold">N</div>
+            <span class="font-display font-bold text-slate-800">Voltar ao Feed</span>
+        </a>
+        <h1 class="font-display font-bold text-lg text-nio-700">Minha Agenda</h1>
+        <div class="w-8"></div>
+    </nav>
+
+    <main class="relative z-10 max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-2 space-y-6">
+            <div class="glass-card rounded-3xl p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-display font-bold text-slate-900">Dezembro 2025</h2>
+                    <div class="flex gap-2">
+                        <button class="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center"><i class="fas fa-chevron-left"></i></button>
+                        <button class="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-7 mb-4 text-center text-xs font-bold text-slate-400 uppercase">
+                    <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+                </div>
+
+                <div class="grid grid-cols-7 gap-2 text-sm font-medium">
+                    <div class="h-20 p-2 text-slate-300">29</div>
+                    <div class="h-20 p-2 text-slate-300">30</div>
+                    
+                    <div class="h-20 p-2 calendar-day rounded-xl border border-transparent hover:border-slate-200 hover:shadow-sm flex flex-col items-start relative">
+                        <span>1</span>
+                        <div class="mt-auto w-full h-1.5 bg-blue-400 rounded-full"></div> </div>
+                    
+                    <div class="h-20 p-2 calendar-day rounded-xl border border-transparent hover:border-slate-200 hover:shadow-sm">2</div>
+                    <div class="h-20 p-2 calendar-day rounded-xl border border-transparent hover:border-slate-200 hover:shadow-sm">3</div>
+                    <div class="h-20 p-2 calendar-day rounded-xl border border-transparent hover:border-slate-200 hover:shadow-sm">4</div>
+                    <div class="h-20 p-2 calendar-day rounded-xl border border-transparent hover:border-slate-200 hover:shadow-sm">5</div>
+                    <div class="h-20 p-2 calendar-day rounded-xl border border-transparent hover:border-slate-200 hover:shadow-sm">6</div>
+                    <div class="h-20 p-2 calendar-day rounded-xl border border-transparent hover:border-slate-200 hover:shadow-sm">7</div>
+                    
+                    <div class="h-20 p-2 calendar-day rounded-xl border border-transparent hover:border-slate-200 hover:shadow-sm">8</div>
+                    <div class="h-20 p-2 calendar-day rounded-xl border border-transparent hover:border-slate-200 hover:shadow-sm flex flex-col items-start">
+                        <span>9</span>
+                        <div class="mt-auto w-full h-1.5 bg-red-400 rounded-full mb-1"></div>
+                        <div class="w-2/3 h-1.5 bg-green-400 rounded-full"></div>
+                    </div>
+                    <div class="h-20 p-2 calendar-day rounded-xl border border-transparent hover:border-slate-200 hover:shadow-sm">10</div>
+                    <div class="h-20 p-2 calendar-day rounded-xl border border-transparent hover:border-slate-200 hover:shadow-sm">11</div>
+                    <div class="h-20 p-2 calendar-day rounded-xl border border-transparent hover:border-slate-200 hover:shadow-sm">12</div>
+                    <div class="h-20 p-2 calendar-day rounded-xl border border-transparent hover:border-slate-200 hover:shadow-sm">13</div>
+                    <div class="h-20 p-2 calendar-day rounded-xl border border-transparent hover:border-slate-200 hover:shadow-sm">14</div>
+
+                    <div class="h-20 p-2 calendar-day rounded-xl border border-transparent hover:border-slate-200 hover:shadow-sm">15</div>
+                    <div class="h-20 p-2 calendar-day rounded-xl border border-transparent hover:border-slate-200 hover:shadow-sm">16</div>
+                    <div class="h-20 p-2 calendar-day rounded-xl border border-transparent hover:border-slate-200 hover:shadow-sm">17</div>
+                    <div class="h-20 p-2 calendar-day rounded-xl border border-transparent hover:border-slate-200 hover:shadow-sm">18</div>
+                    <div class="h-20 p-2 calendar-day rounded-xl border border-transparent hover:border-slate-200 hover:shadow-sm">19</div>
+                    <div class="h-20 p-2 calendar-day rounded-xl border border-transparent hover:border-slate-200 hover:shadow-sm">20</div>
+                    <div class="h-20 p-2 calendar-today shadow-lg shadow-nio-500/30 flex flex-col items-start relative">
+                        <span class="font-bold">21</span>
+                        <span class="text-[10px] opacity-80 absolute top-2 right-2">HOJE</span>
+                        <div class="mt-auto w-full h-1.5 bg-white/50 rounded-full mb-1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <h3 class="font-display font-bold text-xl text-slate-800">Próximos Eventos</h3>
+            
+            <div class="glass-card p-4 rounded-2xl border-l-4 border-l-red-500 hover:bg-white transition flex gap-4">
+                <div class="flex flex-col items-center justify-center w-12 h-12 bg-red-50 rounded-xl text-red-600 font-bold shrink-0">
+                    <span class="text-[10px] uppercase">DEZ</span>
+                    <span class="text-lg leading-none">23</span>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-800 text-sm">Prova de Biologia</h4>
+                    <p class="text-xs text-slate-500">Capítulo 5: Genética</p>
+                    <span class="inline-block mt-2 px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] rounded font-bold uppercase">Presencial</span>
+                </div>
+            </div>
+
+            <div class="glass-card p-4 rounded-2xl border-l-4 border-l-blue-500 hover:bg-white transition flex gap-4">
+                <div class="flex flex-col items-center justify-center w-12 h-12 bg-blue-50 rounded-xl text-blue-600 font-bold shrink-0">
+                    <span class="text-[10px] uppercase">DEZ</span>
+                    <span class="text-lg leading-none">28</span>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-800 text-sm">Entrega: Trabalho de Artes</h4>
+                    <p class="text-xs text-slate-500">Enviar via Portal (PDF)</p>
+                    <span class="inline-block mt-2 px-2 py-0.5 bg-blue-100 text-blue-600 text-[10px] rounded font-bold uppercase">Upload</span>
+                </div>
+            </div>
+
+            <div class="glass-card p-4 rounded-2xl border-l-4 border-l-green-500 hover:bg-white transition flex gap-4">
+                <div class="flex flex-col items-center justify-center w-12 h-12 bg-green-50 rounded-xl text-green-600 font-bold shrink-0">
+                    <span class="text-[10px] uppercase">JAN</span>
+                    <span class="text-lg leading-none">05</span>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-800 text-sm">Início das Férias</h4>
+                    <p class="text-xs text-slate-500">Recesso Escolar</p>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

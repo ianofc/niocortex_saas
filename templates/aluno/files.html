@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br" class="scroll-smooth bg-[#F0F2F5]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materiais de Estudo | NioStudent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'], display: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        nio: { 50: '#f2f0ff', 100: '#e6e1ff', 500: '#7c3aed', 600: '#6d28d9' },
+                        lumina: { cyan: '#00E5FF' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.5); }
+        .glass-card { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.4); }
+        .neural-bg { background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 30px 30px; }
+    </style>
+</head>
+<body class="text-slate-800 font-sans antialiased min-h-screen relative bg-[#F0F2F5]">
+
+    <div class="absolute inset-0 pointer-events-none neural-bg opacity-30"></div>
+
+    <nav class="sticky top-0 z-40 flex items-center justify-between w-full px-6 py-3 shadow-sm glass-panel">
+        <a href="{% url 'core:aluno_dashboard' %}" class="flex items-center gap-2 transition hover:opacity-80">
+            <div class="flex items-center justify-center w-8 h-8 font-bold text-white rounded-lg bg-nio-600">N</div>
+            <span class="font-bold font-display text-slate-800">Voltar ao Feed</span>
+        </a>
+        <h1 class="text-lg font-bold font-display text-nio-700">Central de Arquivos</h1>
+        <div class="relative hidden w-64 sm:block">
+            <input type="text" placeholder="Buscar arquivo..." class="w-full bg-white border border-slate-200 rounded-full py-1.5 pl-4 pr-10 text-sm focus:ring-2 focus:ring-nio-300">
+            <i class="absolute fas fa-search right-3 top-2 text-slate-400"></i>
+        </div>
+    </nav>
+
+    <main class="relative z-10 max-w-6xl p-6 mx-auto" x-data="{ filter: 'all' }">
+        
+        <div class="flex gap-4 pb-2 mb-8 overflow-x-auto">
+            <button @click="filter = 'all'" :class="filter === 'all' ? 'bg-nio-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'" class="px-4 py-2 text-sm font-bold transition-colors shadow-sm rounded-xl whitespace-nowrap">Todos</button>
+            <button @click="filter = 'mat'" :class="filter === 'mat' ? 'bg-nio-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'" class="px-4 py-2 text-sm font-bold transition-colors shadow-sm rounded-xl whitespace-nowrap">Matemática</button>
+            <button @click="filter = 'his'" :class="filter === 'his' ? 'bg-nio-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'" class="px-4 py-2 text-sm font-bold transition-colors shadow-sm rounded-xl whitespace-nowrap">História</button>
+            <button @click="filter = 'video'" :class="filter === 'video' ? 'bg-nio-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'" class="px-4 py-2 text-sm font-bold transition-colors shadow-sm rounded-xl whitespace-nowrap"><i class="mr-2 fas fa-video"></i> Aulas Gravadas</button>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+            <div x-show="filter === 'all' || filter === 'mat'" class="p-4 transition duration-300 cursor-pointer glass-card rounded-2xl group hover:-translate-y-1">
+                <div class="flex items-center justify-center mb-4 text-red-500 transition aspect-video bg-red-50 rounded-xl group-hover:bg-red-100">
+                    <i class="text-4xl fas fa-file-pdf"></i>
+                </div>
+                <h3 class="mb-1 text-sm font-bold truncate text-slate-800">Lista de Exercícios 04.pdf</h3>
+                <p class="mb-3 text-xs text-slate-500">Matemática • 2.4 MB</p>
+                <button class="w-full py-2 text-xs font-bold transition bg-white border rounded-lg border-slate-200 text-slate-600 hover:bg-nio-50 hover:text-nio-600 hover:border-nio-200">Baixar</button>
+            </div>
+
+            <div x-show="filter === 'all' || filter === 'his' || filter === 'video'" class="p-4 transition duration-300 cursor-pointer glass-card rounded-2xl group hover:-translate-y-1">
+                <div class="relative flex items-center justify-center mb-4 overflow-hidden text-white aspect-video bg-slate-900 rounded-xl">
+                    <img src="https://source.unsplash.com/random/300x200/?history" class="absolute inset-0 object-cover w-full h-full opacity-50">
+                    <i class="relative z-10 text-4xl fas fa-play-circle"></i>
+                </div>
+                <h3 class="mb-1 text-sm font-bold truncate text-slate-800">Revolução Francesa - Aula 1</h3>
+                <p class="mb-3 text-xs text-slate-500">História • 45 min</p>
+                <button class="w-full py-2 text-xs font-bold text-white transition rounded-lg bg-nio-600 hover:bg-nio-700">Assistir</button>
+            </div>
+
+            <div x-show="filter === 'all' || filter === 'his'" class="p-4 transition duration-300 cursor-pointer glass-card rounded-2xl group hover:-translate-y-1">
+                <div class="flex items-center justify-center mb-4 text-blue-500 transition aspect-video bg-blue-50 rounded-xl group-hover:bg-blue-100">
+                    <i class="text-4xl fas fa-file-word"></i>
+                </div>
+                <h3 class="mb-1 text-sm font-bold truncate text-slate-800">Roteiro de Estudos.docx</h3>
+                <p class="mb-3 text-xs text-slate-500">História • 500 KB</p>
+                <button class="w-full py-2 text-xs font-bold transition bg-white border rounded-lg border-slate-200 text-slate-600 hover:bg-nio-50 hover:text-nio-600 hover:border-nio-200">Baixar</button>
+            </div>
+
+            <div x-show="filter === 'all' || filter === 'mat'" class="p-4 transition duration-300 cursor-pointer glass-card rounded-2xl group hover:-translate-y-1">
+                <div class="flex items-center justify-center mb-4 text-purple-500 transition aspect-video bg-purple-50 rounded-xl group-hover:bg-purple-100">
+                    <i class="text-4xl fas fa-image"></i>
+                </div>
+                <h3 class="mb-1 text-sm font-bold truncate text-slate-800">Esquema Lousa.jpg</h3>
+                <p class="mb-3 text-xs text-slate-500">Matemática • 1.2 MB</p>
+                <button class="w-full py-2 text-xs font-bold transition bg-white border rounded-lg border-slate-200 text-slate-600 hover:bg-nio-50 hover:text-nio-600 hover:border-nio-200">Visualizar</button>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

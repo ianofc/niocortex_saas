@@ -1,64 +1,704 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <title>NioCortex | Meu Estudo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NioCortex | Portal do Aluno</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="bg-[#F8FAFC] text-slate-800 font-sans">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: 'var(--color-primary)',
+                        secondary: 'var(--color-secondary)',
+                        accent: 'var(--color-accent)',
+                        background: 'var(--bg-body)',
+                        surface: 'var(--bg-card)',
+                        text: 'var(--text-main)',
+                        textMuted: 'var(--text-muted)',
+                        talkio: {
+                            sidebar: 'var(--talkio-sidebar)',
+                            chat: 'var(--talkio-chat)',
+                            hover: 'var(--talkio-hover)',
+                            bubbleOut: 'var(--talkio-bubble-out)',
+                            bubbleIn: 'var(--talkio-bubble-in)',
+                        }
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                        'glow': '0 0 15px var(--color-primary)',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
-    <nav class="bg-white px-6 py-4 flex justify-between items-center shadow-sm">
-        <div class="font-black text-xl tracking-tight text-slate-800">
-            NioCortex <span class="text-teal-500 font-normal text-sm ml-1">Student</span>
-        </div>
-        <div class="flex items-center gap-4">
-            <span class="text-sm font-bold text-slate-600">{{ user.username }}</span>
-            <a href="{% url 'core:logout' %}" class="text-red-400 hover:text-red-600"><i class="fas fa-power-off"></i></a>
+    <style>
+        /* --- DEFINIÇÃO DE VARIÁVEIS DE TEMA --- */
+        :root {
+            /* Padrão: Aurora Lumina Clean */
+            --color-primary: #7c3aed;
+            --color-secondary: #00E5FF;
+            --color-accent: #FF2E93;
+            --bg-body: #F0F2F5;
+            --bg-card: rgba(255, 255, 255, 0.85);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+            --gradient-sidebar: linear-gradient(135deg, #7c3aed 0%, #FF2E93 100%);
+            
+            /* Talkio Light */
+            --talkio-sidebar: #ffffff;
+            --talkio-chat: #8E9DBC;
+            --talkio-hover: #f1f5f9;
+            --talkio-bubble-out: #eeffde;
+            --talkio-bubble-in: #ffffff;
+        }
+
+        /* Tema Feminino (Rosa/Lumina) */
+        .theme-pink {
+            --color-primary: #db2777;
+            --color-secondary: #f472b6;
+            --color-accent: #8b5cf6;
+            --bg-body: #fff0f5;
+            --gradient-sidebar: linear-gradient(135deg, #db2777 0%, #8b5cf6 100%);
+        }
+
+        /* Tema Masculino (Azul/Tech) */
+        .theme-blue {
+            --color-primary: #2563eb;
+            --color-secondary: #0ea5e9;
+            --color-accent: #f59e0b;
+            --bg-body: #f0f9ff;
+            --gradient-sidebar: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
+        }
+
+        /* Dark Mode Global */
+        .theme-dark {
+            --color-primary: #818cf8;
+            --color-secondary: #2dd4bf;
+            --color-accent: #f472b6;
+            --bg-body: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --gradient-sidebar: linear-gradient(135deg, #4f46e5 0%, #2dd4bf 100%);
+            
+            /* Talkio Dark */
+            --talkio-sidebar: #17212b;
+            --talkio-chat: #0e1621;
+            --talkio-hover: #202b36;
+            --talkio-bubble-out: #2b5278;
+            --talkio-bubble-in: #182533;
+        }
+
+        /* Base Styles */
+        body { 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
+            transition: background-color 0.4s ease, color 0.4s ease; 
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: var(--glass-border);
+            box-shadow: var(--shadow-glass);
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .theme-dark .glass-nav {
+            background: rgba(15, 23, 42, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Scrollbars Customizadas */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 10px; opacity: 0.3; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: var(--color-primary); }
+
+        /* Talkio Specifics */
+        .talkio-pattern {
+            background-image: url('https://web.telegram.org/img/bg_0.png'); 
+            background-size: cover;
+            background-attachment: fixed;
+        }
+        .talkio-drawer {
+            background-color: var(--talkio-sidebar);
+            color: var(--text-main);
+        }
+        
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body x-data="appData()" 
+      x-init="init()"
+      :class="{ 
+          'theme-aurora': theme === 'aurora', 
+          'theme-pink': theme === 'pink', 
+          'theme-blue': theme === 'blue',
+          'theme-dark': theme === 'dark' 
+      }"
+      class="font-sans antialiased min-h-screen flex flex-col relative overflow-x-hidden selection:bg-[var(--color-primary)] selection:text-white">
+
+    <div class="fixed inset-0 z-0 transition-colors duration-700 pointer-events-none">
+        <div class="absolute top-[-10%] left-[20%] w-[800px] h-[800px] rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-float"
+             :style="`background-color: var(--color-secondary)`"></div>
+        <div class="absolute bottom-[10%] right-[10%] w-[600px] h-[600px] rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-float"
+             style="animation-delay: 2s; background-color: var(--color-primary)"></div>
+        <div class="absolute inset-0 opacity-20" 
+             style="background-image: radial-gradient(var(--text-muted) 1px, transparent 1px); background-size: 30px 30px;"></div>
+    </div>
+
+    <nav class="sticky top-0 z-40 w-full px-4 py-2 transition-colors duration-300 shadow-sm glass-nav">
+        <div class="flex items-center justify-between mx-auto h-14 max-w-7xl">
+            
+            <div class="flex items-center flex-1 gap-4">
+                <a href="{% url 'core:aluno_dashboard' %}" class="flex items-center gap-2 group">
+                    <div class="flex items-center justify-center w-10 h-10 text-lg font-bold text-white transition-transform shadow-lg rounded-xl group-hover:scale-110"
+                         style="background: var(--gradient-sidebar)">N</div>
+                    <span class="hidden text-xl font-bold tracking-tight font-display md:block" style="color: var(--text-main)">
+                        Nio<span style="color: var(--color-primary)">Student</span>
+                    </span>
+                </a>
+            </div>
+
+            <div class="items-center justify-center flex-1 hidden gap-8 lg:flex">
+                <a href="{% url 'core:aluno_dashboard' %}" class="relative flex flex-col items-center p-2 group" title="Feed Principal">
+                    <i class="mb-1 text-2xl transition-colors duration-300 fas fa-home" 
+                       :style="currentPath === '/dashboard/aluno/' ? 'color: var(--color-primary)' : 'color: var(--text-muted)'"></i>
+                    <span class="absolute bottom-0 w-1.5 h-1.5 rounded-full" 
+                          :style="currentPath === '/dashboard/aluno/' ? 'background-color: var(--color-primary)' : 'display: none'"></span>
+                </a>
+
+                <a href="{% url 'core:student_subjects' %}" class="relative flex flex-col items-center p-2 group" title="Minhas Disciplinas">
+                    <i class="fas fa-book text-2xl mb-1 transition-colors duration-300 group-hover:text-[var(--color-primary)]" style="color: var(--text-muted)"></i>
+                </a>
+
+                <a href="{% url 'core:student_lesson' %}" class="relative flex flex-col items-center p-2 group" title="Sala de Aula">
+                    <i class="fas fa-tv text-2xl mb-1 transition-colors duration-300 group-hover:text-[var(--color-primary)]" style="color: var(--text-muted)"></i>
+                </a>
+
+                <a href="{% url 'core:student_profile' %}" class="relative flex flex-col items-center p-2 group" title="Gamificação & Perfil">
+                    <i class="fas fa-trophy text-2xl mb-1 transition-colors duration-300 group-hover:text-[var(--color-primary)]" style="color: var(--text-muted)"></i>
+                </a>
+            </div>
+
+            <div class="flex items-center justify-end flex-1 gap-4">
+                
+                <button @click="openTalkio()" class="relative flex items-center justify-center w-10 h-10 transition rounded-full hover:bg-black/5" title="Abrir Talkio">
+                    <img src="{% static 'imgs/talkio/Talkio_logo.png' %}" class="object-contain w-8 h-8 drop-shadow-sm" alt="Talkio">
+                    <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white rounded-full flex items-center justify-center text-[9px] font-bold text-white">3</span>
+                </button>
+                
+                <div class="relative">
+                    <button @click="notificationsOpen = !notificationsOpen" class="relative flex items-center justify-center w-10 h-10 transition rounded-full hover:bg-black/5" style="color: var(--text-main)">
+                        <i class="text-xl far fa-bell"></i>
+                        <span class="absolute w-2 h-2 bg-red-500 rounded-full top-2 right-2 animate-pulse"></span>
+                    </button>
+                    <div x-show="notificationsOpen" @click.away="notificationsOpen = false" x-transition class="absolute right-0 z-50 mt-3 overflow-hidden border-0 shadow-2xl w-80 rounded-2xl glass-panel">
+                        <div class="p-4 text-sm font-bold border-b border-gray-100 bg-white/50 backdrop-blur" style="color: var(--text-main)">Notificações</div>
+                        <div class="overflow-y-auto max-h-64 custom-scroll">
+                            <div class="flex items-start gap-3 p-3 border-b cursor-pointer hover:bg-black/5 border-gray-100/50">
+                                <div class="flex items-center justify-center w-8 h-8 text-green-600 bg-green-100 rounded-full shrink-0"><i class="fas fa-check"></i></div>
+                                <div><p class="text-xs font-bold" style="color: var(--text-main)">Nota lançada</p><p class="text-xs" style="color: var(--text-muted)">História: 9.5 (Prova Mensal)</p></div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 cursor-pointer hover:bg-black/5">
+                                <div class="flex items-center justify-center w-8 h-8 text-blue-600 bg-blue-100 rounded-full shrink-0"><i class="fas fa-video"></i></div>
+                                <div><p class="text-xs font-bold" style="color: var(--text-main)">Aula Iniciada</p><p class="text-xs" style="color: var(--text-muted)">Prof. Cláudia está ao vivo.</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative ml-2 cursor-pointer group">
+                    <div class="w-10 h-10 rounded-full p-[2px] transition-transform group-hover:scale-105" style="background: var(--gradient-sidebar)">
+                        <img src="https://i.pravatar.cc/150?img=32" class="object-cover w-full h-full border-2 border-white rounded-full">
+                    </div>
+                    
+                    <div class="absolute right-0 z-50 hidden w-64 mt-4 bg-white border shadow-2xl dark:bg-slate-800 rounded-2xl border-slate-100 group-hover:block animate-fade-in-up">
+                        <div class="p-4 border-b border-slate-100 dark:border-slate-700 bg-gradient-to-r from-gray-50 to-white dark:from-slate-800 dark:to-slate-900 rounded-t-2xl">
+                            <p class="text-sm font-bold text-gray-800 truncate dark:text-white">{{ user.first_name }}</p>
+                            <p class="text-xs text-slate-500">8º Ano B • Matrícula #202588</p>
+                        </div>
+                        
+                        <div class="p-4 border-b border-slate-100 dark:border-slate-700">
+                            <p class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-wider">Aparência do Sistema</p>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button @click="setTheme('aurora')" class="flex items-center justify-center h-10 transition border-2 rounded-xl hover:shadow-md"
+                                        :class="theme === 'aurora' ? 'border-purple-500 bg-purple-50 ring-2 ring-purple-200' : 'border-slate-200'">
+                                    <div class="w-5 h-5 rounded-full bg-gradient-to-br from-purple-400 to-cyan-400"></div>
+                                </button>
+                                
+                                <button @click="setTheme('dark')" class="flex items-center justify-center h-10 transition border-2 rounded-xl hover:shadow-md"
+                                        :class="theme === 'dark' ? 'border-slate-600 bg-slate-100 ring-2 ring-slate-300' : 'border-slate-200'">
+                                    <div class="w-5 h-5 border rounded-full bg-slate-800 border-slate-600"></div>
+                                </button>
+
+                                <template x-if="userGender === 'F'">
+                                    <button @click="setTheme('pink')" class="flex items-center justify-center h-10 transition border-2 rounded-xl hover:shadow-md"
+                                            :class="theme === 'pink' ? 'border-pink-500 bg-pink-50 ring-2 ring-pink-200' : 'border-slate-200'">
+                                        <div class="w-5 h-5 bg-pink-500 rounded-full"></div>
+                                    </button>
+                                </template>
+                                <template x-if="userGender === 'M'">
+                                    <button @click="setTheme('blue')" class="flex items-center justify-center h-10 transition border-2 rounded-xl hover:shadow-md"
+                                            :class="theme === 'blue' ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' : 'border-slate-200'">
+                                        <div class="w-5 h-5 bg-blue-500 rounded-full"></div>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+
+                        <a href="{% url 'core:logout' %}" class="flex items-center gap-3 p-4 text-sm text-red-600 transition hover:bg-red-50 rounded-b-2xl">
+                            <i class="fas fa-power-off"></i> Sair do Sistema
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </nav>
 
-    <main class="max-w-5xl mx-auto p-6">
-        
-        <header class="mb-10 text-center">
-            <h1 class="text-3xl font-extrabold text-slate-800 mb-2">O que vamos aprender hoje?</h1>
-            <p class="text-slate-500">Seu assistente pessoal de evolução contínua.</p>
-        </header>
+    <div class="max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-6 pt-6 px-4 relative z-10 lg:h-[calc(100vh-80px)]">
 
-        <div class="max-w-2xl mx-auto bg-white p-2 rounded-full shadow-lg border border-gray-200 flex items-center mb-12 transform hover:scale-105 transition duration-300">
-            <div class="pl-4 pr-2 text-teal-500">
-                <i class="fas fa-sparkles text-xl"></i>
+        <div class="hidden lg:flex flex-col w-[280px] flex-shrink-0 sticky top-24 h-full gap-6 pb-4">
+            
+            <div class="relative flex flex-col items-center p-6 overflow-hidden text-center transition-all duration-500 glass-panel rounded-3xl group hover:shadow-lg">
+                <div class="absolute top-0 left-0 w-full h-24 opacity-20" style="background: var(--gradient-sidebar)"></div>
+                
+                <div class="relative z-10 mt-4 mb-3">
+                    <div class="w-24 h-24 p-1 bg-white rounded-full shadow-xl">
+                        <img src="https://i.pravatar.cc/150?img=32" class="object-cover w-full h-full border-2 rounded-full border-slate-100">
+                    </div>
+                    <div class="absolute bottom-0 right-0 p-1 bg-white rounded-full shadow-sm" title="Top Aluno">
+                        <div class="flex items-center justify-center text-xs bg-yellow-400 rounded-full w-7 h-7"><i class="text-white fas fa-star"></i></div>
+                    </div>
+                </div>
+
+                <h2 class="w-full text-xl font-bold truncate font-display" style="color: var(--text-main)">{{ user.first_name }}</h2>
+                <p class="mb-4 text-xs font-medium tracking-wider uppercase" style="color: var(--text-muted)">Nível 5 • Explorador</p>
+
+                <div class="flex justify-center w-full gap-4 py-3 mb-4 border-t border-b border-gray-200/30">
+                    <div><span class="block text-sm font-bold" style="color: var(--color-primary)">1.250</span><span class="text-[10px] text-slate-400 uppercase">XP</span></div>
+                    <div class="w-px bg-gray-200/50"></div>
+                    <div><span class="block text-sm font-bold text-amber-500">320</span><span class="text-[10px] text-slate-400 uppercase">Coins</span></div>
+                </div>
+
+                <a href="{% url 'core:student_profile' %}" class="w-full py-2 text-xs font-bold transition border border-transparent rounded-xl hover:bg-white/50 hover:border-gray-200" style="color: var(--color-primary)">Ver Perfil Completo</a>
             </div>
-            <input type="text" placeholder="Ex: Quero estudar sobre a Revolução Industrial..." 
-                   class="w-full bg-transparent border-none focus:ring-0 text-lg p-2 outline-none text-slate-700 placeholder-slate-400">
-            <button class="bg-teal-500 hover:bg-teal-600 text-white rounded-full px-6 py-3 font-bold transition">
-                Gerar Plano
-            </button>
+
+            <nav class="flex-1 pr-2 space-y-2 overflow-y-auto custom-scroll">
+                <a href="{% url 'core:aluno_dashboard' %}" class="flex items-center gap-3 px-4 py-3 transition-all shadow-sm rounded-2xl group"
+                   style="background: var(--bg-card); border-left: 4px solid var(--color-primary);">
+                    <div class="flex justify-center w-8"><i class="fas fa-newspaper" style="color: var(--color-primary)"></i></div>
+                    <span class="text-sm font-bold" style="color: var(--text-main)">Feed Principal</span>
+                </a>
+                
+                <a href="{% url 'core:student_subjects' %}" class="flex items-center gap-3 px-4 py-3 transition-all rounded-2xl hover:bg-white/40 group">
+                    <div class="flex justify-center w-8"><i class="transition fas fa-book text-slate-400 group-hover:text-blue-500"></i></div>
+                    <span class="text-sm font-medium" style="color: var(--text-muted)">Minhas Disciplinas</span>
+                </a>
+                
+                <a href="{% url 'core:student_grades' %}" class="flex items-center gap-3 px-4 py-3 transition-all rounded-2xl hover:bg-white/40 group">
+                    <div class="flex justify-center w-8"><i class="transition fas fa-chart-pie text-slate-400 group-hover:text-green-500"></i></div>
+                    <span class="text-sm font-medium" style="color: var(--text-muted)">Boletim & Notas</span>
+                </a>
+                
+                <a href="{% url 'core:student_calendar' %}" class="flex items-center gap-3 px-4 py-3 transition-all rounded-2xl hover:bg-white/40 group">
+                    <div class="flex justify-center w-8"><i class="transition fas fa-calendar-alt text-slate-400 group-hover:text-red-500"></i></div>
+                    <span class="text-sm font-medium" style="color: var(--text-muted)">Agenda Escolar</span>
+                </a>
+                
+                <a href="{% url 'core:student_financial' %}" class="flex items-center gap-3 px-4 py-3 transition-all rounded-2xl hover:bg-white/40 group">
+                    <div class="flex justify-center w-8"><i class="transition fas fa-wallet text-slate-400 group-hover:text-purple-500"></i></div>
+                    <span class="text-sm font-medium" style="color: var(--text-muted)">Financeiro</span>
+                </a>
+                
+                <a href="{% url 'core:student_services' %}" class="flex items-center gap-3 px-4 py-3 transition-all rounded-2xl hover:bg-white/40 group">
+                    <div class="flex justify-center w-8"><i class="transition fas fa-file-alt text-slate-400 group-hover:text-orange-500"></i></div>
+                    <span class="text-sm font-medium" style="color: var(--text-muted)">Secretaria</span>
+                </a>
+            </nav>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="flex-1 w-full lg:max-w-[600px] mx-auto pb-20 space-y-6 overflow-y-auto scrollbar-hide">
             
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-bold">História</span>
-                    <span class="text-xs text-gray-400">45% Concluído</span>
-                </div>
-                <h3 class="font-bold text-lg mb-2">Idade Média</h3>
-                <div class="w-full bg-gray-100 rounded-full h-2 mb-4">
-                    <div class="bg-orange-400 h-2 rounded-full" style="width: 45%"></div>
-                </div>
-                <button class="w-full border border-slate-200 text-slate-600 py-2 rounded-lg text-sm font-bold hover:bg-slate-50">
-                    Continuar
+            <div class="flex gap-3 p-4 transition shadow-sm glass-panel rounded-2xl hover:shadow-md">
+                <div class="w-10 h-10 overflow-hidden bg-gray-200 rounded-full shrink-0"><img src="https://i.pravatar.cc/150?img=32" class="object-cover w-full h-full"></div>
+                <button @click="consciosOpen = true" class="flex-1 text-left bg-gray-50/50 hover:bg-gray-100/50 border border-transparent hover:border-gray-200 rounded-full px-4 py-2.5 text-sm transition text-slate-500 flex items-center justify-between">
+                    <span>Pergunte algo ao Conscios ou poste...</span>
+                    <i class="text-yellow-500 fas fa-sparkles"></i>
                 </button>
             </div>
 
-            <div class="border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center p-6 text-slate-400 hover:border-teal-400 hover:text-teal-500 transition cursor-pointer h-full min-h-[200px]">
-                <i class="fas fa-plus-circle text-4xl mb-2"></i>
-                <span class="font-bold text-sm">Novo Tópico</span>
+            <template x-for="post in feed" :key="post.id">
+                <div class="relative p-5 overflow-hidden transition shadow-sm glass-panel rounded-2xl hover:shadow-md" 
+                     :class="{'border-l-4': post.type === 'event' || post.type === 'alert'}" 
+                     :style="post.borderColor ? `border-left-color: ${post.borderColor}` : ''">
+                    
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center justify-center w-10 h-10 overflow-hidden text-xs font-bold bg-gray-100 rounded-full shadow-sm">
+                                <template x-if="post.avatar.includes('http')"><img :src="post.avatar" class="object-cover w-full h-full"></template>
+                                <template x-if="!post.avatar.includes('http')">
+                                    <div class="flex items-center justify-center w-full h-full text-white" :style="`background: ${post.avatarColor || 'var(--color-primary)'}`">
+                                        <i :class="post.icon" class="text-lg"></i>
+                                    </div>
+                                </template>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold" style="color: var(--text-main)" x-text="post.author"></h4>
+                                <p class="text-xs" style="color: var(--text-muted)" x-text="post.time"></p>
+                            </div>
+                        </div>
+                        <button class="text-slate-400 hover:text-slate-600"><i class="fas fa-ellipsis-h"></i></button>
+                    </div>
+
+                    <div class="pl-1">
+                        <h3 class="mb-2 text-base font-bold" style="color: var(--text-main)" x-text="post.title" x-show="post.title"></h3>
+                        <p class="mb-4 text-sm leading-relaxed" style="color: var(--text-main)" x-text="post.content"></p>
+                        
+                        <template x-if="post.image">
+                            <div class="relative w-full h-48 mb-4 overflow-hidden cursor-pointer rounded-xl group">
+                                <img :src="post.image" class="object-cover w-full h-full transition duration-500 group-hover:scale-105">
+                                <div class="absolute inset-0 transition bg-black/10 group-hover:bg-transparent"></div>
+                            </div>
+                        </template>
+
+                        <template x-if="post.action">
+                            <button class="w-full py-2.5 rounded-xl font-bold text-white text-sm shadow-lg hover:opacity-90 transition flex items-center justify-center gap-2 mb-2"
+                                    :style="`background: var(--gradient-sidebar)`">
+                                <i :class="post.actionIcon"></i> <span x-text="post.actionText"></span>
+                            </button>
+                        </template>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-3 mt-2 border-t border-gray-100/50">
+                        <div class="flex gap-4">
+                            <button class="flex items-center gap-1 text-xs font-bold transition text-slate-500 hover:text-red-500"><i class="far fa-heart"></i> <span x-text="post.likes"></span></button>
+                            <button class="flex items-center gap-1 text-xs font-bold transition text-slate-500 hover:text-blue-500"><i class="far fa-comment"></i> <span x-text="post.comments"></span></button>
+                        </div>
+                        <button class="text-slate-400 hover:text-slate-600"><i class="far fa-bookmark"></i></button>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <div class="hidden lg:flex flex-col w-[280px] flex-shrink-0 sticky top-24 h-fit gap-6 pb-4">
+            
+            <div class="p-5 shadow-sm glass-panel rounded-2xl">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold" style="color: var(--text-main)">Horário de Hoje</h3>
+                    <i class="far fa-clock" style="color: var(--text-muted)"></i>
+                </div>
+                <div class="relative space-y-4">
+                    <div class="absolute left-1.5 top-2 bottom-2 w-0.5 bg-gray-200/50"></div>
+                    <template x-for="aula in schedule">
+                        <div class="relative flex gap-3 group">
+                            <div class="w-3 h-3 rounded-full mt-1.5 z-10 border-2 border-white shadow-sm transition-transform group-hover:scale-125" 
+                                 :class="aula.status === 'done' ? 'bg-green-500' : (aula.status === 'current' ? 'bg-blue-500 animate-pulse' : 'bg-gray-300')"></div>
+                            <div>
+                                <p class="text-xs font-bold" style="color: var(--text-main)" x-text="aula.subject"></p>
+                                <p class="text-[10px]" style="color: var(--text-muted)"><span x-text="aula.time"></span> • <span x-text="aula.room"></span></p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <div class="p-5 shadow-sm glass-panel rounded-2xl">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold" style="color: var(--text-main)">Talkio</h3>
+                    <button @click="openTalkio()" class="text-xs font-bold hover:underline" style="color: var(--color-primary)">Abrir App</button>
+                </div>
+                <div class="space-y-3">
+                    <template x-for="chat in chats.slice(0, 3)">
+                        <div class="flex items-center gap-3 p-1 transition rounded-lg cursor-pointer opacity-80 hover:opacity-100 hover:bg-white/30" @click="openTalkioChat(chat)">
+                            <div class="relative w-9 h-9">
+                                <template x-if="chat.avatar.includes('http')"><img :src="chat.avatar" class="object-cover w-full h-full rounded-full"></template>
+                                <template x-if="!chat.avatar.includes('http')"><div class="flex items-center justify-center w-full h-full text-xs font-bold text-blue-600 bg-blue-100 rounded-full">G</div></template>
+                                <div x-show="chat.online" class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></div>
+                            </div>
+                            <div class="flex-1 overflow-hidden">
+                                <p class="text-xs font-bold truncate" style="color: var(--text-main)" x-text="chat.name"></p>
+                                <p class="text-[10px] truncate" style="color: var(--text-muted)" x-text="chat.lastMsg"></p>
+                            </div>
+                            <span x-show="chat.unread > 0" class="text-[10px] font-bold bg-red-500 text-white px-1.5 rounded-full" x-text="chat.unread"></span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <div class="p-5 border-red-100 shadow-sm glass-panel rounded-2xl bg-gradient-to-br from-white to-red-50/30">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="flex items-center justify-center w-8 h-8 text-red-500 bg-red-100 rounded-lg"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div>
+                        <p class="text-xs font-bold text-red-500 uppercase">Atenção</p>
+                        <p class="text-xs font-bold text-slate-700">Entrega Pendente</p>
+                    </div>
+                </div>
+                <p class="mb-1 text-sm font-bold text-slate-800">Lista de Física (Cap. 4)</p>
+                <p class="mb-3 text-xs text-slate-500">Fecha hoje às 23:59</p>
+                <a href="{% url 'core:student_activity' %}" class="block w-full py-2 text-xs font-bold text-center text-red-500 transition bg-white border border-red-200 rounded-lg hover:bg-red-50">Enviar Agora</a>
             </div>
 
         </div>
-    </main>
+    </div>
 
+    <div class="fixed z-50 flex flex-col items-end gap-2 bottom-6 right-6" x-cloak>
+        <div x-show="consciosOpen" 
+             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-10 scale-95" x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+             x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 scale-100" x-transition:leave-end="opacity-0 translate-y-10 scale-95"
+             class="flex flex-col mb-2 overflow-hidden bg-white shadow-2xl glass-panel w-80 h-96 rounded-2xl border-white/60">
+            <div class="flex items-center justify-between p-4 text-white bg-gradient-to-r from-gray-900 to-gray-800">
+                <div class="flex items-center gap-2"><i class="text-purple-400 fas fa-brain"></i> <span class="text-sm font-bold">Conscios AI</span></div>
+                <button @click="consciosOpen = false"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="flex-1 p-4 space-y-3 overflow-y-auto bg-slate-50">
+                <div class="flex justify-start"><div class="p-2 text-xs bg-white border border-gray-200 rounded-tl-none shadow-sm rounded-xl text-slate-600">Olá! Como posso ajudar nos estudos hoje?</div></div>
+            </div>
+            <div class="p-3 bg-white border-t border-gray-100"><input type="text" placeholder="Digite..." class="w-full px-3 py-2 text-xs border-none rounded-full bg-slate-100"></div>
+        </div>
+        <button @click="consciosOpen = !consciosOpen" class="flex items-center justify-center text-white transition border-2 rounded-full shadow-2xl w-14 h-14 hover:scale-110 border-white/20 bg-gradient-to-r from-purple-600 to-indigo-600">
+            <i class="text-xl fas fa-robot"></i>
+        </button>
+    </div>
+
+    <div x-cloak x-show="talkioOpen" class="fixed inset-0 z-[100] flex justify-center items-center">
+        <div @click="talkioOpen = false" x-show="talkioOpen" x-transition.opacity class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        
+        <div x-show="talkioOpen" 
+             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+             class="relative w-full max-w-6xl h-[90vh] rounded-xl shadow-2xl flex overflow-hidden talkio-drawer transition-colors duration-300">
+            
+            <div class="flex flex-col w-1/3 border-r md:w-80 border-gray-200/10 bg-opacity-95" style="background-color: var(--talkio-sidebar); border-right: 1px solid rgba(0,0,0,0.05);">
+                <div class="flex items-center gap-3 p-3">
+                    <button @click="talkioMenu = !talkioMenu" class="relative p-2 text-gray-500 transition rounded-full hover:bg-black/5">
+                        <i class="fas fa-bars"></i>
+                        <div x-show="talkioMenu" @click.away="talkioMenu = false" class="absolute left-0 z-50 w-64 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-100 shadow-xl top-10 rounded-xl animate-fade-in-up" style="background-color: var(--talkio-sidebar); color: var(--text-main)">
+                            <div class="flex items-center gap-3 px-4 py-3 border-b border-gray-100/10">
+                                <img src="https://i.pravatar.cc/150?img=32" class="w-10 h-10 rounded-full">
+                                <div><p class="font-bold">{{ user.first_name }}</p><p class="text-xs opacity-70">+55 11 99999-9999</p></div>
+                            </div>
+                            <a href="#" class="flex items-center gap-4 px-4 py-2 hover:bg-black/5"><i class="w-5 fas fa-users"></i> Novo Grupo</a>
+                            <a href="#" class="flex items-center gap-4 px-4 py-2 hover:bg-black/5"><i class="w-5 fas fa-user"></i> Contatos</a>
+                            <a href="#" class="flex items-center gap-4 px-4 py-2 hover:bg-black/5"><i class="w-5 fas fa-phone"></i> Chamadas</a>
+                            <a href="#" class="flex items-center gap-4 px-4 py-2 hover:bg-black/5"><i class="w-5 fas fa-bookmark"></i> Salvos</a>
+                            <a href="#" class="flex items-center gap-4 px-4 py-2 hover:bg-black/5"><i class="w-5 fas fa-cog"></i> Configurações</a>
+                            <a href="#" class="flex items-center gap-4 px-4 py-2 hover:bg-black/5"><i class="w-5 fas fa-question-circle"></i> FAQ Talkio</a>
+                        </div>
+                    </button>
+                    <div class="relative flex-1">
+                        <input type="text" placeholder="Buscar" class="w-full bg-gray-100/50 border-none rounded-full py-1.5 pl-9 pr-4 text-sm focus:ring-0 focus:bg-white transition" style="background-color: var(--talkio-hover)">
+                        <i class="absolute text-xs text-gray-400 fas fa-search left-3 top-2"></i>
+                    </div>
+                </div>
+
+                <div class="flex px-2 border-b border-gray-100/10">
+                    <button class="flex-1 py-2 text-sm font-bold text-blue-500 border-b-2 border-blue-500">Tudo</button>
+                    <button class="flex-1 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">Grupos</button>
+                    <button class="flex-1 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">Privado</button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto custom-scroll">
+                    <template x-for="chat in chats" :key="chat.id">
+                        <div @click="activeChat = chat" 
+                             class="flex items-center gap-3 p-2.5 cursor-pointer transition relative group"
+                             :style="activeChat && activeChat.id === chat.id ? 'background-color: #3390ec; color: white;' : ''"
+                             :class="activeChat && activeChat.id !== chat.id ? 'hover:bg-black/5' : ''">
+                            
+                            <div class="relative w-12 h-12 shrink-0">
+                                <template x-if="chat.avatar.includes('http')"><img :src="chat.avatar" class="object-cover w-full h-full rounded-full"></template>
+                                <template x-if="!chat.avatar.includes('http')"><div class="flex items-center justify-center w-full h-full text-lg font-bold text-white rounded-full bg-gradient-to-tr from-blue-400 to-purple-500">G</div></template>
+                                <div x-show="chat.online" class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                            </div>
+                            
+                            <div class="flex-1 min-w-0 pb-2 border-b border-gray-100/10 group-hover:border-transparent">
+                                <div class="flex items-baseline justify-between">
+                                    <h4 class="text-sm font-bold truncate" x-text="chat.name"></h4>
+                                    <span class="text-xs opacity-70" x-text="chat.time"></span>
+                                </div>
+                                <div class="flex justify-between items-center mt-0.5">
+                                    <p class="text-xs truncate max-w-[140px] opacity-80" x-text="chat.lastMsg"></p>
+                                    <div x-show="chat.unread > 0" class="min-w-[18px] h-[18px] bg-gray-400 rounded-full flex items-center justify-center text-[10px] text-white font-bold px-1" 
+                                         :class="activeChat && activeChat.id === chat.id ? 'bg-white text-blue-500' : 'bg-green-500'">
+                                        <span x-text="chat.unread"></span>
+                                    </div>
+                                    <i x-show="chat.type === 'private'" class="fas fa-lock text-[10px] opacity-50 ml-1"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="absolute flex flex-col gap-3 bottom-6 right-6">
+                    <button class="flex items-center justify-center w-10 h-10 text-gray-600 transition bg-gray-200 rounded-full shadow-lg hover:scale-110" title="Adicionar Contato"><i class="fas fa-user-plus"></i></button>
+                    <button class="flex items-center justify-center text-white transition bg-blue-500 rounded-full shadow-lg w-14 h-14 hover:scale-105" title="Novo Chat"><i class="fas fa-pen"></i></button>
+                </div>
+            </div>
+
+            <div class="relative flex flex-col flex-1" style="background-color: var(--talkio-chat);">
+                <div class="absolute inset-0 pointer-events-none talkio-pattern opacity-10"></div>
+
+                <div class="relative z-10 flex items-center justify-between p-2 px-4 border-b shadow-sm border-gray-200/10" style="background-color: var(--talkio-sidebar)">
+                    <template x-if="activeChat">
+                        <div class="flex items-center gap-3 cursor-pointer">
+                            <i class="mr-2 text-gray-500 fas fa-arrow-left md:hidden" @click="activeChat = null"></i>
+                            <div class="w-10 h-10 overflow-hidden rounded-full">
+                                 <template x-if="activeChat.avatar.includes('http')"><img :src="activeChat.avatar" class="object-cover w-full h-full"></template>
+                                 <template x-if="!activeChat.avatar.includes('http')"><div class="flex items-center justify-center w-full h-full font-bold text-white bg-blue-500">G</div></template>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold" x-text="activeChat.name"></h3>
+                                <p class="text-xs text-blue-500" x-text="activeChat.online ? 'online' : 'visto por último recentemente'"></p>
+                            </div>
+                        </div>
+                    </template>
+                    <template x-if="!activeChat">
+                        <div class="text-sm text-gray-500">Selecione um chat para começar</div>
+                    </template>
+                    
+                    <div class="flex items-center gap-4 text-gray-400" x-show="activeChat">
+                        <button class="hover:text-blue-500"><i class="fas fa-search"></i></button>
+                        <button class="hover:text-blue-500"><i class="fas fa-phone"></i></button>
+                        <button class="hover:text-blue-500"><i class="fas fa-ellipsis-v"></i></button>
+                        <button @click="talkioOpen = false" class="ml-2 hover:text-red-500"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+
+                <div class="relative z-10 flex-1 p-4 space-y-2 overflow-y-auto custom-scroll">
+                    <template x-if="activeChat">
+                        <div class="space-y-4">
+                            <div class="flex justify-center"><span class="px-2 py-1 text-xs font-bold text-white rounded-full shadow-sm bg-black/20">Hoje</span></div>
+                            
+                            <div class="flex justify-start max-w-[70%]">
+                                <div class="relative p-2 px-3 text-sm rounded-lg rounded-tl-none shadow-sm group" style="background-color: var(--talkio-bubble-in); color: var(--text-main)">
+                                    <p x-text="activeChat.lastMsg"></p>
+                                    <span class="text-[10px] opacity-50 float-right ml-2 mt-1">14:30</span>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end max-w-[70%] ml-auto">
+                                <div class="p-2 px-3 text-sm rounded-lg rounded-tr-none shadow-sm" style="background-color: var(--talkio-bubble-out); color: black;">
+                                    <p>Vou verificar agora mesmo!</p>
+                                    <div class="flex items-center justify-end gap-1 mt-1">
+                                        <span class="text-[10px] text-green-700">14:32</span>
+                                        <i class="fas fa-check-double text-[10px] text-green-600"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                    <template x-if="!activeChat">
+                        <div class="flex items-center justify-center h-full">
+                            <div class="px-4 py-2 text-sm text-white rounded-full bg-black/20 backdrop-blur-sm">Selecione um chat para enviar mensagens</div>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="relative z-10 p-3" style="background-color: var(--talkio-sidebar)" x-show="activeChat">
+                    <div class="flex items-end gap-2">
+                        <button class="p-3 text-gray-400 transition hover:text-gray-600"><i class="text-xl fas fa-paperclip"></i></button>
+                        <div class="flex items-center flex-1 transition border border-transparent bg-gray-100/50 rounded-2xl focus-within:border-blue-400" style="background-color: var(--talkio-hover)">
+                            <input type="text" placeholder="Mensagem" class="w-full px-4 py-3 text-sm bg-transparent border-none focus:ring-0" style="color: var(--text-main)">
+                            <button class="p-3 text-gray-400 hover:text-gray-600"><i class="far fa-smile"></i></button>
+                        </div>
+                        <button class="flex items-center justify-center w-12 h-12 p-3 text-white transition bg-blue-500 rounded-full shadow hover:bg-blue-600 hover:scale-110">
+                            <i class="text-lg fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function appData() {
+            return {
+                theme: 'aurora',
+                userGender: 'F', // Simulação: Isso viria do backend Django {{ user.gender }}
+                messengerOpen: false,
+                talkioOpen: false,
+                talkioMenu: false,
+                activeChat: null,
+                consciosOpen: false,
+                notificationsOpen: false,
+                currentPath: window.location.pathname,
+
+                feed: [
+                    {id: 1, author: 'Sistema', title: 'Boas-vindas, Ana!', content: 'Bem-vinda de volta! Seu ambiente de estudos está pronto.', time: 'Agora', avatar: 'N', avatarColor: '#7c3aed', type: 'welcome', likes: 0, comments: 0},
+                    {id: 2, author: 'Prof. Cláudia', title: 'Aula Ao Vivo: História', content: 'Inicia em 15 minutos. Tema: Revolução Industrial.', time: '10 min atrás', avatar: 'C', avatarColor: '#db2777', type: 'event', action: true, actionText: 'Entrar na Sala', actionIcon: 'fas fa-video', borderColor: '#db2777', likes: 12, comments: 2},
+                    {id: 3, author: 'NioCortex', title: 'Nova Conquista!', content: 'Você alcançou o Nível 5 em Raciocínio Lógico.', time: '1h atrás', avatar: 'icon', icon: 'fas fa-trophy', avatarColor: '#f59e0b', type: 'alert', likes: 24, comments: 5},
+                    {id: 4, author: 'Turma 8º B', title: '', content: 'Enquete: Qual tema para o trabalho de Geografia?', time: '2h atrás', avatar: 'group', avatarColor: '#2563eb', type: 'poll', likes: 5, comments: 18}
+                ],
+
+                schedule: [
+                    {subject: 'Matemática', time: '08:00', room: 'Sala 3B', status: 'done'},
+                    {subject: 'História', time: '10:00', room: 'Lab 2', status: 'current'},
+                    {subject: 'Inglês', time: '13:00', room: 'Sala 3B', status: 'next'},
+                ],
+
+                chats: [
+                    {id: 1, name: 'Prof. Alberto', lastMsg: 'A lista está no portal.', time: '14:30', unread: 2, online: true, avatar: 'https://i.pravatar.cc/150?img=11', type: 'private'},
+                    {id: 2, name: 'Turma 8º B', lastMsg: 'Ana: Alguém fez a q4?', time: '14:25', unread: 5, online: true, avatar: 'group', type: 'public'},
+                    {id: 3, name: 'João Silva', lastMsg: 'Valeu!', time: 'Ontem', unread: 0, online: false, avatar: 'https://i.pravatar.cc/150?img=3', type: 'private'},
+                    {id: 4, name: 'Secretaria', lastMsg: 'Documento pronto.', time: 'Seg', unread: 0, online: true, avatar: 'https://i.pravatar.cc/150?img=5', type: 'private'},
+                ],
+
+                init() {
+                    // Define o tema inicial baseado no gênero se não houver preferência salva
+                    if(this.userGender === 'F') this.theme = 'pink';
+                    else if(this.userGender === 'M') this.theme = 'blue';
+                    else this.theme = 'aurora';
+                },
+
+                setTheme(newTheme) {
+                    this.theme = newTheme;
+                },
+
+                openTalkio() {
+                    this.talkioOpen = true;
+                },
+
+                openTalkioChat(chat) {
+                    this.activeChat = chat;
+                    this.talkioOpen = true;
+                }
+            }
+        }
+    </script>
 </body>
 </html>

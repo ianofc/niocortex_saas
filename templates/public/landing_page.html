@@ -117,7 +117,7 @@
          :class="scrolled ? 'glass-panel py-3 shadow-sm border-white/40' : 'bg-transparent py-6'">
         <div class="flex items-center justify-between px-6 mx-auto max-w-7xl">
             
-            <a href="/" class="relative flex items-center gap-3 group">
+            <a href="{% url 'core:index' %}" class="relative flex items-center gap-3 group">
                 <div class="relative flex items-center justify-center w-10 h-10">
                     <div class="absolute inset-0 transition-transform duration-300 bg-nio-600 rounded-xl rotate-6 opacity-20 group-hover:rotate-12"></div>
                     <div class="absolute inset-0 border shadow-sm bg-white/60 backdrop-blur rounded-xl border-white/50"></div>
@@ -137,7 +137,7 @@
 
             <div class="items-center hidden gap-8 md:flex">
                 <a href="#filosofia" class="text-sm font-semibold transition-colors text-slate-600 hover:text-nio-600">A Evolução</a>
-                <a href="#funcionalidades" class="text-sm font-semibold transition-colors text-slate-600 hover:text-nio-600">Funcionalidades</a>
+                <a href="{% url 'core:about' %}" class="text-sm font-semibold transition-colors text-slate-600 hover:text-nio-600">Sobre Nós</a>
                 
                 <a href="{% url 'core:pricing' %}" class="text-sm font-semibold transition-colors text-slate-600 hover:text-nio-600">Ver Planos</a>
                 
@@ -157,8 +157,8 @@
 
         <div x-show="mobileMenu" x-collapse class="border-b shadow-xl md:hidden bg-white/95 backdrop-blur-xl border-slate-200">
             <div class="flex flex-col gap-4 p-6">
+                <a href="{% url 'core:about' %}" class="text-lg font-bold text-slate-700">Sobre Nós</a>
                 <a href="#filosofia" class="text-lg font-bold text-slate-700">A Evolução</a>
-                <a href="#funcionalidades" class="text-lg font-bold text-slate-700">Funcionalidades</a>
                 <a href="{% url 'core:pricing' %}" class="text-lg font-bold text-slate-700">Planos & Preços</a>
                 <hr class="border-slate-200">
                 <a href="{% url 'core:login' %}" class="py-3 font-bold text-center border rounded-xl border-slate-200 text-slate-700">Entrar</a>
@@ -356,7 +356,7 @@
                     </div>
                 </div>
 
-                <div class="relative flex flex-col justify-between p-8 overflow-hidden text-white transition-all duration-300 shadow-sm md:col-span-2 rounded-3xl bg-slate-900 hover:shadow-xl group">
+                <a href="{% url 'core:feature_financial' %}" class="relative flex flex-col justify-between p-8 overflow-hidden text-white transition-all duration-300 shadow-sm md:col-span-2 rounded-3xl bg-slate-900 hover:shadow-xl group hover:scale-[1.01]">
                     <div class="absolute inset-0 bg-gradient-to-r from-slate-900 to-slate-800"></div>
                     <div class="relative z-10">
                         <div class="flex items-start justify-between mb-6">
@@ -365,19 +365,21 @@
                         </div>
                         <h3 class="mb-2 text-xl font-bold">Lobo Parietal (Lógica)</h3>
                         <p class="text-sm text-slate-400">Gestão financeira precisa. Emissão de boletos, régua de cobrança automática e previsibilidade de fluxo de caixa.</p>
+                        <p class="mt-4 text-xs font-bold text-green-400 underline">Ver funcionalidades &rarr;</p>
                     </div>
                     <div class="relative z-10 flex items-end h-16 gap-2 mt-6">
                         <div class="w-full h-2 overflow-hidden rounded-full bg-slate-800">
                             <div class="bg-green-500 h-full w-[70%] group-hover:w-[85%] transition-all duration-1000 ease-out"></div>
                         </div>
                     </div>
-                </div>
+                </a>
 
-                <div class="p-6 transition-all duration-300 bg-white border shadow-sm md:col-span-1 rounded-3xl border-slate-200 hover:shadow-lg group">
+                <a href="{% url 'core:feature_diary' %}" class="p-6 transition-all duration-300 bg-white border shadow-sm md:col-span-1 rounded-3xl border-slate-200 hover:shadow-lg group hover:border-nio-300">
                     <div class="flex items-center justify-center w-10 h-10 mb-4 text-xl text-blue-600 transition-transform bg-blue-100 rounded-lg group-hover:scale-110"><i class="fas fa-database"></i></div>
                     <h3 class="mb-2 text-lg font-bold text-slate-900">Lobo Temporal</h3>
                     <p class="text-xs leading-relaxed text-slate-500">Memória institucional. Histórico escolar, documentos e diários armazenados vitaliciamente.</p>
-                </div>
+                    <p class="mt-4 text-xs font-bold text-nio-600">Saiba mais &rarr;</p>
+                </a>
 
                 <div class="relative p-6 overflow-hidden text-white transition-all duration-300 shadow-lg md:col-span-1 rounded-3xl bg-gradient-to-br from-lumina-pink to-purple-600 hover:shadow-xl group">
                     <div class="absolute text-white transition-opacity transform -right-6 -bottom-6 text-9xl opacity-10 group-hover:opacity-20 group-hover:rotate-12">
@@ -468,19 +470,6 @@
                                 <span class="px-2 py-1 text-xs font-bold text-blue-700 bg-blue-100 rounded">Nota 9.5</span>
                             </div>
                         </div>
-                        <div class="flex items-center justify-between p-4 transition-colors bg-white border shadow-sm rounded-xl border-slate-200 hover:border-nio-300">
-                            <div class="flex items-center gap-3">
-                                <div class="flex items-center justify-center w-10 h-10 font-bold text-pink-600 bg-pink-100 rounded-full">MO</div>
-                                <div>
-                                    <p class="font-bold text-slate-700">Maria Oliveira</p>
-                                    <p class="text-xs text-slate-400">Desempenho: Médio</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-2">
-                                <span class="px-2 py-1 text-xs font-bold text-green-700 bg-green-100 rounded">Presente</span>
-                                <span class="px-2 py-1 text-xs font-bold text-yellow-700 bg-yellow-100 rounded">Nota 7.0</span>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -552,8 +541,8 @@
                     <h4 class="mb-6 font-bold text-white">Plataforma</h4>
                     <ul class="space-y-3 text-sm">
                         <li><a href="#" class="transition hover:text-nio-400">IO Conscios (IA)</a></li>
-                        <li><a href="#" class="transition hover:text-nio-400">Gestão Financeira</a></li>
-                        <li><a href="#" class="transition hover:text-nio-400">Diário Digital</a></li>
+                        <li><a href="{% url 'core:feature_financial' %}" class="transition hover:text-nio-400">Gestão Financeira</a></li>
+                        <li><a href="{% url 'core:feature_diary' %}" class="transition hover:text-nio-400">Diário Digital</a></li>
                         <li><a href="{% url 'core:pricing' %}" class="transition hover:text-nio-400">Planos</a></li>
                     </ul>
                 </div>
@@ -561,10 +550,10 @@
                 <div>
                     <h4 class="mb-6 font-bold text-white">Institucional</h4>
                     <ul class="space-y-3 text-sm">
-                        <li><a href="#" class="transition hover:text-nio-400">Sobre Nós</a></li>
+                        <li><a href="{% url 'core:about' %}" class="transition hover:text-nio-400">Sobre Nós</a></li>
                         <li><a href="{% url 'core:contact' %}" class="transition hover:text-nio-400">Contato</a></li>
-                        <li><a href="#" class="transition hover:text-nio-400">Status do Sistema</a></li>
-                        <li><a href="#" class="transition hover:text-nio-400">Central de Ajuda</a></li>
+                        <li><a href="{% url 'core:system_status' %}" class="transition hover:text-nio-400">Status do Sistema</a></li>
+                        <li><a href="{% url 'core:help_center' %}" class="transition hover:text-nio-400">Central de Ajuda</a></li>
                     </ul>
                 </div>
 
@@ -581,8 +570,8 @@
             <div class="flex flex-col items-center justify-between gap-4 pt-8 text-xs border-t border-slate-900 md:flex-row">
                 <p>&copy; 2025 NioCortex Tecnologia Educacional. Todos os direitos reservados.</p>
                 <div class="flex gap-6">
-                    <a href="#" class="transition hover:text-white">Privacidade</a>
-                    <a href="#" class="transition hover:text-white">Termos de Uso</a>
+                    <a href="{% url 'core:privacy_policy' %}" class="transition hover:text-white">Privacidade</a>
+                    <a href="{% url 'core:terms_of_use' %}" class="transition hover:text-white">Termos de Uso</a>
                 </div>
             </div>
         </div>

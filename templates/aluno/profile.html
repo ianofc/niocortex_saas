@@ -1,0 +1,200 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br" class="scroll-smooth bg-[#F0F2F5]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de {{ user.first_name }} | NioStudent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'], display: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        nio: { 50: '#f2f0ff', 100: '#e6e1ff', 500: '#7c3aed', 600: '#6d28d9', 900: '#3e1a75' },
+                        lumina: { cyan: '#00E5FF', pink: '#FF2E93', amber: '#F59E0B' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.5); }
+        .glass-card { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.4); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .neural-bg { background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 30px 30px; }
+    </style>
+</head>
+<body class="text-slate-800 font-sans antialiased min-h-screen relative bg-[#F0F2F5]">
+
+    <div class="absolute inset-0 pointer-events-none neural-bg opacity-30"></div>
+
+    <nav class="sticky top-0 z-40 flex items-center justify-between w-full px-6 py-3 shadow-sm glass-panel">
+        <a href="{% url 'core:aluno_dashboard' %}" class="flex items-center gap-2 transition hover:opacity-80">
+            <div class="flex items-center justify-center w-8 h-8 font-bold text-white rounded-lg bg-nio-600">N</div>
+            <span class="font-bold font-display text-slate-800">Voltar ao Feed</span>
+        </a>
+        <h1 class="text-lg font-bold font-display text-nio-700">Perfil do Aluno</h1>
+        <button class="flex items-center justify-center w-8 h-8 transition rounded-full bg-slate-200 text-slate-600 hover:bg-nio-600 hover:text-white" title="Configurações">
+            <i class="fas fa-cog"></i>
+        </button>
+    </nav>
+
+    <main class="relative z-10 max-w-5xl p-4 mx-auto md:p-6">
+        
+        <div class="relative mb-6 overflow-hidden glass-card rounded-3xl group">
+            <div class="relative h-48 md:h-64 bg-gradient-to-r from-nio-600 to-lumina-pink">
+                <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+                <button class="absolute bottom-4 right-4 bg-black/30 hover:bg-black/50 text-white px-3 py-1.5 rounded-lg text-xs backdrop-blur-sm transition opacity-0 group-hover:opacity-100">
+                    <i class="mr-1 fas fa-camera"></i> Alterar Capa
+                </button>
+            </div>
+            
+            <div class="relative px-6 pb-6">
+                <div class="absolute -top-16 left-6 md:left-10">
+                    <div class="w-32 h-32 p-1 bg-white rounded-full shadow-xl">
+                        <div class="relative flex items-center justify-center w-full h-full overflow-hidden text-4xl rounded-full cursor-pointer bg-slate-100 group/avatar">
+                            <span class="transition group-hover/avatar:opacity-20">🎓</span>
+                            <div class="absolute inset-0 flex items-center justify-center transition opacity-0 group-hover/avatar:opacity-100">
+                                <i class="fas fa-camera text-slate-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-start justify-between gap-4 pt-20 md:pt-4 md:pl-48 md:flex-row md:items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold font-display text-slate-900">{{ user.first_name }} {{ user.last_name }}</h2>
+                        <p class="mb-2 text-sm text-slate-500">8º Ano B • Colégio Futuro</p>
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-0.5 bg-nio-100 text-nio-700 text-xs font-bold rounded border border-nio-200">Nível 5</span>
+                            <span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold rounded border border-amber-200">Explorador</span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-6 text-center">
+                        <div>
+                            <span class="block text-xl font-bold text-slate-800">1.250</span>
+                            <span class="text-xs font-bold tracking-wider uppercase text-slate-400">XP Total</span>
+                        </div>
+                        <div>
+                            <span class="block text-xl font-bold text-slate-800">35</span>
+                            <span class="text-xs font-bold tracking-wider uppercase text-slate-400">Ranking</span>
+                        </div>
+                        <div>
+                            <span class="block text-xl font-bold text-slate-800">12</span>
+                            <span class="text-xs font-bold tracking-wider uppercase text-slate-400">Badges</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            
+            <div class="space-y-6">
+                <div class="p-6 glass-card rounded-2xl">
+                    <h3 class="mb-3 font-bold text-slate-800">Sobre</h3>
+                    <p class="mb-4 text-sm leading-relaxed text-slate-600">
+                        Adoro matemática e robótica. Atualmente estudando Python e História da Arte. Sempre pronto para um desafio de xadrez! ♟️
+                    </p>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-center gap-3 text-slate-500">
+                            <i class="w-5 text-center fas fa-map-marker-alt"></i> São Paulo, SP
+                        </div>
+                        <div class="flex items-center gap-3 text-slate-500">
+                            <i class="w-5 text-center fas fa-birthday-cake"></i> 14 de Maio
+                        </div>
+                        <div class="flex items-center gap-3 text-slate-500">
+                            <i class="w-5 text-center fas fa-link"></i> github.com/niostudent
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 glass-card rounded-2xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-slate-800">Coleção de Insígnias</h3>
+                        <a href="#" class="text-xs font-bold text-nio-600 hover:underline">Ver todas</a>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="flex flex-col items-center justify-center transition border cursor-pointer aspect-square bg-slate-50 rounded-xl border-slate-100 hover:bg-white hover:shadow-md" title="Leitor Voraz">
+                            <span class="text-2xl">📚</span>
+                        </div>
+                        <div class="flex flex-col items-center justify-center transition border cursor-pointer aspect-square bg-slate-50 rounded-xl border-slate-100 hover:bg-white hover:shadow-md" title="Mestre dos Números">
+                            <span class="text-2xl">🧮</span>
+                        </div>
+                        <div class="flex flex-col items-center justify-center transition border cursor-pointer aspect-square bg-slate-50 rounded-xl border-slate-100 hover:bg-white hover:shadow-md" title="Cientista Jr">
+                            <span class="text-2xl">🧪</span>
+                        </div>
+                        <div class="flex flex-col items-center justify-center transition border cursor-pointer aspect-square bg-slate-50 rounded-xl border-slate-100 hover:bg-white hover:shadow-md" title="Pontualidade">
+                            <span class="text-2xl">⏰</span>
+                        </div>
+                        <div class="flex flex-col items-center justify-center transition border cursor-pointer aspect-square bg-slate-50 rounded-xl border-slate-100 hover:bg-white hover:shadow-md" title="Amigo da Turma">
+                            <span class="text-2xl">🤝</span>
+                        </div>
+                        <div class="flex items-center justify-center border-2 border-dashed aspect-square border-slate-200 rounded-xl text-slate-300">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6 lg:col-span-2">
+                
+                <div class="flex items-center gap-4 p-4 glass-card rounded-2xl">
+                    <div class="flex items-center justify-center w-10 h-10 text-xl rounded-full bg-slate-200">🎓</div>
+                    <input type="text" placeholder="Compartilhe uma conquista..." class="flex-1 bg-slate-50 border-none rounded-full py-2.5 px-4 text-sm focus:ring-2 focus:ring-nio-300 transition">
+                    <button class="p-2 rounded-full text-nio-600 hover:bg-nio-50"><i class="fas fa-image"></i></button>
+                </div>
+
+                <div class="p-5 glass-card rounded-2xl">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="flex items-center justify-center w-10 h-10 text-xl rounded-full bg-slate-200">🎓</div>
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-800">{{ user.first_name }} {{ user.last_name }}</h4>
+                            <p class="text-xs text-slate-500">Ontem às 16:30</p>
+                        </div>
+                    </div>
+                    <p class="mb-4 text-sm text-slate-700">
+                        Acabei de finalizar o projeto de Robótica! Foi incrível ver o braço mecânico funcionando pela primeira vez. 🤖🚀
+                    </p>
+                    <div class="relative flex items-center justify-center h-64 mb-4 overflow-hidden bg-slate-100 rounded-xl text-slate-400 group">
+                        <img src="https://source.unsplash.com/random/600x400/?robotics" class="object-cover w-full h-full transition duration-500 group-hover:scale-105">
+                    </div>
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                        <div class="flex gap-4">
+                            <button class="flex items-center gap-1 text-sm transition text-slate-500 hover:text-red-500"><i class="far fa-heart"></i> 12</button>
+                            <button class="flex items-center gap-1 text-sm transition text-slate-500 hover:text-blue-500"><i class="far fa-comment"></i> 3</button>
+                        </div>
+                        <button class="text-slate-400 hover:text-slate-600"><i class="fas fa-share-alt"></i></button>
+                    </div>
+                </div>
+
+                <div class="relative p-5 overflow-hidden glass-card rounded-2xl">
+                    <div class="absolute top-0 left-0 w-1.5 h-full bg-yellow-400"></div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="flex items-center justify-center w-10 h-10 text-lg text-yellow-600 bg-yellow-100 rounded-full"><i class="fas fa-trophy"></i></div>
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-800">Nova Conquista Desbloqueada!</h4>
+                            <p class="text-xs text-slate-500">2 dias atrás</p>
+                        </div>
+                    </div>
+                    <div class="pl-14">
+                        <p class="text-sm text-slate-600">
+                            {{ user.first_name }} alcançou o <strong>Nível 5</strong> em Raciocínio Lógico. Continue assim!
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>
