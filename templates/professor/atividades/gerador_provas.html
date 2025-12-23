@@ -3,38 +3,47 @@
 {% block title %}Gerador de Provas IA - Cortex{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto space-y-8">
+
+<div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+    <div class="absolute top-0 right-1/3 w-96 h-96 bg-purple-200/20 dark:bg-purple-900/20 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen animate-blob"></div>
+    <div class="absolute bottom-0 left-1/4 w-96 h-96 bg-indigo-200/20 dark:bg-indigo-900/20 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-2000"></div>
+</div>
+
+<div class="max-w-5xl mx-auto space-y-10 relative">
     
-    <div class="text-center">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-purple-100 text-purple-600 mb-4 shadow-lg shadow-purple-500/20 dark:bg-purple-900/30 dark:text-purple-400">
-            <i class="fas fa-wand-magic-sparkles text-3xl"></i>
+    <div class="text-center relative py-8">
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-purple-500 to-indigo-600 mb-6 shadow-lg shadow-purple-500/30 transform rotate-3 hover:rotate-0 transition-transform duration-500">
+            <i class="fas fa-wand-magic-sparkles text-4xl text-white"></i>
         </div>
-        <h1 class="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight mb-2">
+        <h1 class="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-purple-800 to-indigo-800 dark:from-white dark:via-purple-300 dark:to-indigo-300 tracking-tight mb-3">
             IA Generator <span class="text-purple-600 dark:text-purple-400">Pro</span>
         </h1>
-        <p class="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-            Crie avaliações completas em segundos usando a inteligência artificial. Selecione o conteúdo, defina o estilo e deixe a IA trabalhar.
+        <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto font-medium leading-relaxed">
+            Crie avaliações completas em segundos. A IA analisa seu histórico, planos de aula e materiais extras para gerar uma prova perfeita.
         </p>
     </div>
 
     <form method="POST" action="{{ url_for('planos.gerar_prova_docx') }}" enctype="multipart/form-data" 
-          id="form-gerar-prova" class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+          id="form-gerar-prova" class="bg-white/70 dark:bg-gray-800/60 backdrop-blur-xl rounded-[2.5rem] shadow-glass border border-white/50 dark:border-gray-700/50 overflow-hidden ring-1 ring-black/5 dark:ring-white/5 relative">
         
-        <div class="p-8 border-b border-gray-100 dark:border-gray-700">
-            <div class="flex items-start gap-4">
-                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm shadow-md">1</div>
-                <div class="flex-grow">
-                    <label for="prova-turma-select" class="block text-xl font-bold text-gray-900 dark:text-white mb-2">Qual é a turma?</label>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">A IA irá buscar o contexto específico (nível, histórico) desta turma.</p>
+        <div class="p-8 md:p-10 border-b border-gray-100/50 dark:border-gray-700/50 relative group">
+            <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-purple-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="flex gap-6">
+                <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 flex items-center justify-center font-black text-lg shadow-inner">1</div>
+                <div class="flex-grow space-y-4">
+                    <div>
+                        <label for="prova-turma-select" class="block text-xl font-bold text-gray-900 dark:text-white mb-1">Qual é a turma?</label>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">A IA irá buscar o contexto específico (nível, histórico) desta turma.</p>
+                    </div>
                     
                     <div class="relative">
-                        <select id="prova-turma-select" name="turma" class="block w-full rounded-xl border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white py-4 pl-4 pr-10 focus:ring-purple-500 focus:border-purple-500 transition-shadow shadow-sm appearance-none cursor-pointer" required>
+                        <select id="prova-turma-select" name="turma" class="block w-full rounded-2xl border-0 bg-white dark:bg-gray-900 text-gray-900 dark:text-white py-4 pl-5 pr-12 ring-1 ring-gray-200 dark:ring-gray-700 focus:ring-2 focus:ring-purple-500 shadow-sm appearance-none cursor-pointer transition-all hover:bg-gray-50 dark:hover:bg-gray-800 font-medium" required>
                             <option value="">-- Selecione uma Turma --</option>
                             {% for turma in turmas %}
                             <option value="{{ turma.id }}">{{ turma.nome }}</option>
                             {% endfor %}
                         </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-5 text-purple-500">
                             <i class="fas fa-chevron-down"></i>
                         </div>
                     </div>
@@ -42,35 +51,45 @@
             </div>
         </div>
 
-        <div id="fontes-db-container" class="p-8 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30 transition-all duration-500" style="display: none;">
-            <div class="flex items-start gap-4">
-                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm shadow-md">2</div>
-                <div class="w-full">
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">O que deve cair na prova?</h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Selecione os conteúdos da base de dados que servirão de fonte.</p>
+        <div id="fontes-db-container" class="p-8 md:p-10 border-b border-gray-100/50 dark:border-gray-700/50 bg-purple-50/30 dark:bg-purple-900/10 transition-all duration-500" style="display: none;">
+            <div class="flex gap-6">
+                <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 flex items-center justify-center font-black text-lg shadow-inner">2</div>
+                <div class="w-full space-y-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">O que deve cair na prova?</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Selecione os conteúdos da base de dados que servirão de fonte.</p>
+                    </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         
-                        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
-                            <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 flex items-center justify-between">
-                                <h4 class="font-bold text-gray-700 dark:text-gray-200 text-sm"><i class="fas fa-book-open mr-2 text-emerald-500"></i> Planos de Aula</h4>
-                                <span class="text-xs text-gray-400 bg-white dark:bg-gray-800 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-600">Conteúdo</span>
+                        <div class="bg-white/80 dark:bg-gray-800/80 rounded-2xl border border-white/50 dark:border-gray-700/50 overflow-hidden shadow-sm hover:shadow-md transition-all">
+                            <div class="px-5 py-4 bg-gray-50/50 dark:bg-gray-700/30 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                                <h4 class="font-bold text-gray-800 dark:text-gray-200 text-sm flex items-center gap-2">
+                                    <div class="p-1.5 bg-emerald-100 dark:bg-emerald-900/50 rounded-lg text-emerald-600"><i class="fas fa-book-open text-xs"></i></div>
+                                    Planos de Aula
+                                </h4>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Conteúdo</span>
                             </div>
-                            <div id="planos-container" class="max-h-60 overflow-y-auto custom-scrollbar p-2 space-y-1">
-                                <div class="flex flex-col items-center justify-center h-32 text-gray-400 text-sm animate-pulse">
-                                    <i class="fas fa-circle-notch fa-spin mb-2"></i> Carregando...
+                            <div id="planos-container" class="h-64 overflow-y-auto custom-scrollbar p-3 space-y-1">
+                                <div class="flex flex-col items-center justify-center h-full text-gray-400 text-sm animate-pulse gap-2">
+                                    <i class="fas fa-circle-notch fa-spin text-xl text-emerald-500"></i>
+                                    <span>Carregando...</span>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
-                            <div class="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 flex items-center justify-between">
-                                <h4 class="font-bold text-gray-700 dark:text-gray-200 text-sm"><i class="fas fa-tasks mr-2 text-blue-500"></i> Atividades Anteriores</h4>
-                                <span class="text-xs text-gray-400 bg-white dark:bg-gray-800 px-2 py-0.5 rounded-md border border-gray-200 dark:border-gray-600">Estilo de Questões</span>
+                        <div class="bg-white/80 dark:bg-gray-800/80 rounded-2xl border border-white/50 dark:border-gray-700/50 overflow-hidden shadow-sm hover:shadow-md transition-all">
+                            <div class="px-5 py-4 bg-gray-50/50 dark:bg-gray-700/30 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                                <h4 class="font-bold text-gray-800 dark:text-gray-200 text-sm flex items-center gap-2">
+                                    <div class="p-1.5 bg-blue-100 dark:bg-blue-900/50 rounded-lg text-blue-600"><i class="fas fa-tasks text-xs"></i></div>
+                                    Atividades Anteriores
+                                </h4>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Estilo</span>
                             </div>
-                            <div id="atividades-container" class="max-h-60 overflow-y-auto custom-scrollbar p-2 space-y-1">
-                                <div class="flex flex-col items-center justify-center h-32 text-gray-400 text-sm animate-pulse">
-                                    <i class="fas fa-circle-notch fa-spin mb-2"></i> Carregando...
+                            <div id="atividades-container" class="h-64 overflow-y-auto custom-scrollbar p-3 space-y-1">
+                                <div class="flex flex-col items-center justify-center h-full text-gray-400 text-sm animate-pulse gap-2">
+                                    <i class="fas fa-circle-notch fa-spin text-xl text-blue-500"></i>
+                                    <span>Carregando...</span>
                                 </div>
                             </div>
                         </div>
@@ -80,18 +99,21 @@
             </div>
         </div>
 
-        <div class="p-8 border-b border-gray-100 dark:border-gray-700">
-            <div class="flex items-start gap-4">
-                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm shadow-md">3</div>
-                <div class="w-full">
-                    <label class="block text-xl font-bold text-gray-900 dark:text-white mb-2">Material Extra (Opcional)</label>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Anexe PDFs ou DOCs com textos de apoio, resumos ou capítulos de livros.</p>
+        <div class="p-8 md:p-10 border-b border-gray-100/50 dark:border-gray-700/50 relative group">
+            <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="flex gap-6">
+                <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 flex items-center justify-center font-black text-lg shadow-inner">3</div>
+                <div class="w-full space-y-4">
+                    <div>
+                        <label class="block text-xl font-bold text-gray-900 dark:text-white mb-1">Material Extra (Opcional)</label>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Anexe PDFs ou DOCs com textos de apoio, resumos ou capítulos de livros.</p>
+                    </div>
                     
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         {% for i in range(3) %}
-                        <div class="relative group">
+                        <div class="relative group/upload">
                             <input type="file" name="fontes_externas" accept=".pdf,.docx,.txt" 
-                                   class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 dark:file:bg-purple-900/30 dark:file:text-purple-300 transition-all cursor-pointer border border-gray-200 dark:border-gray-600 rounded-lg p-2 bg-gray-50 dark:bg-gray-900/50">
+                                   class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-wide file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-indigo-900/30 dark:file:text-indigo-300 transition-all cursor-pointer border border-dashed border-gray-300 dark:border-gray-600 rounded-2xl p-2 bg-gray-50/50 dark:bg-gray-900/30 hover:bg-white dark:hover:bg-gray-800">
                         </div>
                         {% endfor %}
                     </div>
@@ -99,32 +121,84 @@
             </div>
         </div>
 
-        <div class="p-8 bg-purple-50 dark:bg-purple-900/10">
-            <div class="flex items-start gap-4">
-                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm shadow-md">4</div>
-                <div class="w-full">
-                    <label for="instrucoes-prova" class="block text-xl font-bold text-gray-900 dark:text-white mb-2">Instruções para a IA</label>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Defina o formato exato. Ex: "10 questões múltipla escolha", "Nível difícil", "Foco no capítulo 3".</p>
+        <div class="p-8 md:p-10 bg-gradient-to-b from-purple-50/50 to-transparent dark:from-purple-900/20 dark:to-transparent relative group">
+            <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-fuchsia-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="flex gap-6">
+                <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-fuchsia-100 dark:bg-fuchsia-900/30 text-fuchsia-700 dark:text-fuchsia-300 flex items-center justify-center font-black text-lg shadow-inner">4</div>
+                <div class="w-full space-y-4">
+                    <div>
+                        <label for="instrucoes-prova" class="block text-xl font-bold text-gray-900 dark:text-white mb-1">Instruções para a IA</label>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Defina o formato exato. Ex: "10 questões múltipla escolha", "Nível difícil".</p>
+                    </div>
                     
-                    <textarea id="instrucoes-prova" name="instrucoes_prova" rows="4" 
-                              class="w-full rounded-xl border-purple-200 dark:border-purple-800 bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm focus:border-purple-500 focus:ring-purple-500 p-4 transition-all" 
-                              placeholder="Descreva como você quer a prova...">Crie uma prova com 5 questões de escolha múltipla (A, B, C, D) e 5 questões discursivas. Inclua gabarito ao final. Nível de dificuldade: Médio.</textarea>
+                    <div class="relative">
+                        <textarea id="instrucoes-prova" name="instrucoes_prova" rows="4" 
+                                  class="w-full rounded-2xl border-0 bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm ring-1 ring-gray-200 dark:ring-gray-700 focus:ring-2 focus:ring-fuchsia-500 p-5 transition-all resize-none font-medium placeholder-gray-400" 
+                                  placeholder="Descreva como você quer a prova...">Crie uma prova com 5 questões de escolha múltipla (A, B, C, D) e 5 questões discursivas. Inclua gabarito ao final. Nível de dificuldade: Médio.</textarea>
+                        <div class="absolute bottom-3 right-3 text-fuchsia-400 opacity-50">
+                            <i class="fas fa-pen-nib"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         
-        <div class="p-6 bg-white dark:bg-gray-800 flex justify-end items-center gap-4">
-             <p class="text-xs text-gray-400 italic hidden sm:block">A geração pode levar até 2 minutos dependendo da quantidade de material.</p>
-             <button type="submit" id="btn-gerar-prova" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 font-bold text-lg flex items-center gap-2">
-                <i class="fas fa-magic"></i> Gerar Prova Agora
+        <div class="p-6 md:p-8 bg-white/50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-center gap-4">
+             <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 italic bg-gray-100 dark:bg-gray-700/50 px-3 py-1.5 rounded-lg">
+                <i class="fas fa-clock"></i>
+                <span>Tempo estimado: ~2 minutos</span>
+             </div>
+             
+             <button type="submit" id="btn-gerar-prova" class="group relative w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-10 py-4 rounded-2xl shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all transform hover:-translate-y-1 font-bold text-lg overflow-hidden">
+                <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                <div class="relative flex items-center justify-center gap-3">
+                    <i class="fas fa-magic text-amber-300 group-hover:animate-pulse"></i>
+                    <span>Gerar Prova Agora</span>
+                </div>
             </button>
         </div>
 
     </form>
 </div>
+
+<style>
+    .shadow-glass {
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+    }
+    
+    .animate-blob {
+        animation: blob 7s infinite alternate;
+    }
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
+    
+    @keyframes blob {
+        0% { transform: translate(0px, 0px) scale(1); }
+        33% { transform: translate(30px, -50px) scale(1.1); }
+        66% { transform: translate(-20px, 20px) scale(0.9); }
+        100% { transform: translate(0px, 0px) scale(1); }
+    }
+
+    /* Custom Scrollbar */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(139, 92, 246, 0.2);
+        border-radius: 20px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(139, 92, 246, 0.5);
+    }
+</style>
 {% endblock %}
 
 {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const turmaSelect = document.getElementById('prova-turma-select');
@@ -143,15 +217,18 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Mostra o container com animação suave
+        // Mostra o container com animação
         fontesDbContainer.style.display = 'block';
-        fontesDbContainer.classList.add('animate-fade-in-down');
+        fontesDbContainer.animate([
+            { opacity: 0, transform: 'translateY(-10px)' },
+            { opacity: 1, transform: 'translateY(0)' }
+        ], { duration: 400, easing: 'ease-out' });
         
         // Estado de Loading Visual
         const loadingHTML = `
-            <div class="flex flex-col items-center justify-center h-32 text-purple-400 text-sm animate-pulse">
-                <i class="fas fa-circle-notch fa-spin mb-3 text-2xl"></i> 
-                <span>Buscando dados da turma...</span>
+            <div class="flex flex-col items-center justify-center h-full text-purple-400 text-sm animate-pulse gap-3">
+                <i class="fas fa-circle-notch fa-spin text-3xl opacity-50"></i> 
+                <span class="font-medium">Analisando dados da turma...</span>
             </div>
         `;
         planosContainer.innerHTML = loadingHTML;
@@ -165,18 +242,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Renderiza Planos
                 if (data.planos && data.planos.length > 0) {
                     planosContainer.innerHTML = data.planos.map(plano => `
-                        <label class="flex items-start p-3 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg cursor-pointer transition-colors border border-transparent hover:border-purple-100 dark:hover:border-purple-800">
-                            <input type="checkbox" name="planos_ids" value="${plano.id}" class="mt-1 mr-3 rounded text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
-                            <div class="flex-1">
-                                <span class="block text-sm font-semibold text-gray-800 dark:text-gray-200">${plano.titulo}</span>
-                                <span class="block text-xs text-gray-500 dark:text-gray-400">${plano.data}</span>
+                        <label class="flex items-center p-3 hover:bg-white dark:hover:bg-gray-700/50 rounded-xl cursor-pointer transition-all border border-transparent hover:border-emerald-200 dark:hover:border-emerald-800 group">
+                            <div class="relative flex items-center">
+                                <input type="checkbox" name="planos_ids" value="${plano.id}" class="peer h-5 w-5 rounded-md border-gray-300 text-emerald-600 focus:ring-emerald-500 bg-gray-100 dark:bg-gray-700 dark:border-gray-600 transition-all cursor-pointer">
+                            </div>
+                            <div class="ml-3 flex-1">
+                                <span class="block text-sm font-bold text-gray-700 dark:text-gray-200 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">${plano.titulo}</span>
+                                <span class="block text-xs text-gray-400 font-medium">${plano.data}</span>
                             </div>
                         </label>
                     `).join('');
                 } else {
                     planosContainer.innerHTML = `
-                        <div class="flex flex-col items-center justify-center h-32 text-gray-400 text-sm">
-                            <i class="fas fa-folder-open mb-2 text-xl"></i>
+                        <div class="flex flex-col items-center justify-center h-full text-gray-400 text-sm gap-2">
+                            <div class="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center"><i class="fas fa-folder-open text-lg"></i></div>
                             <p>Nenhum plano encontrado.</p>
                         </div>`;
                 }
@@ -184,25 +263,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Renderiza Atividades
                 if (data.atividades && data.atividades.length > 0) {
                     atividadesContainer.innerHTML = data.atividades.map(ativ => `
-                        <label class="flex items-start p-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg cursor-pointer transition-colors border border-transparent hover:border-blue-100 dark:hover:border-blue-800">
-                            <input type="checkbox" name="atividades_ids" value="${ativ.id}" class="mt-1 mr-3 rounded text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
-                            <div class="flex-1">
-                                <span class="block text-sm font-semibold text-gray-800 dark:text-gray-200">${ativ.titulo}</span>
-                                <span class="block text-xs text-gray-500 dark:text-gray-400">${ativ.data}</span>
+                        <label class="flex items-center p-3 hover:bg-white dark:hover:bg-gray-700/50 rounded-xl cursor-pointer transition-all border border-transparent hover:border-blue-200 dark:hover:border-blue-800 group">
+                            <div class="relative flex items-center">
+                                <input type="checkbox" name="atividades_ids" value="${ativ.id}" class="peer h-5 w-5 rounded-md border-gray-300 text-blue-600 focus:ring-blue-500 bg-gray-100 dark:bg-gray-700 dark:border-gray-600 transition-all cursor-pointer">
+                            </div>
+                            <div class="ml-3 flex-1">
+                                <span class="block text-sm font-bold text-gray-700 dark:text-gray-200 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">${ativ.titulo}</span>
+                                <span class="block text-xs text-gray-400 font-medium">${ativ.data}</span>
                             </div>
                         </label>
                     `).join('');
                 } else {
                     atividadesContainer.innerHTML = `
-                        <div class="flex flex-col items-center justify-center h-32 text-gray-400 text-sm">
-                            <i class="fas fa-folder-open mb-2 text-xl"></i>
+                        <div class="flex flex-col items-center justify-center h-full text-gray-400 text-sm gap-2">
+                            <div class="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center"><i class="fas fa-folder-open text-lg"></i></div>
                             <p>Nenhuma atividade anterior.</p>
                         </div>`;
                 }
             })
             .catch(error => {
                 console.error('Erro:', error);
-                const errorHTML = `<div class="p-4 text-red-500 text-sm text-center"><i class="fas fa-exclamation-triangle"></i> Erro ao carregar dados.</div>`;
+                const errorHTML = `<div class="h-full flex items-center justify-center text-red-400 text-sm font-medium"><i class="fas fa-exclamation-circle mr-2"></i> Erro ao carregar dados.</div>`;
                 planosContainer.innerHTML = errorHTML;
                 atividadesContainer.innerHTML = errorHTML;
             });
@@ -215,7 +296,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     icon: 'warning',
                     title: 'Selecione uma Turma',
                     text: 'Precisamos saber para qual turma é a prova.',
-                    confirmButtonColor: '#9333ea'
+                    confirmButtonColor: '#9333ea',
+                    background: '#ffffff',
+                    customClass: { popup: 'rounded-2xl' }
                 });
                 event.preventDefault();
                 return;
@@ -223,24 +306,31 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Estado de Loading do Botão
             btnGerarProva.disabled = true;
-            btnGerarProva.classList.add('opacity-75', 'cursor-not-allowed');
+            btnGerarProva.classList.add('opacity-80', 'cursor-wait');
             btnGerarProva.innerHTML = `
-                <i class="fas fa-circle-notch fa-spin text-xl"></i>
-                <div class="flex flex-col items-start ml-2 text-left leading-tight">
-                    <span>Criando Prova...</span>
-                    <span class="text-[10px] font-normal opacity-80">Isso pode levar alguns minutos.</span>
+                <div class="flex items-center gap-3">
+                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <div class="flex flex-col items-start text-left leading-none">
+                        <span class="text-sm">Processando...</span>
+                        <span class="text-[10px] opacity-80 font-normal">Aguarde o download</span>
+                    </div>
                 </div>
             `;
             
             // Feedback Visual Adicional
             Swal.fire({
-                title: 'A IA está trabalhando!',
-                text: 'Estamos lendo seus materiais e escrevendo a prova. O download iniciará automaticamente assim que terminar.',
-                imageUrl: 'https://cdn-icons-png.flaticon.com/512/4712/4712109.png',
-                imageWidth: 100,
-                imageHeight: 100,
-                showConfirmButton: false,
-                allowOutsideClick: false
+                title: 'A IA está criando!',
+                html: '<p class="text-gray-600">Estamos lendo seus materiais, formulando questões e formatando o documento.</p>',
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                allowOutsideClick: false,
+                background: '#ffffff',
+                customClass: { popup: 'rounded-2xl' }
             });
         });
     }

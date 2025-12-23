@@ -1,13 +1,12 @@
-{% extends "core/aluno_dashboard_base.html" %} 
 {% load static %}
 <!DOCTYPE html>
-<html lang="pt-br" class="scroll-smooth bg-[#F0F2F5]">
+<html lang="pt-br" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minhas Disciplinas | NioStudent</title>
+    <title>Minhas Disciplinas | NioCortex</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     
@@ -16,179 +15,252 @@
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'], display: ['Outfit', 'sans-serif'] },
-                    colors: {
-                        nio: { 50: '#f2f0ff', 100: '#e6e1ff', 400: '#8e66ff', 500: '#7c3aed', 600: '#6d28d9', 800: '#4c1d95', 900: '#3e1a75' },
-                        lumina: { cyan: '#00E5FF', pink: '#FF2E93', amber: '#F59E0B' }
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
                     },
-                    boxShadow: { 'glass': '0 4px 30px rgba(0, 0, 0, 0.1)' }
+                    colors: {
+                        // Paleta Aurora Lumina Clean
+                        bgBody: '#F4F7FD', 
+                        textMain: '#1e293b',
+                        textLight: '#64748b',
+                        
+                        // Cores Luminosas
+                        auroraPurple: '#8B5CF6',
+                        auroraCyan: '#06b6d4',
+                        auroraPink: '#EC4899',
+                        auroraBlue: '#3B82F6',
+                        auroraGreen: '#10B981',
+                        auroraYellow: '#F59E0B',
+                    },
+                    boxShadow: {
+                        'glass-clean': '0 8px 32px 0 rgba(31, 38, 135, 0.05)',
+                        'glow-blue': '0 0 20px rgba(59, 130, 246, 0.5)',
+                        'glow-pink': '0 0 20px rgba(236, 72, 153, 0.5)',
+                        'glow-green': '0 0 20px rgba(16, 185, 129, 0.5)',
+                    }
                 }
             }
         }
     </script>
+
     <style>
-        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.5); }
-        .glass-card { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.4); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .neural-bg { background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 30px 30px; }
+        body { background-color: var(--bgBody); color: var(--textMain); }
+        
+        /* Efeito de Vidro Limpo e Luminoso */
+        .glass-panel-clean {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: var(--shadow-glass-clean);
+        }
+
+        /* Botão de Vidro */
+        .glass-button {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        .glass-button:hover {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+        }
+
+        /* Padrão de Fundo Sutil */
+        .micro-grid-bg {
+            background-image: radial-gradient(rgba(99, 102, 241, 0.1) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        /* Animação de Flutuação Suave */
+        @keyframes float-slow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        .animate-float-slow { animation: float-slow 8s ease-in-out infinite; }
+        .delay-2s { animation-delay: 2s; }
+        .delay-4s { animation-delay: 4s; }
     </style>
 </head>
-<body class="text-slate-800 font-sans antialiased min-h-screen relative selection:bg-nio-500 selection:text-white bg-[#F0F2F5]">
+<body class="relative flex flex-col min-h-screen overflow-x-hidden antialiased">
 
-    <div class="fixed inset-0 z-0 pointer-events-none">
-        <div class="absolute top-[-10%] left-[20%] w-[600px] h-[600px] bg-lumina-cyan/20 rounded-full mix-blend-multiply filter blur-[120px] opacity-70"></div>
-        <div class="absolute bottom-[10%] right-[10%] w-[500px] h-[500px] bg-nio-400/20 rounded-full mix-blend-multiply filter blur-[120px] opacity-70"></div>
-        <div class="absolute inset-0 neural-bg opacity-30"></div>
+    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-[-20%] left-[10%] w-[800px] h-[800px] bg-auroraCyan/20 rounded-full mix-blend-multiply filter blur-[150px] opacity-60 animate-float-slow"></div>
+        <div class="absolute bottom-[-10%] right-[5%] w-[700px] h-[700px] bg-auroraPurple/20 rounded-full mix-blend-multiply filter blur-[150px] opacity-60 animate-float-slow delay-2s"></div>
+        <div class="absolute top-[30%] right-[30%] w-[500px] h-[500px] bg-auroraPink/15 rounded-full mix-blend-multiply filter blur-[150px] opacity-50 animate-float-slow delay-4s"></div>
+        <div class="absolute inset-0 micro-grid-bg opacity-40"></div>
     </div>
 
-    <nav class="sticky top-0 z-40 w-full px-6 py-3 glass-panel shadow-sm flex justify-between items-center">
-        <a href="{% url 'core:aluno_dashboard' %}" class="flex items-center gap-2 hover:opacity-80 transition">
-            <div class="w-8 h-8 bg-nio-600 rounded-lg flex items-center justify-center text-white font-bold">N</div>
-            <span class="font-display font-bold text-slate-800">Voltar ao Feed</span>
-        </a>
-        <h1 class="font-display font-bold text-lg text-nio-700">Minhas Disciplinas</h1>
-        <div class="w-8"></div> </nav>
-
-    <main class="relative z-10 max-w-6xl mx-auto p-6">
-        
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-            <div>
-                <h2 class="text-3xl font-display font-bold text-slate-900">Jornada Acadêmica</h2>
-                <p class="text-slate-500 text-sm">Acompanhe seu progresso em cada matéria.</p>
+    <nav class="sticky top-0 z-50 w-full px-6 py-4 border-b shadow-sm glass-panel-clean border-white/50">
+        <div class="flex items-center justify-between mx-auto max-w-7xl">
+            <div class="flex items-center gap-6">
+                <a href="{% url 'core:aluno_dashboard' %}" class="glass-button flex items-center gap-3 px-5 py-2.5 rounded-2xl text-auroraPurple font-bold group">
+                    <i class="transition-transform fas fa-arrow-left group-hover:-translate-x-1"></i> <span>Voltar ao Feed</span>
+                </a>
+                <h1 class="hidden text-2xl font-extrabold text-transparent font-display bg-clip-text bg-gradient-to-r from-auroraPurple to-auroraCyan md:block">
+                    Minhas Disciplinas
+                </h1>
             </div>
-            <div class="flex gap-2 bg-white/60 p-1 rounded-xl border border-white/40">
-                <button class="px-4 py-2 rounded-lg bg-nio-600 text-white text-sm font-bold shadow-lg shadow-nio-500/30">Em Curso</button>
-                <button class="px-4 py-2 rounded-lg text-slate-600 hover:bg-white/50 text-sm font-medium transition">Concluídas</button>
+
+            <div class="flex items-center gap-4">
+                <span class="px-4 py-1.5 bg-white/60 backdrop-blur-md text-auroraPurple text-xs font-bold rounded-full border border-white/70 shadow-sm">
+                    <i class="mr-2 far fa-calendar-alt"></i>2º Semestre 2025
+                </span>
+                <div class="w-11 h-11 rounded-full p-[3px] bg-gradient-to-tr from-auroraCyan via-auroraPurple to-auroraPink shadow-lg shadow-auroraPurple/20">
+                    <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}https://i.pravatar.cc/150?img=32{% endif %}" class="object-cover w-full h-full border-2 border-white rounded-full">
+                </div>
             </div>
         </div>
+    </nav>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <main class="relative z-10 w-full p-6 pt-10 mx-auto max-w-7xl">
+        
+        <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
 
-            <div class="glass-card rounded-2xl p-6 group hover:-translate-y-1 transition duration-300 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-full -mr-16 -mt-16 opacity-50 group-hover:scale-125 transition duration-700"></div>
+            <div class="glass-panel-clean rounded-[32px] p-6 group hover:-translate-y-3 transition-all duration-500 relative overflow-hidden ring-1 ring-white/60 hover:shadow-glow-blue">
+                <div class="absolute top-[-50%] right-[-50%] w-80 h-80 bg-auroraCyan/20 rounded-full blur-[80px] opacity-0 group-hover:opacity-100 transition duration-700 pointer-events-none"></div>
                 
                 <div class="relative z-10">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl shadow-sm">
+                    <div class="flex items-start justify-between mb-5">
+                        <div class="flex items-center justify-center w-16 h-16 text-3xl text-white shadow-lg rounded-3xl bg-gradient-to-br from-auroraCyan to-auroraBlue shadow-auroraCyan/30">
                             <i class="fas fa-calculator"></i>
                         </div>
-                        <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">Média 9.5</span>
+                        <span class="px-4 py-1.5 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 backdrop-blur-md text-emerald-600 text-sm font-bold rounded-full border border-emerald-400/30">
+                            Média 9.5 <i class="ml-1 fas fa-check-circle"></i>
+                        </span>
                     </div>
                     
-                    <h3 class="text-xl font-bold text-slate-800 mb-1">Matemática</h3>
-                    <p class="text-sm text-slate-500 mb-6 flex items-center gap-2">
-                        <i class="far fa-user text-xs"></i> Prof. Alberto
+                    <h3 class="mb-1 text-3xl font-bold font-display text-slate-800">Matemática</h3>
+                    <p class="flex items-center gap-2 mb-8 text-sm font-medium text-textLight">
+                        <i class="fas fa-chalkboard-teacher text-auroraCyan"></i> Prof. Alberto
                     </p>
 
-                    <div class="space-y-2 mb-6">
-                        <div class="flex justify-between text-xs font-bold text-slate-600">
-                            <span>Progresso do Bimestre</span>
-                            <span>75%</span>
+                    <div class="mb-8 space-y-3">
+                        <div class="flex justify-between text-sm font-bold text-slate-600">
+                            <span>Progresso Anual</span>
+                            <span class="text-auroraBlue">92%</span>
                         </div>
-                        <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                            <div class="h-full bg-blue-500 w-[75%] rounded-full group-hover:animate-pulse"></div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <div class="text-center p-2 rounded-lg bg-slate-50 border border-slate-100">
-                            <span class="block text-xs text-slate-400 uppercase font-bold">Faltas</span>
-                            <span class="block text-lg font-bold text-slate-700">2</span>
-                        </div>
-                        <div class="text-center p-2 rounded-lg bg-slate-50 border border-slate-100">
-                            <span class="block text-xs text-slate-400 uppercase font-bold">Próx. Prova</span>
-                            <span class="block text-lg font-bold text-blue-600">25/10</span>
+                        <div class="w-full h-3 bg-slate-200/50 rounded-full overflow-hidden backdrop-blur-sm p-[2px]">
+                            <div class="h-full bg-gradient-to-r from-auroraCyan to-auroraBlue w-[92%] rounded-full shadow-glow-blue relative overflow-hidden">
+                                <div class="absolute inset-0 bg-white/30 animate-pulse"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <button class="w-full py-3 rounded-xl border border-blue-200 text-blue-600 font-bold hover:bg-blue-600 hover:text-white transition flex items-center justify-center gap-2">
-                        Ver Detalhes <i class="fas fa-arrow-right"></i>
-                    </button>
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="p-4 text-center transition border bg-white/40 backdrop-blur-md rounded-2xl border-white/60 group-hover:bg-white/60">
+                            <span class="block mb-1 text-xs font-bold tracking-wider uppercase text-textLight">Faltas</span>
+                            <span class="block text-xl font-bold font-display text-slate-700">2</span>
+                        </div>
+                        <div class="relative p-4 overflow-hidden text-center transition border bg-white/40 backdrop-blur-md rounded-2xl border-white/60 group-hover:bg-white/60">
+                            <span class="block mb-1 text-xs font-bold tracking-wider uppercase text-textLight">Próx. Prova</span>
+                            <span class="block text-xl font-bold font-display text-auroraBlue">25/10</span>
+                            <div class="absolute bottom-0 left-0 w-full h-1 bg-auroraBlue/50"></div>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'core:student_lesson' %}" class="flex items-center justify-center w-full py-4 rounded-2xl bg-gradient-to-r from-auroraCyan to-auroraBlue text-white font-bold text-lg hover:shadow-lg hover:shadow-auroraCyan/40 transition-all group-hover:scale-[1.02] active:scale-95">
+                        Acessar Sala de Aula <i class="ml-3 text-xl fas fa-arrow-right"></i>
+                    </a>
                 </div>
             </div>
 
-            <div class="glass-card rounded-2xl p-6 group hover:-translate-y-1 transition duration-300 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-orange-100 rounded-full -mr-16 -mt-16 opacity-50 group-hover:scale-125 transition duration-700"></div>
+            <div class="glass-panel-clean rounded-[32px] p-6 group hover:-translate-y-3 transition-all duration-500 relative overflow-hidden ring-1 ring-white/60 hover:shadow-glow-pink">
+                <div class="absolute top-[-50%] right-[-50%] w-80 h-80 bg-auroraPink/20 rounded-full blur-[80px] opacity-0 group-hover:opacity-100 transition duration-700 pointer-events-none"></div>
                 
                 <div class="relative z-10">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center text-2xl shadow-sm">
-                            <i class="fas fa-scroll"></i>
+                    <div class="flex items-start justify-between mb-5">
+                        <div class="flex items-center justify-center w-16 h-16 text-3xl text-white shadow-lg rounded-3xl bg-gradient-to-br from-auroraPink to-auroraYellow shadow-auroraPink/30">
+                            <i class="fas fa-landmark"></i>
                         </div>
-                        <span class="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-bold rounded-full">Média 7.0</span>
+                        <span class="px-4 py-1.5 bg-gradient-to-r from-amber-400/20 to-orange-400/20 backdrop-blur-md text-amber-600 text-sm font-bold rounded-full border border-amber-400/30">
+                            Média 8.0 <i class="ml-1 fas fa-minus-circle"></i>
+                        </span>
                     </div>
                     
-                    <h3 class="text-xl font-bold text-slate-800 mb-1">História</h3>
-                    <p class="text-sm text-slate-500 mb-6 flex items-center gap-2">
-                        <i class="far fa-user text-xs"></i> Prof. Cláudia
+                    <h3 class="mb-1 text-3xl font-bold font-display text-slate-800">História</h3>
+                    <p class="flex items-center gap-2 mb-8 text-sm font-medium text-textLight">
+                        <i class="fas fa-chalkboard-teacher text-auroraPink"></i> Prof. Cláudia
                     </p>
 
-                    <div class="space-y-2 mb-6">
-                        <div class="flex justify-between text-xs font-bold text-slate-600">
-                            <span>Progresso do Bimestre</span>
-                            <span>40%</span>
+                    <div class="mb-8 space-y-3">
+                        <div class="flex justify-between text-sm font-bold text-slate-600">
+                            <span>Progresso Anual</span>
+                            <span class="text-auroraPink">45%</span>
                         </div>
-                        <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                            <div class="h-full bg-orange-500 w-[40%] rounded-full"></div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <div class="text-center p-2 rounded-lg bg-slate-50 border border-slate-100">
-                            <span class="block text-xs text-slate-400 uppercase font-bold">Faltas</span>
-                            <span class="block text-lg font-bold text-slate-700">0</span>
-                        </div>
-                        <div class="text-center p-2 rounded-lg bg-slate-50 border border-slate-100">
-                            <span class="block text-xs text-slate-400 uppercase font-bold">Próx. Prova</span>
-                            <span class="block text-lg font-bold text-orange-600">Hoje</span>
+                        <div class="w-full h-3 bg-slate-200/50 rounded-full overflow-hidden backdrop-blur-sm p-[2px]">
+                            <div class="h-full bg-gradient-to-r from-auroraPink to-auroraYellow w-[45%] rounded-full shadow-glow-pink relative overflow-hidden">
+                                <div class="absolute inset-0 bg-white/30 animate-pulse"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <button class="w-full py-3 rounded-xl border border-orange-200 text-orange-600 font-bold hover:bg-orange-600 hover:text-white transition flex items-center justify-center gap-2">
-                        Ver Detalhes <i class="fas fa-arrow-right"></i>
-                    </button>
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="p-4 text-center transition border bg-white/40 backdrop-blur-md rounded-2xl border-white/60 group-hover:bg-white/60">
+                            <span class="block mb-1 text-xs font-bold tracking-wider uppercase text-textLight">Faltas</span>
+                            <span class="block text-xl font-bold font-display text-slate-700">0</span>
+                        </div>
+                        <div class="relative p-4 overflow-hidden text-center transition border bg-white/40 backdrop-blur-md rounded-2xl border-white/60 group-hover:bg-white/60">
+                            <span class="block mb-1 text-xs font-bold tracking-wider uppercase text-textLight">Próx. Prova</span>
+                            <span class="block text-xl font-bold font-display text-auroraPink">Hoje!</span>
+                            <div class="absolute bottom-0 left-0 w-full h-1 bg-auroraPink/50 animate-pulse"></div>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'core:student_lesson' %}" class="flex items-center justify-center w-full py-4 rounded-2xl bg-gradient-to-r from-auroraPink to-auroraYellow text-white font-bold text-lg hover:shadow-lg hover:shadow-auroraPink/40 transition-all group-hover:scale-[1.02] active:scale-95">
+                        Acessar Sala de Aula <i class="ml-3 text-xl fas fa-arrow-right"></i>
+                    </a>
                 </div>
             </div>
 
-            <div class="glass-card rounded-2xl p-6 group hover:-translate-y-1 transition duration-300 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-green-100 rounded-full -mr-16 -mt-16 opacity-50 group-hover:scale-125 transition duration-700"></div>
+            <div class="glass-panel-clean rounded-[32px] p-6 group hover:-translate-y-3 transition-all duration-500 relative overflow-hidden ring-1 ring-white/60 hover:shadow-glow-green">
+                <div class="absolute top-[-50%] right-[-50%] w-80 h-80 bg-auroraGreen/20 rounded-full blur-[80px] opacity-0 group-hover:opacity-100 transition duration-700 pointer-events-none"></div>
                 
                 <div class="relative z-10">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="w-12 h-12 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center text-2xl shadow-sm">
+                    <div class="flex items-start justify-between mb-5">
+                        <div class="flex items-center justify-center w-16 h-16 text-3xl text-white shadow-lg rounded-3xl bg-gradient-to-br from-auroraGreen to-teal-500 shadow-auroraGreen/30">
                             <i class="fas fa-flask"></i>
                         </div>
-                        <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">Média 8.5</span>
+                        <span class="px-4 py-1.5 bg-gradient-to-r from-emerald-400/20 to-teal-400/20 backdrop-blur-md text-emerald-600 text-sm font-bold rounded-full border border-emerald-400/30">
+                            Média 10.0 <i class="ml-1 fas fa-star"></i>
+                        </span>
                     </div>
                     
-                    <h3 class="text-xl font-bold text-slate-800 mb-1">Ciências</h3>
-                    <p class="text-sm text-slate-500 mb-6 flex items-center gap-2">
-                        <i class="far fa-user text-xs"></i> Prof. Roberto
+                    <h3 class="mb-1 text-3xl font-bold font-display text-slate-800">Ciências</h3>
+                    <p class="flex items-center gap-2 mb-8 text-sm font-medium text-textLight">
+                        <i class="fas fa-chalkboard-teacher text-auroraGreen"></i> Prof. Roberto
                     </p>
 
-                    <div class="space-y-2 mb-6">
-                        <div class="flex justify-between text-xs font-bold text-slate-600">
-                            <span>Progresso do Bimestre</span>
-                            <span>60%</span>
+                    <div class="mb-8 space-y-3">
+                        <div class="flex justify-between text-sm font-bold text-slate-600">
+                            <span>Progresso Anual</span>
+                            <span class="text-auroraGreen">60%</span>
                         </div>
-                        <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                            <div class="h-full bg-green-500 w-[60%] rounded-full"></div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <div class="text-center p-2 rounded-lg bg-slate-50 border border-slate-100">
-                            <span class="block text-xs text-slate-400 uppercase font-bold">Faltas</span>
-                            <span class="block text-lg font-bold text-slate-700">1</span>
-                        </div>
-                        <div class="text-center p-2 rounded-lg bg-slate-50 border border-slate-100">
-                            <span class="block text-xs text-slate-400 uppercase font-bold">Próx. Prova</span>
-                            <span class="block text-lg font-bold text-green-600">30/10</span>
+                        <div class="w-full h-3 bg-slate-200/50 rounded-full overflow-hidden backdrop-blur-sm p-[2px]">
+                            <div class="h-full bg-gradient-to-r from-auroraGreen to-teal-500 w-[60%] rounded-full shadow-glow-green relative overflow-hidden">
+                                <div class="absolute inset-0 bg-white/30 animate-pulse"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <button class="w-full py-3 rounded-xl border border-green-200 text-green-600 font-bold hover:bg-green-600 hover:text-white transition flex items-center justify-center gap-2">
-                        Ver Detalhes <i class="fas fa-arrow-right"></i>
-                    </button>
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="p-4 text-center transition border bg-white/40 backdrop-blur-md rounded-2xl border-white/60 group-hover:bg-white/60">
+                            <span class="block mb-1 text-xs font-bold tracking-wider uppercase text-textLight">Faltas</span>
+                            <span class="block text-xl font-bold font-display text-slate-700">1</span>
+                        </div>
+                        <div class="relative p-4 overflow-hidden text-center transition border bg-white/40 backdrop-blur-md rounded-2xl border-white/60 group-hover:bg-white/60">
+                            <span class="block mb-1 text-xs font-bold tracking-wider uppercase text-textLight">Próx. Prova</span>
+                            <span class="block text-xl font-bold font-display text-auroraGreen">30/10</span>
+                            <div class="absolute bottom-0 left-0 w-full h-1 bg-auroraGreen/50"></div>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'core:student_lesson' %}" class="flex items-center justify-center w-full py-4 rounded-2xl bg-gradient-to-r from-auroraGreen to-teal-500 text-white font-bold text-lg hover:shadow-lg hover:shadow-auroraGreen/40 transition-all group-hover:scale-[1.02] active:scale-95">
+                        Acessar Sala de Aula <i class="ml-3 text-xl fas fa-arrow-right"></i>
+                    </a>
                 </div>
             </div>
 
