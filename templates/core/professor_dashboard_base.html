@@ -4,25 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portal do Professor NioCortex">
     <title>{% block title %}NioCortex | Sala dos Professores{% endblock %}</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-    
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/perfis.css' %}" rel="stylesheet">
 
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                        display: ['Outfit', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'], display: ['Outfit', 'sans-serif'] },
                     colors: {
                         primary: 'var(--color-primary)',
                         secondary: 'var(--color-secondary)',
@@ -31,162 +30,60 @@
                         surface: 'var(--bg-card)',
                         text: 'var(--text-main)',
                         textMuted: 'var(--text-muted)',
-                        
-                        // Paleta Talkio
                         talkio: {
                             sidebar: 'var(--talkio-sidebar)',
                             chat: 'var(--talkio-chat)',
                             hover: 'var(--talkio-hover)',
                             bubbleOut: 'var(--talkio-bubble-out)',
                             bubbleIn: 'var(--talkio-bubble-in)',
-                            meta: 'var(--talkio-meta)',
+                            secret: 'var(--talkio-secret)',
                         }
                     },
-                    boxShadow: {
-                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
-                        'glow': '0 0 15px var(--color-primary)',
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' },
-                        }
-                    }
+                    boxShadow: { glass: '0 8px 32px 0 rgba(31, 38, 135, 0.07)', glow: '0 0 15px var(--color-primary)' },
+                    animation: { float: 'float 6s ease-in-out infinite', pulse: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' },
+                    keyframes: { float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } } }
                 }
             }
         }
     </script>
-
-    <style>
-        /* --- ENGINE DE TEMAS (PROFESSOR) --- */
-        :root {
-            /* Padrão: Aurora Pro */
-            --color-primary: #6366f1; /* Indigo */
-            --color-secondary: #06b6d4; /* Cyan */
-            --color-accent: #8b5cf6; /* Violet */
-            --bg-body: #F3F4F6;
-            --bg-card: rgba(255, 255, 255, 0.9);
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
-            --glass-border: 1px solid rgba(255, 255, 255, 0.7);
-            --gradient-sidebar: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
-            
-            /* Talkio Light */
-            --talkio-sidebar: #ffffff;
-            --talkio-chat: #8E9DBC;
-            --talkio-hover: #f3f4f6;
-            --talkio-bubble-out: #e0e7ff;
-            --talkio-bubble-in: #ffffff;
-            --talkio-meta: #9ca3af;
-        }
-
-        /* Tema Feminino (Rosa Pro) */
-        .theme-pink {
-            --color-primary: #be185d;
-            --color-secondary: #db2777;
-            --color-accent: #f472b6;
-            --bg-body: #fff1f2;
-            --gradient-sidebar: linear-gradient(135deg, #be185d 0%, #db2777 100%);
-        }
-
-        /* Tema Masculino (Azul Pro) */
-        .theme-blue {
-            --color-primary: #1e40af;
-            --color-secondary: #3b82f6;
-            --color-accent: #60a5fa;
-            --bg-body: #eff6ff;
-            --gradient-sidebar: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-        }
-
-        /* Tema Dark Pro */
-        .theme-dark {
-            --color-primary: #818cf8;
-            --color-secondary: #22d3ee;
-            --color-accent: #c084fc;
-            --bg-body: #111827;
-            --bg-card: rgba(31, 41, 55, 0.85);
-            --text-main: #f9fafb;
-            --text-muted: #94a3b8;
-            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
-            --gradient-sidebar: linear-gradient(135deg, #4f46e5 0%, #0891b2 100%);
-            
-            /* Talkio Dark */
-            --talkio-sidebar: #1f2937;
-            --talkio-chat: #0e1621;
-            --talkio-hover: #374151;
-            --talkio-bubble-out: #3730a3;
-            --talkio-bubble-in: #1f2937;
-            --talkio-meta: #6b7280;
-        }
-
-        body { background-color: var(--bg-body); color: var(--text-main); transition: all 0.4s ease; }
-
-        .glass-panel {
-            background: var(--bg-card);
-            backdrop-filter: blur(16px);
-            border: var(--glass-border);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        .glass-nav {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-        }
-        .theme-dark .glass-nav {
-            background: rgba(17, 24, 39, 0.95);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .custom-scroll::-webkit-scrollbar { width: 6px; }
-        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 10px; opacity: 0.3; }
-        
-        .talkio-pattern { background-image: url('https://web.telegram.org/img/bg_0.png'); background-size: cover; }
-        .talkio-drawer { background-color: var(--talkio-sidebar); color: var(--text-main); }
-        
-        [x-cloak] { display: none !important; }
-    </style>
 </head>
-<body x-data="professorAppData()" 
+
+<body x-data="professorAppData({ gender: '{{ user.gender|default:'F' }}', is_premium: '{{ is_premium|yesno:'true,false' }}' })" 
       x-init="init()"
-      :class="currentThemeClass"
+      :class="{
+          'theme-pink': theme === 'pink',
+          'theme-blue': theme === 'blue',
+          'theme-dark': theme === 'dark',
+          'theme-aurora': theme === 'aurora'
+      }"
       class="font-sans antialiased min-h-screen flex flex-col relative overflow-x-hidden selection:bg-[var(--color-primary)] selection:text-white">
 
     <div class="fixed inset-0 z-0 transition-colors duration-700 pointer-events-none">
-        <div class="absolute top-[-20%] left-[10%] w-[900px] h-[900px] rounded-full mix-blend-multiply filter blur-[150px] opacity-30 animate-float"
-             :style="`background-color: var(--color-primary)`"></div>
-        <div class="absolute bottom-[-10%] right-[5%] w-[700px] h-[700px] rounded-full mix-blend-multiply filter blur-[150px] opacity-30 animate-float"
-             style="animation-delay: 3s; background-color: var(--color-secondary)"></div>
-        <div class="absolute inset-0 opacity-10" 
-             style="background-image: radial-gradient(var(--text-muted) 1px, transparent 1px); background-size: 24px 24px;"></div>
+        <div class="absolute top-[-20%] left-[10%] w-[900px] h-[900px] rounded-full mix-blend-multiply filter blur-[150px] opacity-30 animate-float" style="background-color: var(--color-primary)"></div>
+        <div class="absolute bottom-[-10%] right-[5%] w-[700px] h-[700px] rounded-full mix-blend-multiply filter blur-[150px] opacity-30 animate-float" style="animation-delay: 3s; background-color: var(--color-secondary)"></div>
+        <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(var(--text-muted) 1px, transparent 1px); background-size: 24px 24px;"></div>
     </div>
 
     <nav class="sticky top-0 z-40 w-full px-4 py-2 transition-colors duration-300 shadow-sm glass-nav">
         <div class="flex items-center justify-between h-16 mx-auto max-w-7xl">
-            
             <div class="flex items-center flex-1 gap-4">
                 <a href="{% url 'core:professor_dashboard' %}" class="flex items-center gap-3 group">
-                    <div class="flex items-center justify-center w-10 h-10 text-xl font-bold text-white transition-transform shadow-lg rounded-xl group-hover:scale-110"
-                         style="background: var(--gradient-sidebar)">N</div>
+                    <div class="flex items-center justify-center w-10 h-10 text-xl font-bold text-white transition-transform shadow-lg rounded-xl group-hover:scale-110" style="background: var(--gradient-sidebar)">N</div>
                     <div class="flex flex-col">
                         <span class="text-xl font-bold leading-none font-display" style="color: var(--text-main)">Nio<span style="color: var(--color-primary)">Docente</span></span>
-                        <span class="text-[10px] uppercase tracking-widest font-bold opacity-60" style="color: var(--text-muted)">Portal do Professor</span>
+                        <span class="text-[10px] uppercase tracking-widest font-bold opacity-60" style="color: var(--text-muted)">Sala dos Professores</span>
                     </div>
                 </a>
             </div>
 
             <div class="items-center justify-center flex-1 hidden gap-8 lg:flex">
                 <a href="{% url 'core:professor_dashboard' %}" class="relative flex flex-col items-center p-2 group" title="Início">
-                    <i class="mb-1 text-2xl transition-colors duration-300 fas fa-home" 
-                       :style="currentPath === '/dashboard/professor/' ? 'color: var(--color-primary)' : 'color: var(--text-muted)'"></i>
-                    <span class="absolute bottom-0 w-1.5 h-1.5 rounded-full" 
-                          :style="currentPath === '/dashboard/professor/' ? 'background-color: var(--color-primary)' : 'display: none'"></span>
+                    <i class="mb-1 text-2xl transition-colors duration-300 fas fa-home" :style="currentPath === '/dashboard/professor/' ? 'color: var(--color-primary)' : 'color: var(--text-muted)'"></i>
+                    <span class="absolute bottom-0 w-1.5 h-1.5 rounded-full" :style="currentPath === '/dashboard/professor/' ? 'background-color: var(--color-primary)' : 'display: none'"></span>
+                </a>
+                
+                <a href="#" class="relative flex flex-col items-center p-2 rounded-lg group hover:bg-black/5" title="Diário Digital">
+                    <i class="fas fa-book-open text-2xl mb-1 transition-colors duration-300 text-slate-400 group-hover:text-[var(--color-primary)]"></i>
                 </a>
 
                 <a href="{% url 'pedagogical:listar_turmas' %}" class="relative flex flex-col items-center p-2 rounded-lg group hover:bg-black/5" title="Minhas Turmas">
@@ -199,54 +96,30 @@
             </div>
 
             <div class="flex items-center justify-end flex-1 gap-4">
-                
-                <button @click="openTalkio()" class="relative flex items-center justify-center w-10 h-10 transition rounded-full hover:bg-black/5" title="Talkio">
-                    <img src="{% static 'imgs/talkio/Talkio_logo.png' %}" class="object-contain w-8 h-8 drop-shadow-sm" alt="Talkio">
-                    <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white rounded-full flex items-center justify-center text-[9px] font-bold text-white">5</span>
+                <button @click="openTalkio()" class="relative flex items-center justify-center w-10 h-10 transition rounded-full hover:bg-black/5">
+                    <img src="{% static 'imgs/talkio/Talkio_logo.png' %}" class="object-contain w-8 h-8 drop-shadow-sm">
+                    <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-white rounded-full flex items-center justify-center text-[9px] font-bold text-white animate-pulse">5</span>
                 </button>
                 
                 <div class="relative ml-2 cursor-pointer group">
                     <div class="w-10 h-10 rounded-full p-[2px] transition-transform group-hover:scale-105" style="background: var(--gradient-sidebar)">
                         <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}https://i.pravatar.cc/150?img=12{% endif %}" class="object-cover w-full h-full border-2 border-white rounded-full">
                     </div>
-                    
                     <div class="absolute right-0 z-50 hidden w-64 mt-4 bg-white border shadow-2xl dark:bg-slate-800 rounded-2xl border-slate-100 group-hover:block animate-fade-in-up">
                         <div class="p-4 border-b border-slate-100 dark:border-slate-700 bg-gradient-to-r from-gray-50 to-white dark:from-slate-800 dark:to-slate-900 rounded-t-2xl">
                             <p class="text-sm font-bold text-gray-800 truncate dark:text-white">{{ user.first_name }} {{ user.last_name }}</p>
-                            <p class="text-xs text-slate-500">
-                                {% if is_freemium %}Professor(a) Independente{% else %}Colégio Futuro{% endif %}
-                            </p>
+                            <p class="text-xs text-slate-500">{% if is_freemium %}Professor(a) Independente{% else %}Colégio Futuro{% endif %}</p>
                         </div>
-                        
                         <div class="p-4 border-b border-slate-100 dark:border-slate-700">
                             <p class="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-wider">Aparência</p>
                             <div class="grid grid-cols-3 gap-2">
-                                <button @click="setTheme('aurora')" class="flex items-center justify-center h-10 transition border-2 rounded-xl hover:shadow-md"
-                                        :class="theme === 'aurora' ? 'border-indigo-500 bg-indigo-50' : 'border-slate-200'">
-                                    <div class="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-400 to-cyan-400"></div>
-                                </button>
-                                <button @click="setTheme('dark')" class="flex items-center justify-center h-10 transition border-2 rounded-xl hover:shadow-md"
-                                        :class="theme === 'dark' ? 'border-slate-600 bg-slate-100' : 'border-slate-200'">
-                                    <div class="w-5 h-5 border rounded-full bg-slate-800 border-slate-600"></div>
-                                </button>
-                                <template x-if="gender === 'F'">
-                                    <button @click="setTheme('pink')" class="flex items-center justify-center h-10 transition border-2 rounded-xl hover:shadow-md"
-                                            :class="theme === 'pink' ? 'border-pink-500 bg-pink-50' : 'border-slate-200'">
-                                        <div class="w-5 h-5 bg-pink-500 rounded-full"></div>
-                                    </button>
-                                </template>
-                                <template x-if="gender === 'M'">
-                                    <button @click="setTheme('blue')" class="flex items-center justify-center h-10 transition border-2 rounded-xl hover:shadow-md"
-                                            :class="theme === 'blue' ? 'border-blue-500 bg-blue-50' : 'border-slate-200'">
-                                        <div class="w-5 h-5 bg-blue-500 rounded-full"></div>
-                                    </button>
-                                </template>
+                                <button @click="setTheme('aurora')" class="flex items-center justify-center h-10 transition border-2 rounded-xl hover:shadow-md"><div class="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-400 to-cyan-400"></div></button>
+                                <button @click="setTheme('dark')" class="flex items-center justify-center h-10 transition border-2 rounded-xl hover:shadow-md"><div class="w-5 h-5 border rounded-full bg-slate-800 border-slate-600"></div></button>
+                                <template x-if="gender === 'F'"><button @click="setTheme('pink')" class="flex items-center justify-center h-10 transition border-2 rounded-xl hover:shadow-md"><div class="w-5 h-5 bg-pink-500 rounded-full"></div></button></template>
+                                <template x-if="gender === 'M'"><button @click="setTheme('blue')" class="flex items-center justify-center h-10 transition border-2 rounded-xl hover:shadow-md"><div class="w-5 h-5 bg-blue-500 rounded-full"></div></button></template>
                             </div>
                         </div>
-
-                        <a href="{% url 'core:logout' %}" class="flex items-center gap-3 p-4 text-sm text-red-600 transition hover:bg-red-50 rounded-b-2xl">
-                            <i class="fas fa-power-off"></i> Sair do Sistema
-                        </a>
+                        <a href="{% url 'core:logout' %}" class="flex items-center gap-3 p-4 text-sm text-red-600 transition hover:bg-red-50 rounded-b-2xl"><i class="fas fa-power-off"></i> Sair do Sistema</a>
                     </div>
                 </div>
             </div>
@@ -259,36 +132,29 @@
             
             <div class="relative flex flex-col items-center p-6 overflow-hidden text-center transition-all duration-500 glass-panel rounded-3xl group hover:shadow-lg">
                 <div class="absolute top-0 left-0 w-full h-24 opacity-20" style="background: var(--gradient-sidebar)"></div>
-                
                 <div class="relative z-10 mt-4 mb-3">
                     <div class="w-24 h-24 p-1 bg-white rounded-full shadow-xl">
-                        <img src="https://i.pravatar.cc/150?img=12" class="object-cover w-full h-full border-2 rounded-full border-slate-100">
+                        <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}https://i.pravatar.cc/150?img=12{% endif %}" class="object-cover w-full h-full border-2 rounded-full border-slate-100">
                     </div>
                 </div>
-
                 <h2 class="w-full px-2 text-lg font-bold truncate font-display" style="color: var(--text-main)">Prof. {{ user.first_name }}</h2>
                 <p class="mb-4 text-xs font-medium tracking-wider uppercase" style="color: var(--text-muted)">Matemática & Física</p>
-
                 <div class="flex justify-center w-full gap-4 py-3 mb-4 border-t border-b border-gray-200/30">
                     <div><span class="block text-sm font-bold" style="color: var(--color-primary)">5</span><span class="text-[10px] text-slate-400 uppercase">Turmas</span></div>
                     <div class="w-px bg-gray-200/50"></div>
                     <div><span class="block text-sm font-bold text-green-500">128</span><span class="text-[10px] text-slate-400 uppercase">Alunos</span></div>
                 </div>
-                
                 {% if is_freemium %}
-                <button class="w-full py-2 text-xs font-bold text-white transition bg-yellow-400 shadow-md rounded-xl hover:bg-yellow-500 animate-pulse">
-                    <i class="mr-1 fas fa-crown"></i> Seja Premium
-                </button>
-                {% else %}
-                <a href="#" class="w-full py-2 text-xs font-bold transition border border-transparent rounded-xl hover:bg-white/50 hover:border-gray-200" style="color: var(--color-primary)">Editar Perfil</a>
+                <button class="w-full py-2 text-xs font-bold text-white transition bg-yellow-400 shadow-md rounded-xl hover:bg-yellow-500 animate-pulse"><i class="mr-1 fas fa-crown"></i> Seja Premium</button>
                 {% endif %}
             </div>
 
-            <nav class="flex-1 pr-2 space-y-2 overflow-y-auto custom-scroll">
-                <a href="{% url 'core:professor_dashboard' %}" class="flex items-center gap-3 px-4 py-3 transition-all shadow-sm rounded-2xl group"
-                   style="background: var(--bg-card); border-left: 4px solid var(--color-primary);">
-                    <div class="flex justify-center w-8"><i class="text-lg fas fa-chart-line" style="color: var(--color-primary)"></i></div>
-                    <span class="text-sm font-bold" style="color: var(--text-main)">Visão Geral</span>
+            <nav class="flex-1 p-2 pr-2 space-y-2 overflow-y-auto custom-scroll glass-panel rounded-2xl">
+                <p class="px-4 pt-2 text-[10px] font-bold uppercase tracking-wider opacity-50 mb-1" style="color: var(--text-muted)">Acadêmico</p>
+                
+                <a href="{% url 'core:professor_dashboard' %}" class="flex items-center gap-3 px-4 py-3 transition-all shadow-sm rounded-2xl group" style="background: var(--bg-card); border-left: 4px solid var(--color-primary);">
+                    <div class="flex justify-center w-8"><i class="text-lg fas fa-newspaper" style="color: var(--color-primary)"></i></div>
+                    <span class="text-sm font-bold" style="color: var(--text-main)">Mural / Feed</span>
                 </a>
                 
                 <a href="{% url 'pedagogical:listar_turmas' %}" class="flex items-center gap-3 px-4 py-3 transition-all rounded-2xl hover:bg-white/40 group">
@@ -303,28 +169,36 @@
                 
                 <a href="#" class="flex items-center gap-3 px-4 py-3 transition-all rounded-2xl hover:bg-white/40 group">
                     <div class="flex justify-center w-8"><i class="text-lg transition fas fa-calendar-check text-slate-400 group-hover:text-orange-500"></i></div>
-                    <span class="text-sm font-medium" style="color: var(--text-muted)">Frequência</span>
-                </a>
-                
-                <a href="{% url 'pedagogical:gerador_planejamentos' %}" class="flex items-center gap-3 px-4 py-3 transition-all rounded-2xl hover:bg-white/40 group">
-                    <div class="flex justify-center w-8"><i class="text-lg transition fas fa-layer-group text-slate-400 group-hover:text-purple-500"></i></div>
-                    <span class="text-sm font-medium" style="color: var(--text-muted)">Planejamento</span>
-                </a>
-                
-                <a href="{% url 'pedagogical:gerador_provas' %}" class="flex items-center gap-3 px-4 py-3 transition-all rounded-2xl hover:bg-white/40 group">
-                    <div class="flex justify-center w-8"><i class="text-lg transition fas fa-file-alt text-slate-400 group-hover:text-red-500"></i></div>
-                    <span class="text-sm font-medium" style="color: var(--text-muted)">Gerador de Provas</span>
+                    <span class="text-sm font-medium" style="color: var(--text-muted)">Frequência Diária</span>
                 </a>
 
-                <a href="{% url 'pedagogical:gerador_atividades' %}" class="flex items-center gap-3 px-4 py-3 transition-all rounded-2xl hover:bg-white/40 group">
-                    <div class="flex justify-center w-8"><i class="text-lg transition fas fa-pencil-alt text-slate-400 group-hover:text-orange-500"></i></div>
-                    <span class="text-sm font-medium" style="color: var(--text-muted)">Criar Atividades</span>
+                <p class="px-4 pt-4 text-[10px] font-bold uppercase tracking-wider opacity-50 mb-1" style="color: var(--text-muted)">Pedagógico</p>
+
+                <a href="{% url 'pedagogical:gerador_planejamentos' %}" class="flex items-center gap-3 px-4 py-3 transition-all rounded-2xl hover:bg-white/40 group">
+                    <div class="flex justify-center w-8"><i class="text-lg transition fas fa-layer-group text-slate-400 group-hover:text-purple-500"></i></div>
+                    <span class="text-sm font-medium" style="color: var(--text-muted)">Planos de Ensino</span>
+                </a>
+
+                <a href="{% url 'pedagogical:gerador_provas' %}" class="flex items-center gap-3 px-4 py-3 transition-all rounded-2xl hover:bg-white/40 group">
+                    <div class="flex justify-center w-8"><i class="text-lg transition fas fa-file-alt text-slate-400 group-hover:text-red-500"></i></div>
+                    <span class="text-sm font-medium" style="color: var(--text-muted)">Banco de Questões</span>
+                </a>
+
+                <p class="px-4 pt-4 text-[10px] font-bold uppercase tracking-wider opacity-50 mb-1" style="color: var(--text-muted)">Administrativo</p>
+
+                <a href="#" class="flex items-center gap-3 px-4 py-3 transition-all rounded-2xl hover:bg-white/40 group">
+                    <div class="flex justify-center w-8"><i class="text-lg transition fas fa-file-signature text-slate-400 group-hover:text-indigo-500"></i></div>
+                    <span class="text-sm font-medium" style="color: var(--text-muted)">Secretaria Virtual</span>
+                </a>
+                
+                <a href="#" class="flex items-center gap-3 px-4 py-3 transition-all rounded-2xl hover:bg-white/40 group">
+                    <div class="flex justify-center w-8"><i class="text-lg transition fas fa-chart-bar text-slate-400 group-hover:text-emerald-500"></i></div>
+                    <span class="text-sm font-medium" style="color: var(--text-muted)">Relatórios</span>
                 </a>
             </nav>
         </div>
 
         <div class="flex-1 w-full lg:max-w-[700px] mx-auto pb-20 space-y-6 overflow-y-auto scrollbar-hide">
-            
             {% block content %}
             
             {% if is_freemium %}
@@ -333,41 +207,39 @@
                 <div class="relative z-10 flex flex-col items-center justify-between gap-4 sm:flex-row">
                     <div>
                         <h3 class="mb-1 text-lg font-bold text-slate-800"><i class="mr-2 text-yellow-500 fas fa-crown"></i> NioCortex Premium</h3>
-                        <p class="max-w-sm text-sm text-slate-600">Indique sua escola ou colegas professores e desbloqueie recursos ilimitados de IA e gestão.</p>
+                        <p class="max-w-sm text-sm text-slate-600">Desbloqueie recursos ilimitados de IA e gestão.</p>
                     </div>
-                    <div class="flex gap-2">
-                        <button class="px-5 py-2.5 bg-white border border-yellow-200 text-yellow-700 font-bold rounded-xl hover:bg-yellow-50 transition text-xs shadow-sm">
-                            Convidar Colega
-                        </button>
-                        <button class="px-5 py-2.5 bg-yellow-500 text-white font-bold rounded-xl shadow-lg shadow-yellow-500/30 hover:bg-yellow-600 transition hover:-translate-y-1 text-xs">
-                            Indicar Escola
-                        </button>
-                    </div>
+                    <button class="px-5 py-2.5 bg-yellow-500 text-white font-bold rounded-xl shadow-lg shadow-yellow-500/30 hover:bg-yellow-600 transition hover:-translate-y-1 text-xs">Assinar Agora</button>
                 </div>
             </div>
             {% endif %}
 
-            <div class="relative p-4 mb-6 overflow-hidden transition shadow-sm glass-panel rounded-2xl group hover:shadow-md">
+            <div class="relative p-5 mb-6 overflow-hidden transition border shadow-sm glass-panel rounded-2xl group hover:shadow-md border-white/60">
                 <div class="flex gap-4">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 p-[2px] shrink-0">
-                        <img src="https://i.pravatar.cc/150?img=12" class="object-cover w-full h-full border-2 border-white rounded-full">
+                    <div class="w-10 h-10 rounded-full p-[2px]" style="background: var(--gradient-sidebar)">
+                        <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}https://i.pravatar.cc/150?img=12{% endif %}" class="object-cover w-full h-full border-2 border-white rounded-full">
                     </div>
                     <div class="flex-1">
-                        <textarea class="w-full p-3 mb-2 text-sm transition border-0 resize-none bg-gray-50/50 rounded-xl focus:ring-2 focus:ring-primary" rows="2" placeholder="Compartilhe avisos, fotos ou vídeos com suas turmas..."></textarea>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-xs font-bold uppercase text-slate-500">Para:</span>
+                            <select class="text-xs font-bold text-[var(--color-primary)] bg-white border border-slate-200 rounded-lg py-1 px-2 focus:ring-2 focus:ring-[var(--color-primary)] outline-none cursor-pointer">
+                                <option value="todas">Todas as minhas turmas</option>
+                                <option value="9a">9º Ano A - Matemática</option>
+                                <option value="9b">9º Ano B - Matemática</option>
+                                <option value="3c">3º Ano C - Física</option>
+                            </select>
+                        </div>
+
+                        <textarea class="w-full p-3 mb-2 text-sm transition border-0 resize-none bg-slate-50 rounded-xl focus:ring-2 focus:ring-primary focus:bg-white" rows="2" placeholder="Digite um aviso, lembrete ou atividade..."></textarea>
+                        
                         <div class="flex items-center justify-between">
                             <div class="flex gap-1">
-                                <button class="p-2 transition rounded-lg text-slate-400 hover:text-green-500 hover:bg-green-50" title="Adicionar Foto">
-                                    <i class="text-lg fas fa-image"></i>
-                                </button>
-                                <button class="p-2 transition rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50" title="Adicionar Vídeo">
-                                    <i class="text-lg fas fa-video"></i>
-                                </button>
-                                <button class="p-2 transition rounded-lg text-slate-400 hover:text-blue-500 hover:bg-blue-50" title="Anexo">
-                                    <i class="text-lg fas fa-paperclip"></i>
-                                </button>
+                                <button class="p-2 transition rounded-lg text-slate-400 hover:text-green-500 hover:bg-green-50" title="Foto"><i class="text-lg fas fa-image"></i></button>
+                                <button class="p-2 transition rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50" title="Vídeo"><i class="text-lg fas fa-video"></i></button>
+                                <button class="p-2 transition rounded-lg text-slate-400 hover:text-blue-500 hover:bg-blue-50" title="Arquivo"><i class="text-lg fas fa-paperclip"></i></button>
                             </div>
-                            <button class="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-bold rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5">
-                                Publicar
+                            <button class="px-6 py-2 text-xs font-bold text-white transition transform shadow-md rounded-xl hover:shadow-lg hover:-translate-y-0.5" style="background: var(--gradient-sidebar)">
+                                <i class="mr-1 fas fa-paper-plane"></i> Publicar
                             </button>
                         </div>
                     </div>
@@ -376,7 +248,7 @@
 
             <div class="space-y-6">
                 <template x-for="post in feed" :key="post.id">
-                    <div class="relative p-5 overflow-hidden transition shadow-sm glass-panel rounded-2xl hover:shadow-md"
+                    <div class="relative p-5 overflow-hidden transition shadow-sm glass-panel rounded-2xl hover:shadow-md" 
                          :class="{'border-l-4': post.type === 'alert' || post.type === 'event'}" 
                          :style="post.borderColor ? `border-left-color: ${post.borderColor}` : ''">
                         
@@ -385,9 +257,7 @@
                                 <div class="flex items-center justify-center w-10 h-10 overflow-hidden text-xs font-bold bg-gray-100 rounded-full shadow-sm">
                                     <template x-if="post.avatar.includes('http')"><img :src="post.avatar" class="object-cover w-full h-full"></template>
                                     <template x-if="!post.avatar.includes('http')">
-                                        <div class="flex items-center justify-center w-full h-full text-white" :style="`background: ${post.avatarColor || 'var(--color-primary)'}`">
-                                            <i :class="post.icon" class="text-lg"></i>
-                                        </div>
+                                        <div class="flex items-center justify-center w-full h-full text-white" :style="`background: ${post.avatarColor || 'var(--color-primary)'}`"><i :class="post.icon" class="text-lg"></i></div>
                                     </template>
                                 </div>
                                 <div>
@@ -395,7 +265,7 @@
                                     <div class="flex items-center gap-2">
                                         <p class="text-xs" style="color: var(--text-muted)" x-text="post.time"></p>
                                         <template x-if="post.target">
-                                            <span class="text-[10px] bg-gray-100 px-1.5 rounded text-gray-500" x-text="post.target"></span>
+                                            <span class="text-[9px] font-bold bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded border border-slate-200 uppercase" x-text="post.target"></span>
                                         </template>
                                     </div>
                                 </div>
@@ -412,43 +282,17 @@
                                     <img :src="post.mediaUrl" class="object-cover w-full h-full transition duration-500 group-hover:scale-105">
                                 </div>
                             </template>
-
-                            <template x-if="post.mediaType === 'video'">
-                                <div class="relative flex items-center justify-center w-full mb-4 overflow-hidden bg-black cursor-pointer aspect-video rounded-xl group">
-                                    <div class="absolute inset-0 bg-center bg-cover opacity-60" :style="`background-image: url(${post.thumbnail})`"></div>
-                                    <button class="z-10 flex items-center justify-center text-white transition border-2 rounded-full w-14 h-14 bg-white/20 backdrop-blur-sm border-white/50 group-hover:scale-110">
-                                        <i class="ml-1 text-xl fas fa-play"></i>
-                                    </button>
-                                    <span class="absolute px-2 py-1 text-xs text-white rounded bottom-3 right-3 bg-black/70">12:30</span>
-                                </div>
-                            </template>
-
-                            <template x-if="post.action">
-                                <button class="w-full py-2.5 rounded-xl font-bold text-white text-sm shadow-lg hover:opacity-90 transition flex items-center justify-center gap-2 mb-2"
-                                        :style="`background: var(--gradient-sidebar)`">
-                                    <i :class="post.actionIcon"></i> <span x-text="post.actionText"></span>
-                                </button>
-                            </template>
                         </div>
 
                         <div class="flex items-center justify-between pt-3 mt-2 border-t border-gray-100/50">
                             <div class="flex gap-6">
-                                <button class="flex items-center gap-1.5 text-xs font-bold transition text-slate-500 hover:text-red-500 group">
-                                    <i class="text-lg far fa-heart group-hover:animate-pulse"></i> <span x-text="post.likes"></span>
-                                </button>
-                                <button class="flex items-center gap-1.5 text-xs font-bold transition text-slate-500 hover:text-blue-500">
-                                    <i class="text-lg far fa-comment"></i> <span x-text="post.comments"></span>
-                                </button>
-                                <button class="flex items-center gap-1.5 text-xs font-bold transition text-slate-500 hover:text-green-500">
-                                    <i class="text-lg fas fa-share"></i>
-                                </button>
+                                <button class="flex items-center gap-1.5 text-xs font-bold transition text-slate-500 hover:text-red-500"><i class="text-lg far fa-heart"></i> <span x-text="post.likes"></span></button>
+                                <button class="flex items-center gap-1.5 text-xs font-bold transition text-slate-500 hover:text-blue-500"><i class="text-lg far fa-comment"></i> <span x-text="post.comments"></span></button>
                             </div>
-                            <button class="text-slate-400 hover:text-slate-600"><i class="far fa-bookmark"></i></button>
                         </div>
                     </div>
                 </template>
             </div>
-
             {% endblock %}
         </div>
 
@@ -463,24 +307,15 @@
                     <div class="absolute left-1.5 top-2 bottom-2 w-0.5 bg-gray-200/50"></div>
                     <div class="relative flex gap-3 group opacity-60">
                         <div class="w-3 h-3 rounded-full mt-1.5 z-10 border-2 border-white shadow-sm bg-green-500"></div>
-                        <div>
-                            <p class="text-xs font-bold line-through text-slate-700">07:30 - 09:10</p>
-                            <p class="text-[10px] text-slate-500">8º B • História</p>
-                        </div>
+                        <div><p class="text-xs font-bold line-through text-slate-700">07:30 - 09:10</p><p class="text-[10px] text-slate-500">8º B • História</p></div>
                     </div>
                     <div class="relative flex gap-3 group">
                         <div class="w-3 h-3 rounded-full mt-1.5 z-10 border-2 border-white shadow-sm bg-blue-500 animate-pulse"></div>
-                        <div>
-                            <p class="text-xs font-bold text-slate-700">09:30 - 11:10</p>
-                            <p class="text-[10px] text-slate-500">9º A • Matemática (Atual)</p>
-                        </div>
+                        <div><p class="text-xs font-bold text-slate-700">09:30 - 11:10</p><p class="text-[10px] text-slate-500">9º A • Matemática (Atual)</p></div>
                     </div>
                     <div class="relative flex gap-3 group">
                         <div class="w-3 h-3 rounded-full mt-1.5 z-10 border-2 border-white shadow-sm bg-gray-300"></div>
-                        <div>
-                            <p class="text-xs font-bold text-slate-700">11:20 - 13:00</p>
-                            <p class="text-[10px] text-slate-500">3º C • Física</p>
-                        </div>
+                        <div><p class="text-xs font-bold text-slate-700">11:20 - 13:00</p><p class="text-[10px] text-slate-500">3º C • Física</p></div>
                     </div>
                 </div>
             </div>
@@ -499,12 +334,12 @@
                 </div>
             </div>
 
-            <div class="p-5 shadow-sm glass-panel rounded-2xl">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-bold" style="color: var(--text-main)">Talkio</h3>
-                    <button @click="openTalkio" class="text-xs font-bold hover:underline" style="color: var(--color-primary)">Abrir</button>
+            <div class="relative p-5 overflow-hidden border shadow-sm glass-panel rounded-2xl group border-blue-100/50">
+                <div class="relative z-10 flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2"><img src="{% static 'imgs/talkio/Talkio_logo.png' %}" class="object-contain w-6 h-6"><h3 class="text-sm font-bold" style="color: var(--text-main)">Talkio</h3></div>
+                    <button @click="openTalkio" class="px-3 py-1 text-xs font-bold transition rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600">Abrir</button>
                 </div>
-                <div class="space-y-3">
+                <div class="relative z-10 space-y-3">
                     <div class="flex items-center gap-3 p-1 transition rounded-lg cursor-pointer opacity-80 hover:opacity-100 hover:bg-white/30">
                         <div class="relative w-9 h-9">
                             <div class="flex items-center justify-center w-full h-full text-xs font-bold text-purple-600 bg-purple-100 rounded-full">CP</div>
@@ -514,16 +349,6 @@
                             <p class="text-xs font-bold truncate">Coord. Pedagógica</p>
                             <p class="text-[10px] truncate text-slate-500">Reunião confirmada?</p>
                         </div>
-                        <span class="text-[10px] font-bold bg-red-500 text-white px-1.5 rounded-full">1</span>
-                    </div>
-                    <div class="flex items-center gap-3 p-1 transition rounded-lg cursor-pointer opacity-80 hover:opacity-100 hover:bg-white/30">
-                        <div class="relative w-9 h-9">
-                            <div class="flex items-center justify-center w-full h-full text-xs font-bold text-blue-600 bg-blue-100 rounded-full">8B</div>
-                        </div>
-                        <div class="flex-1 overflow-hidden">
-                            <p class="text-xs font-bold truncate">Pais - 8º B</p>
-                            <p class="text-[10px] truncate text-slate-500">Mãe do João: Obrigado prof!</p>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -531,10 +356,47 @@
         </div>
     </div>
 
+    <div x-cloak x-show="talkioOpen" class="fixed inset-0 z-[100] flex justify-center items-center" style="display: none;">
+        <div @click="talkioOpen = false" x-show="talkioOpen" x-transition.opacity class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div class="relative w-full max-w-6xl h-[85vh] bg-white rounded-2xl shadow-2xl flex overflow-hidden animate-float">
+            <div class="flex flex-col w-1/3 bg-white border-r border-slate-100" :class="activeChat ? 'hidden md:flex' : 'flex'">
+                <div class="flex items-center justify-between p-4 border-b border-slate-100 bg-slate-50/50">
+                    <div class="flex items-center gap-2"><img src="{% static 'imgs/talkio/Talkio_logo.png' %}" class="w-6 h-6"><span class="font-bold text-slate-700">Talkio</span></div>
+                    <div class="flex gap-2">
+                        <a href="{% url 'core:talkio' %}" target="_blank" class="flex items-center justify-center w-8 h-8 transition rounded-full hover:bg-slate-200 text-slate-400"><i class="text-xs fas fa-external-link-alt"></i></a>
+                        <button @click="talkioOpen = false" class="flex items-center justify-center w-8 h-8 transition rounded-full hover:bg-red-100 hover:text-red-500 text-slate-400"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="p-3"><div class="relative"><input type="text" placeholder="Buscar aluno/turma..." class="w-full bg-slate-100 border-none rounded-xl py-2 pl-9 pr-4 text-xs focus:ring-2 focus:ring-[var(--color-primary)]"><i class="fas fa-search absolute left-3 top-2.5 text-slate-400 text-xs"></i></div></div>
+                <div class="flex-1 overflow-y-auto custom-scroll">
+                    <div @click="activeChat = {id:1, name: 'Coordenação'}" class="flex items-center gap-3 p-3 transition border-b cursor-pointer hover:bg-slate-50 border-slate-50/50">
+                        <div class="flex items-center justify-center w-10 h-10 text-xs font-bold text-purple-600 bg-purple-100 rounded-full">CP</div>
+                        <div><h4 class="text-sm font-bold text-slate-700">Coordenação</h4><p class="text-xs text-slate-500">Reunião confirmada?</p></div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-1 flex flex-col bg-[#f0f2f5] relative" :class="activeChat ? 'flex' : 'hidden md:flex'">
+                <div class="absolute inset-0 pointer-events-none opacity-5" style="background-image: url('https://web.telegram.org/img/bg_0.png');"></div>
+                <div x-show="!activeChat" class="relative z-10 flex flex-col items-center justify-center flex-1 text-slate-400">
+                    <div class="flex items-center justify-center w-24 h-24 mb-4 rounded-full bg-slate-200 animate-pulse"><i class="text-4xl fas fa-comments text-slate-400"></i></div>
+                    <p class="text-sm font-medium">Selecione uma conversa</p>
+                </div>
+                <div x-show="activeChat" class="relative z-10 flex flex-col w-full h-full">
+                    <div class="flex items-center justify-between h-16 px-4 bg-white border-b shadow-sm border-slate-100">
+                        <div class="flex items-center gap-3">
+                            <button @click="activeChat = null" class="md:hidden text-slate-500"><i class="fas fa-arrow-left"></i></button>
+                            <h3 class="text-sm font-bold text-slate-700">Coordenação</h3>
+                        </div>
+                    </div>
+                    <div class="flex-1 p-4 overflow-y-auto custom-scroll"><div class="flex justify-start"><div class="p-3 text-sm bg-white border shadow-sm border-slate-100 rounded-xl">Reunião confirmada?</div></div></div>
+                    <div class="p-3 bg-white border-t border-slate-100"><input type="text" placeholder="Mensagem..." class="w-full bg-slate-100 border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-[var(--color-primary)]"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="fixed z-50 flex flex-col items-end gap-2 bottom-6 right-6" x-cloak>
-        <div x-show="consciosOpen" 
-             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-10 scale-95" x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-             class="flex flex-col mb-2 overflow-hidden bg-white shadow-2xl glass-panel w-80 h-96 rounded-2xl border-white/60">
+        <div x-show="consciosOpen" x-transition class="flex flex-col mb-2 overflow-hidden bg-white shadow-2xl glass-panel w-80 h-96 rounded-2xl border-white/60">
             <div class="flex items-center justify-between p-4 text-white bg-gradient-to-r from-gray-900 to-gray-800">
                 <div class="flex items-center gap-2"><i class="text-purple-400 fas fa-brain"></i> <span class="text-sm font-bold">Conscios AI</span></div>
                 <button @click="consciosOpen = false"><i class="fas fa-times"></i></button>
@@ -549,38 +411,18 @@
         </button>
     </div>
 
-    <div x-cloak x-show="talkioOpen" class="fixed inset-0 z-[100] flex justify-center items-center bg-black/60 backdrop-blur-sm" @click.self="talkioOpen = false">
-        <div class="w-full max-w-6xl h-[90vh] bg-white rounded-xl shadow-2xl flex overflow-hidden talkio-drawer">
-            <div class="flex flex-col w-1/3 h-full border-r md:w-80 border-gray-200/10">
-                <div class="flex items-center gap-2 p-3 border-b bg-gray-50/50 border-gray-100/10">
-                    <i class="text-gray-400 fas fa-search"></i>
-                    <input type="text" placeholder="Buscar aluno, turma ou colega..." class="w-full text-sm bg-transparent border-none focus:ring-0">
-                </div>
-                <div class="flex-1 p-2 overflow-y-auto">
-                    <div class="flex items-center gap-3 p-3 rounded cursor-pointer hover:bg-black/5">
-                        <div class="flex items-center justify-center w-10 h-10 text-sm font-bold text-purple-600 bg-purple-100 rounded-full">CP</div>
-                        <div><p class="text-sm font-bold">Coordenação</p><p class="text-xs text-gray-500">Reunião confirmada?</p></div>
-                    </div>
-                </div>
-            </div>
-            <div class="relative flex flex-col items-center justify-center flex-1 text-gray-400 bg-gray-100">
-                <div class="absolute inset-0 pointer-events-none talkio-pattern opacity-10"></div>
-                <i class="mb-2 text-4xl opacity-50 fas fa-comments"></i>
-                <p>Selecione uma conversa para iniciar</p>
-            </div>
-        </div>
-    </div>
-
+    <script src="{% static 'js/dashboard_aluno.js' %}"></script>
     <script>
-        function professorAppData() {
+        function professorAppData(data) {
             return {
                 theme: 'aurora',
-                gender: '{{ user.gender|default:"M" }}', 
+                gender: data.gender || 'F',
                 talkioOpen: false,
                 consciosOpen: false,
+                activeChat: null,
                 currentPath: window.location.pathname,
                 
-                // MURAL SOCIAL DATA
+                // MURAL SOCIAL DATA (PROFESSOR VIEW)
                 feed: [
                     {
                         id: 1, 
@@ -599,23 +441,10 @@
                         time: 'Há 10 min', 
                         target: '9º Ano A',
                         avatar: 'https://i.pravatar.cc/150?img=12',
-                        title: '',
                         content: 'Pessoal, segue o resumo da aula de hoje sobre Equações de 2º Grau. Não esqueçam de revisar para a prova!',
                         mediaType: 'image',
                         mediaUrl: 'https://source.unsplash.com/random/800x400/?math,blackboard',
                         likes: 5, comments: 2
-                    },
-                    {
-                        id: 3, 
-                        author: 'Prof. Roberto (Ciências)', 
-                        time: 'Ontem', 
-                        target: 'Sala dos Professores',
-                        avatar: 'https://i.pravatar.cc/150?img=8',
-                        title: 'Feira de Ciências',
-                        content: 'Vejam como foi a apresentação dos alunos do 8º B. Muito orgulho!',
-                        mediaType: 'video',
-                        thumbnail: 'https://source.unsplash.com/random/800x400/?science,lab',
-                        likes: 24, comments: 8
                     }
                 ],
 

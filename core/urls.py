@@ -46,22 +46,40 @@ urlpatterns = [
 
 
     # ==========================================================================
-    # 4. PORTAL DO ALUNO (SUB-PÁGINAS)
+    # 4. PORTAL DO ALUNO (FUNCIONALIDADES)
     # ==========================================================================
+    
+    # --- Essenciais ---
     path('dashboard/aluno/perfil/', views.student_profile, name='student_profile'),
     path('dashboard/aluno/disciplinas/', views.student_subjects, name='student_subjects'),
     path('dashboard/aluno/boletim/', views.student_grades, name='student_grades'),
     path('dashboard/aluno/agenda/', views.student_calendar, name='student_calendar'),
+    path('dashboard/aluno/horario/', views.student_timetable, name='student_timetable'), # <--- NOVA ROTA
     path('dashboard/aluno/arquivos/', views.student_files, name='student_files'),
     path('dashboard/aluno/aula/', views.student_lesson, name='student_lesson'),
     path('dashboard/aluno/atividade/', views.student_activity, name='student_activity'),
+    
+    # --- Administrativo ---
     path('dashboard/aluno/financeiro/', views.student_financial, name='student_financial'),
     path('dashboard/aluno/servicos/', views.student_services, name='student_services'),
+    path('dashboard/aluno/carteirinha/', views.student_id_card, name='student_id_card'),
+    
+    # --- Módulos Específicos (Novos) ---
+    path('dashboard/aluno/diario/', views.daily_diary, name='daily_diary'),           # Infantil
+    path('dashboard/aluno/loja/', views.gamification_store, name='gamification_store'), # Gamificação
+    path('dashboard/aluno/biblioteca/', views.student_library, name='student_library'), # Todos
+    path('dashboard/aluno/carreira/', views.career_center, name='career_center'),     # Superior
+    path('dashboard/aluno/tcc/', views.thesis_manager, name='thesis_manager'),        # Pós/Superior
+
+    # --- Premium ---
+    path('dashboard/aluno/premium/', views.student_premium, name='student_premium'),
+    path('dashboard/aluno/premium/stats/', views.student_premium_stats, name='student_premium_stats'),
 
 
     # ==========================================================================
-    # 5. INTEGRAÇÃO IA (IO CONSCIOS)
+    # 5. COMUNICAÇÃO & IA
     # ==========================================================================
+    path('talkio/', views.talkio_view, name='talkio'), # Chat Full Screen
     path('api/ia/check/', views.api_check_conscios, name='api_check_conscios'),
     path('api/ia/chat/', views.api_chat_conscios, name='api_chat_conscios'),
 

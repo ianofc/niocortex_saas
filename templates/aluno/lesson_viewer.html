@@ -1,211 +1,357 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="pt-br" class="scroll-smooth bg-slate-900"> <head>
+<html lang="pt-br" class="scroll-smooth">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula: Revolução Francesa | NioStudent</title>
+    <meta name="description" content="Sala de Aula - LUMENIOS">
+    <title>Sala de Aula | LUMENIOS</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/perfis.css' %}" rel="stylesheet">
+
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'], display: ['Outfit', 'sans-serif'] },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
                     colors: {
-                        nio: { 500: '#7c3aed', 600: '#6d28d9' },
-                        lumina: { cyan: '#00E5FF' }
+                        primary: 'var(--color-primary)',
+                        secondary: 'var(--color-secondary)',
+                        accent: 'var(--color-accent)',
+                        background: 'var(--bg-body)',
+                        surface: 'var(--bg-card)',
+                        text: 'var(--text-main)',
+                        textMuted: 'var(--text-muted)',
+                        talkio: {
+                            sidebar: 'var(--talkio-sidebar)',
+                            chat: 'var(--talkio-chat)',
+                            hover: 'var(--talkio-hover)',
+                            bubbleOut: 'var(--talkio-bubble-out)',
+                            bubbleIn: 'var(--talkio-bubble-in)',
+                            meta: 'var(--talkio-meta)',
+                        }
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                        'glow': '0 0 15px var(--color-primary)',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } }
                     }
                 }
             }
         }
     </script>
+    
     <style>
-        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        /* Cards de Conteúdo */
+        .content-card {
+            transition: all 0.3s ease;
+        }
+        .content-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.15);
+            border-color: var(--color-primary);
+        }
+        
+        /* Botão de Ação no Card */
+        .action-btn {
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+        }
+        .content-card:hover .action-btn {
+            opacity: 1;
+            transform: translateX(0);
+        }
     </style>
 </head>
-<body class="text-slate-200 font-sans antialiased h-screen flex flex-col overflow-hidden selection:bg-nio-500 selection:text-white">
 
-    <nav class="h-16 border-b border-slate-800 bg-slate-900 flex items-center justify-between px-6 shrink-0 z-20">
-        <div class="flex items-center gap-4">
-            <a href="{% url 'core:student_subjects' %}" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition">
-                <i class="fas fa-chevron-left text-sm"></i>
-            </a>
-            <div>
-                <h1 class="font-bold text-white text-sm md:text-base">História: A Era das Revoluções</h1>
-                <div class="flex items-center gap-2 text-xs text-slate-400">
-                    <span class="w-20 h-1.5 bg-slate-800 rounded-full overflow-hidden block">
-                        <span class="block w-1/3 h-full bg-lumina-cyan rounded-full"></span>
-                    </span>
-                    <span>35% Concluído</span>
+<body x-data="appData({ gender: '{{ user.gender|default:'F' }}', is_premium: '{{ is_premium|yesno:'true,false' }}' })" 
+      x-init="init()"
+      :class="{
+          'theme-pink': theme === 'pink',
+          'theme-blue': theme === 'blue',
+          'theme-dark': theme === 'dark',
+          'theme-premium-fem': theme === 'premium-fem',
+          'theme-premium-masc': theme === 'premium-masc'
+      }"
+      class="font-sans antialiased min-h-screen flex flex-col relative overflow-x-hidden selection:bg-[var(--color-primary)] selection:text-white">
+
+    <div class="fixed inset-0 z-0 transition-colors duration-700 pointer-events-none">
+        <div class="absolute top-[-10%] left-[20%] w-[800px] h-[800px] rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-float" :style="`background-color: var(--color-secondary)`"></div>
+        <div class="absolute bottom-[10%] right-[10%] w-[600px] h-[600px] rounded-full mix-blend-multiply filter blur-[120px] opacity-40 animate-float" style="animation-delay: 2s; background-color: var(--color-primary)"></div>
+        <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(var(--text-muted) 1px, transparent 1px); background-size: 30px 30px;"></div>
+    </div>
+
+    <nav class="sticky top-0 z-40 w-full px-4 py-2 transition-colors duration-300 shadow-sm glass-nav">
+        <div class="flex items-center justify-between h-16 mx-auto max-w-7xl">
+            <div class="flex items-center flex-1 gap-4">
+                <a href="{% url 'core:aluno_dashboard' %}" class="flex items-center gap-3 group">
+                    <div class="flex items-center justify-center w-10 h-10 text-lg font-bold text-white transition-transform shadow-lg rounded-xl group-hover:scale-110 bg-gradient-to-br from-indigo-500 to-purple-600">L</div>
+                    <div class="flex flex-col justify-center">
+                        <span class="hidden text-xl font-bold leading-none tracking-tight font-display md:block" style="color: var(--text-main)">LUMENIOS</span>
+                        <span class="text-[10px] uppercase font-bold tracking-widest opacity-60 hidden md:block" style="color: var(--text-muted)">Learning System</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="items-center justify-center flex-1 hidden gap-8 lg:flex">
+                <a href="{% url 'core:aluno_dashboard' %}" class="relative flex flex-col items-center p-2 group" title="Início">
+                    <i class="mb-1 text-2xl transition-colors duration-300 fas fa-home text-slate-400 group-hover:text-[var(--color-primary)]"></i>
+                </a>
+                <a href="{% url 'core:student_subjects' %}" class="relative flex flex-col items-center p-2 rounded-lg group hover:bg-black/5" title="Disciplinas">
+                    <i class="fas fa-graduation-cap text-2xl mb-1 transition-colors duration-300 group-hover:text-[var(--color-primary)] text-slate-400"></i>
+                </a>
+                <a href="#" class="relative flex flex-col items-center p-2 rounded-lg group" title="Sala de Aula (Atual)">
+                    <i class="mb-1 text-2xl transition-colors duration-300 fas fa-chalkboard-teacher" style="color: var(--color-primary)"></i>
+                    <span class="absolute bottom-0 w-1.5 h-1.5 rounded-full" style="background-color: var(--color-primary)"></span>
+                </a>
+            </div>
+
+            <div class="flex items-center justify-end flex-1 gap-4">
+                <button @click="openTalkio()" class="relative flex items-center justify-center w-10 h-10 transition rounded-full hover:bg-black/5">
+                    <img src="{% static 'imgs/talkio/Talkio_logo.png' %}" class="object-contain w-8 h-8 drop-shadow-sm">
+                </button>
+                <div class="relative ml-2 cursor-pointer group">
+                    <div class="w-10 h-10 rounded-full p-[2px]" :class="is_premium ? 'bg-gradient-to-r from-yellow-400 to-orange-500' : 'bg-gradient-to-r from-indigo-400 to-purple-500'">
+                        <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}https://i.pravatar.cc/150?img=32{% endif %}" class="object-cover w-full h-full border-2 border-white rounded-full">
+                    </div>
+                    <div class="absolute right-0 z-50 hidden w-64 mt-4 bg-white border shadow-2xl dark:bg-slate-800 rounded-2xl border-slate-100 group-hover:block animate-fade-in-up">
+                        <div class="p-4 border-b border-slate-100 dark:border-slate-700 bg-gradient-to-r from-gray-50 to-white dark:from-slate-800 dark:to-slate-900 rounded-t-2xl">
+                            <div class="flex items-center gap-2">
+                                <p class="text-sm font-bold text-gray-800 truncate dark:text-white">{{ user.first_name }}</p>
+                                {% if is_premium %}<i class="text-xs text-blue-500 fas fa-check-circle" title="Verificado"></i>{% endif %}
+                            </div>
+                            <p class="text-xs capitalize text-slate-500">{{ aluno.nivel_ensino|default:"Aluno" }}</p>
+                        </div>
+                        <a href="{% url 'core:logout' %}" class="flex items-center gap-3 p-4 text-sm text-red-600 transition hover:bg-red-50 rounded-b-2xl"><i class="fas fa-power-off"></i> Sair do Sistema</a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="flex items-center gap-4">
-            <button class="flex items-center gap-2 text-sm font-bold text-slate-300 hover:text-white transition">
-                <i class="far fa-star"></i> <span class="hidden sm:inline">Favoritar</span>
-            </button>
-            <div class="h-6 w-px bg-slate-800"></div>
-            <button class="bg-nio-600 hover:bg-nio-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition">
-                Próxima Aula <i class="fas fa-step-forward ml-1"></i>
-            </button>
         </div>
     </nav>
 
-    <main class="flex-1 flex overflow-hidden">
+    <main class="relative z-10 w-full p-6 pb-20 mx-auto space-y-10 max-w-7xl">
         
-        <div class="flex-1 flex flex-col overflow-y-auto bg-black relative">
-            <div class="aspect-video bg-slate-950 relative group flex items-center justify-center w-full max-h-[70vh]">
-                <img src="https://source.unsplash.com/random/1280x720/?history,painting" class="absolute inset-0 w-full h-full object-cover opacity-40">
-                <button class="w-16 h-16 bg-white/10 backdrop-blur rounded-full flex items-center justify-center text-white text-2xl border border-white/20 group-hover:scale-110 transition shadow-2xl">
-                    <i class="fas fa-play ml-1"></i>
-                </button>
-                
-                <div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/90 to-transparent opacity-0 group-hover:opacity-100 transition duration-300">
-                    <div class="w-full h-1 bg-slate-600 rounded-full mb-4 cursor-pointer relative group/timeline">
-                        <div class="absolute h-full bg-nio-500 w-1/3 rounded-full"></div>
-                        <div class="absolute h-3 w-3 bg-white rounded-full top-1/2 -translate-y-1/2 left-1/3 shadow opacity-0 group-hover/timeline:opacity-100"></div>
-                    </div>
-                    <div class="flex justify-between items-center text-white">
-                        <div class="flex gap-4">
-                            <button><i class="fas fa-play"></i></button>
-                            <button><i class="fas fa-volume-up"></i></button>
-                            <span class="text-xs font-mono mt-0.5">14:30 / 45:00</span>
-                        </div>
-                        <div class="flex gap-4">
-                            <button class="text-xs font-bold border border-white/30 rounded px-2">HD</button>
-                            <button><i class="fas fa-expand"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-slate-900 p-6 min-h-[50vh]" x-data="{ tab: 'materiais' }">
-                <div class="flex gap-6 border-b border-slate-800 mb-6">
-                    <button @click="tab = 'descricao'" :class="tab === 'descricao' ? 'text-lumina-cyan border-b-2 border-lumina-cyan' : 'text-slate-400 hover:text-white'" class="pb-3 font-bold text-sm transition">Visão Geral</button>
-                    <button @click="tab = 'materiais'" :class="tab === 'materiais' ? 'text-lumina-cyan border-b-2 border-lumina-cyan' : 'text-slate-400 hover:text-white'" class="pb-3 font-bold text-sm transition">Materiais (2)</button>
-                    <button @click="tab = 'duvidas'" :class="tab === 'duvidas' ? 'text-lumina-cyan border-b-2 border-lumina-cyan' : 'text-slate-400 hover:text-white'" class="pb-3 font-bold text-sm transition">Dúvidas</button>
-                </div>
-
-                <div x-show="tab === 'descricao'" class="animate-fade-in">
-                    <h2 class="text-xl font-bold text-white mb-2">Aula 04: A Queda da Bastilha</h2>
-                    <p class="text-slate-400 text-sm leading-relaxed mb-4">
-                        Nesta aula, analisaremos os eventos de 14 de julho de 1789, compreendendo o simbolismo da Bastilha e como sua queda marcou o início irreversível da Revolução Francesa.
+        <div class="relative p-8 overflow-hidden glass-panel rounded-3xl group">
+            <div class="absolute inset-0 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] opacity-90 z-10"></div>
+            <img src="https://source.unsplash.com/random/1280x400/?technology,code" class="absolute inset-0 object-cover w-full h-full mix-blend-overlay opacity-30">
+            
+            <div class="relative z-20 flex flex-col items-end justify-between h-full gap-6 md:flex-row">
+                <div class="max-w-2xl text-white">
+                    <p class="mb-2 text-xs font-bold tracking-widest uppercase opacity-80">Curso em Andamento</p>
+                    <h2 class="mb-4 text-3xl font-black leading-tight md:text-5xl font-display">Desenvolvimento Full Stack</h2>
+                    <p class="max-w-lg mb-6 text-sm leading-relaxed text-white/90 md:text-base">
+                        Módulo atual: <strong>Arquitetura de Microsserviços</strong>. Continue sua jornada e domine a criação de APIs escaláveis.
                     </p>
-                </div>
-
-                <div x-show="tab === 'materiais'" class="space-y-3 animate-fade-in">
-                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-800 border border-slate-700 hover:border-slate-600 transition">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-red-500/10 text-red-500 flex items-center justify-center"><i class="fas fa-file-pdf"></i></div>
-                            <div>
-                                <p class="text-sm font-bold text-white">Slides da Aula.pdf</p>
-                                <p class="text-xs text-slate-500">2.4 MB</p>
-                            </div>
-                        </div>
-                        <button class="text-slate-400 hover:text-white"><i class="fas fa-download"></i></button>
-                    </div>
-                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-800 border border-slate-700 hover:border-slate-600 transition">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center"><i class="fas fa-link"></i></div>
-                            <div>
-                                <p class="text-sm font-bold text-white">Mapa Mental Interativo</p>
-                                <p class="text-xs text-slate-500">Link Externo</p>
-                            </div>
-                        </div>
-                        <button class="text-slate-400 hover:text-white"><i class="fas fa-external-link-alt"></i></button>
+                    
+                    <div class="flex gap-4">
+                        <button class="px-6 py-3 bg-white text-[var(--color-primary)] rounded-xl font-bold hover:bg-gray-100 transition shadow-lg flex items-center gap-2">
+                            <i class="fas fa-play"></i> Continuar
+                        </button>
+                        <button class="flex items-center gap-2 px-6 py-3 font-bold text-white transition border bg-white/20 border-white/30 rounded-xl hover:bg-white/30 backdrop-blur-sm">
+                            <i class="fas fa-list"></i> Ver Ementa
+                        </button>
                     </div>
                 </div>
 
-                <div x-show="tab === 'duvidas'" class="space-y-4 animate-fade-in">
-                    <div class="flex gap-3">
-                        <div class="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-xs font-bold text-white">AS</div>
-                        <div>
-                            <p class="text-sm font-bold text-white">Ana Souza <span class="text-xs font-normal text-slate-500 ml-2">Há 2h</span></p>
-                            <p class="text-sm text-slate-300">Professor, o Terceiro Estado pagava impostos sozinho?</p>
-                            <div class="mt-2 pl-3 border-l-2 border-slate-700">
-                                <p class="text-xs font-bold text-lumina-cyan mb-1">Prof. Cláudia (Autor)</p>
-                                <p class="text-sm text-slate-400">Exatamente, Ana! Clero e Nobreza eram isentos.</p>
-                            </div>
-                        </div>
+                <div class="w-full p-5 border shadow-xl md:w-72 bg-white/10 backdrop-blur-md rounded-2xl border-white/20">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-bold tracking-wider text-white uppercase">Progresso Global</span>
+                        <span class="text-lg font-black text-white">42%</span>
+                    </div>
+                    <div class="w-full h-2 mb-4 overflow-hidden rounded-full bg-black/20">
+                        <div class="h-full bg-white w-[42%] rounded-full shadow-glow"></div>
+                    </div>
+                    <div class="flex items-center gap-3 pt-3 text-xs border-t text-white/80 border-white/10">
+                        <i class="text-yellow-400 fas fa-trophy"></i>
+                        <span>12 Tópicos concluídos de 28</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <aside class="w-80 bg-slate-900 border-l border-slate-800 flex flex-col hidden lg:flex">
-            <div class="p-4 border-b border-slate-800">
-                <h3 class="font-bold text-white text-sm">Conteúdo do Curso</h3>
+        <section>
+            <div class="flex flex-col items-end justify-between gap-4 mb-6 md:flex-row">
+                <div>
+                    <h2 class="text-2xl font-bold font-display text-slate-800">Minhas Disciplinas & Atividades</h2>
+                    <p class="text-sm text-slate-500">Explore os tópicos disponíveis para estudo.</p>
+                </div>
+                
+                <div class="flex gap-2 pb-2 overflow-x-auto">
+                    <button class="px-4 py-2 rounded-full text-xs font-bold bg-[var(--color-primary)] text-white shadow-md transition">Todos</button>
+                    <button class="px-4 py-2 text-xs font-bold transition bg-white border rounded-full text-slate-600 border-slate-200 hover:bg-slate-50">Vídeo Aulas</button>
+                    <button class="px-4 py-2 text-xs font-bold transition bg-white border rounded-full text-slate-600 border-slate-200 hover:bg-slate-50">Leituras</button>
+                    <button class="px-4 py-2 text-xs font-bold transition bg-white border rounded-full text-slate-600 border-slate-200 hover:bg-slate-50">Trabalhos</button>
+                </div>
             </div>
             
-            <div class="flex-1 overflow-y-auto scrollbar-hide" x-data="{ activeModule: 1 }">
-                <div class="border-b border-slate-800">
-                    <button @click="activeModule = activeModule === 1 ? null : 1" class="w-full p-4 flex justify-between items-center hover:bg-slate-800 transition">
-                        <div>
-                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Módulo 1</p>
-                            <p class="text-sm font-bold text-white">O Antigo Regime</p>
-                        </div>
-                        <i class="fas fa-chevron-down text-slate-500 transition-transform" :class="activeModule === 1 ? 'rotate-180' : ''"></i>
-                    </button>
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                
+                <div class="glass-panel p-6 rounded-2xl content-card border border-transparent hover:border-[var(--color-primary)] relative group cursor-pointer">
+                    <div class="flex items-start justify-between mb-4">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Digital (EAD)</span>
+                        <i class="fas fa-info-circle text-slate-300 hover:text-[var(--color-primary)] transition"></i>
+                    </div>
                     
-                    <div x-show="activeModule === 1" x-collapse>
-                        <a href="#" class="flex gap-3 p-3 pl-4 hover:bg-slate-800/50 transition opacity-50">
-                            <div class="mt-1"><i class="fas fa-check-circle text-green-500 text-xs"></i></div>
-                            <div>
-                                <p class="text-xs font-bold text-slate-300">1. A Sociedade Estamental</p>
-                                <p class="text-[10px] text-slate-500">12 min</p>
-                            </div>
-                        </a>
-                        <a href="#" class="flex gap-3 p-3 pl-4 hover:bg-slate-800/50 transition opacity-50">
-                            <div class="mt-1"><i class="fas fa-check-circle text-green-500 text-xs"></i></div>
-                            <div>
-                                <p class="text-xs font-bold text-slate-300">2. A Crise Econômica</p>
-                                <p class="text-[10px] text-slate-500">18 min</p>
-                            </div>
-                        </a>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2 leading-snug group-hover:text-[var(--color-primary)] transition-colors">
+                        Método DevOps: A Chave para TI de Alta Performance
+                    </h3>
+                    
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-1 rounded bg-blue-50 text-blue-600 text-[10px] font-bold border border-blue-100 flex items-center gap-1">
+                            <i class="fas fa-video"></i> Vídeo Aula
+                        </span>
+                        <span class="text-[10px] text-slate-400">45 min</span>
+                    </div>
+
+                    <div class="relative">
+                        <div class="flex justify-between mb-1 text-xs">
+                            <span class="font-medium text-slate-500"><i class="mr-1 far fa-check-square"></i> 0/6 Etapas</span>
+                            <span class="font-bold text-slate-800">0%</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-[var(--color-primary)] w-0"></div>
+                        </div>
+                    </div>
+
+                    <div class="absolute bottom-6 right-6 action-btn">
+                        <button class="w-8 h-8 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center shadow-lg hover:scale-110 transition">
+                            <i class="text-xs fas fa-arrow-right"></i>
+                        </button>
                     </div>
                 </div>
 
-                <div class="border-b border-slate-800">
-                    <button @click="activeModule = activeModule === 2 ? null : 2" class="w-full p-4 flex justify-between items-center bg-slate-800/30">
-                        <div>
-                            <p class="text-xs font-bold text-nio-400 uppercase tracking-wider mb-1">Módulo 2</p>
-                            <p class="text-sm font-bold text-white">A Explosão Revolucionária</p>
-                        </div>
-                        <i class="fas fa-chevron-down text-slate-500 transition-transform" :class="activeModule === 2 ? 'rotate-180' : ''"></i>
-                    </button>
+                <div class="glass-panel p-6 rounded-2xl content-card border border-transparent hover:border-[var(--color-primary)] relative group cursor-pointer">
+                    <div class="flex items-start justify-between mb-4">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Leitura Complementar</span>
+                        <i class="fas fa-info-circle text-slate-300 hover:text-[var(--color-primary)] transition"></i>
+                    </div>
                     
-                    <div x-show="activeModule === 2" x-collapse>
-                        <a href="#" class="flex gap-3 p-3 pl-4 hover:bg-slate-800/50 transition opacity-50">
-                            <div class="mt-1"><i class="fas fa-check-circle text-green-500 text-xs"></i></div>
-                            <div>
-                                <p class="text-xs font-bold text-slate-300">3. A Convocação dos Estados</p>
-                                <p class="text-[10px] text-slate-500">20 min</p>
-                            </div>
-                        </a>
-                        <a href="#" class="flex gap-3 p-3 pl-4 bg-nio-500/10 border-l-2 border-nio-500">
-                            <div class="mt-1"><i class="fas fa-play-circle text-nio-500 text-xs animate-pulse"></i></div>
-                            <div>
-                                <p class="text-xs font-bold text-white">4. A Queda da Bastilha</p>
-                                <p class="text-[10px] text-nio-300">45 min • Assistindo</p>
-                            </div>
-                        </a>
-                        <a href="#" class="flex gap-3 p-3 pl-4 hover:bg-slate-800/50 transition group">
-                            <div class="mt-1"><i class="far fa-circle text-slate-600 text-xs group-hover:text-slate-400"></i></div>
-                            <div>
-                                <p class="text-xs font-bold text-slate-400 group-hover:text-slate-200">5. A Declaração dos Direitos</p>
-                                <p class="text-[10px] text-slate-600">30 min</p>
-                            </div>
-                        </a>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2 leading-snug group-hover:text-[var(--color-primary)] transition-colors">
+                        Cloud Computing: Eficiência e Redução de Custos
+                    </h3>
+                    
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-1 rounded bg-green-50 text-green-600 text-[10px] font-bold border border-green-100 flex items-center gap-1">
+                            <i class="fas fa-book-reader"></i> Artigo PDF
+                        </span>
+                        <span class="text-[10px] text-slate-400">12 pgs</span>
+                    </div>
+
+                    <div class="relative">
+                        <div class="flex justify-between mb-1 text-xs">
+                            <span class="font-medium text-slate-500"><i class="mr-1 far fa-check-square"></i> 3/6 Etapas</span>
+                            <span class="font-bold text-slate-800">50%</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="w-1/2 h-full bg-green-500"></div>
+                        </div>
+                    </div>
+
+                    <div class="absolute bottom-6 right-6 action-btn">
+                        <button class="w-8 h-8 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center shadow-lg hover:scale-110 transition">
+                            <i class="text-xs fas fa-arrow-right"></i>
+                        </button>
                     </div>
                 </div>
+
+                <div class="glass-panel p-6 rounded-2xl content-card border border-transparent hover:border-[var(--color-primary)] relative group cursor-pointer">
+                    <div class="flex items-start justify-between mb-4">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Atividade Prática</span>
+                        <i class="fas fa-info-circle text-slate-300 hover:text-[var(--color-primary)] transition"></i>
+                    </div>
+                    
+                    <h3 class="text-lg font-bold text-slate-800 mb-2 leading-snug group-hover:text-[var(--color-primary)] transition-colors">
+                        Projeto Final: Modelagem de Banco de Dados
+                    </h3>
+                    
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-1 rounded bg-purple-50 text-purple-600 text-[10px] font-bold border border-purple-100 flex items-center gap-1">
+                            <i class="fas fa-laptop-code"></i> Trabalho
+                        </span>
+                        <span class="text-[10px] text-red-500 font-bold">Entrega: 30/11</span>
+                    </div>
+
+                    <div class="relative">
+                        <div class="flex justify-between mb-1 text-xs">
+                            <span class="font-medium text-slate-500"><i class="mr-1 far fa-check-square"></i> 0/1 Etapa</span>
+                            <span class="font-bold text-slate-800">0%</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-[var(--color-primary)] w-0"></div>
+                        </div>
+                    </div>
+
+                    <div class="absolute bottom-6 right-6 action-btn">
+                        <button class="w-8 h-8 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center shadow-lg hover:scale-110 transition">
+                            <i class="text-xs fas fa-upload"></i>
+                        </button>
+                    </div>
+                </div>
+
+                 <div class="glass-panel p-6 rounded-2xl content-card border border-transparent hover:border-[var(--color-primary)] relative group cursor-pointer">
+                    <div class="flex items-start justify-between mb-4">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Avaliação</span>
+                        <i class="fas fa-info-circle text-slate-300 hover:text-[var(--color-primary)] transition"></i>
+                    </div>
+                    
+                    <h3 class="text-lg font-bold text-slate-800 mb-2 leading-snug group-hover:text-[var(--color-primary)] transition-colors">
+                        Quiz: Fundamentos de Redes
+                    </h3>
+                    
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-1 rounded bg-yellow-50 text-yellow-600 text-[10px] font-bold border border-yellow-100 flex items-center gap-1">
+                            <i class="fas fa-pencil-alt"></i> Prova Rápida
+                        </span>
+                        <span class="text-[10px] text-slate-400">10 Questões</span>
+                    </div>
+
+                    <div class="relative">
+                        <div class="flex justify-between mb-1 text-xs">
+                            <span class="font-medium text-slate-500"><i class="mr-1 far fa-check-square"></i> Pendente</span>
+                            <span class="font-bold text-slate-800">--</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-[var(--color-primary)] w-0"></div>
+                        </div>
+                    </div>
+
+                    <div class="absolute bottom-6 right-6 action-btn">
+                        <button class="w-8 h-8 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center shadow-lg hover:scale-110 transition">
+                            <i class="text-xs fas fa-play"></i>
+                        </button>
+                    </div>
+                </div>
+
             </div>
-        </aside>
+        </section>
 
     </main>
+
+    <script src="{% static 'js/dashboard_aluno.js' %}"></script>
+    
+    <div x-cloak x-show="talkioOpen" class="fixed inset-0 z-[100] flex justify-center items-center">
+        <div @click="talkioOpen = false" x-show="talkioOpen" x-transition.opacity class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div class="relative w-full max-w-6xl h-[90vh] bg-white rounded-xl shadow-2xl flex overflow-hidden">
+             <div class="flex items-center justify-center w-full h-full text-gray-500">Talkio Drawer Carregado (Placeholder)</div>
+        </div>
+    </div>
 
 </body>
 </html>
