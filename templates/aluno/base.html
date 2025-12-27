@@ -240,8 +240,11 @@
                     <span class="text-sm font-medium" style="color: var(--text-muted)">Requerimentos</span>
                 </a>
 
-                <a href="{% url 'lumenios:aluno_painel' %}" class="flex items-center gap-3 px-4 py-3 font-medium transition rounded-xl hover:bg-white/60 text-slate-600">
-                    <i class="w-5 text-center text-indigo-500 fas fa-graduation-cap"></i> Meus Cursos
+                <a href="{% url 'lumenios:aluno_painel' %}" 
+                   class="flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-white/60 text-slate-600 font-medium group"
+                   :class="window.location.pathname.includes('/lumenios/') ? 'bg-white shadow-sm text-indigo-600 font-bold' : ''">
+                    <i class="fas fa-play-circle w-5 text-center text-lg text-slate-400 group-hover:text-indigo-500 transition"></i>
+                    <span>Sala de Aula (Lumenios)</span>
                 </a>
             </nav>
         </div>
