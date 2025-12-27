@@ -20,9 +20,6 @@ urlpatterns = [
     path('crm/', include('crm_sales.urls')),
     path('secretaria/', include('secretariat.urls')),
 
-    # --- NOVO: Rota para o Ambiente de Aprendizagem ---
-    path('lumenios/', include('lumenios.urls')),
-
     # Auth padrão
     path('accounts/', include('django.contrib.auth.urls')),
 

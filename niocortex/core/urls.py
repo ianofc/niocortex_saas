@@ -10,5 +10,4 @@ urlpatterns = [
     # Removido: path('academico/disciplinas/', ... name='student_subjects')
     # Removido: path('professor/materiais/', ...)
 
-    # Novas rotas do Lumenios...
 ]

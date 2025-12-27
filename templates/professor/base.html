@@ -111,17 +111,8 @@
                 <a href="{% url 'pedagogical:listar_turmas' %}" class="relative flex flex-col items-center p-2 rounded-lg group hover:bg-black/5" title="Turmas">
                     <i class="fas fa-users text-2xl mb-1 transition-colors duration-300 text-slate-400 group-hover:text-[var(--color-primary)]"></i>
                 </a>
-                <a href="{% url 'pedagogical:gerador_planejamentos' %}" class="relative flex flex-col items-center p-2 rounded-lg group hover:bg-black/5" title="Planejamento">
-                    <i class="fas fa-clipboard-list text-2xl mb-1 transition-colors duration-300 text-slate-400 group-hover:text-[var(--color-primary)]"></i>
-                </a>
                 <a href="{% url 'pedagogical:gerador_atividades' %}" class="relative flex flex-col items-center p-2 rounded-lg group hover:bg-black/5" title="Atividades">
                     <i class="fas fa-pencil-ruler text-2xl mb-1 transition-colors duration-300 text-slate-400 group-hover:text-[var(--color-primary)]"></i>
-                </a>
-                <a href="#" class="relative flex flex-col items-center p-2 rounded-lg group hover:bg-black/5" title="Diário">
-                    <i class="fas fa-book-open text-2xl mb-1 transition-colors duration-300 text-slate-400 group-hover:text-[var(--color-primary)]"></i>
-                </a>
-                <a href="{% url 'lumenios:professor_painel' %}" class="relative flex flex-col items-center p-2 rounded-lg group hover:bg-black/5" title="Lumenios (Editor)">
-                    <i class="fas fa-chalkboard text-2xl mb-1 transition-colors duration-300 text-slate-400 group-hover:text-[var(--color-primary)]"></i>
                 </a>
                 <button @click="consciosOpen = true" class="relative flex flex-col items-center p-2 transition rounded-lg group hover:bg-purple-50" title="Conscios IA">
                     <i class="mb-1 text-2xl text-purple-400 transition-colors duration-300 fas fa-brain group-hover:text-purple-600 animate-pulse-slow"></i>
@@ -211,10 +202,13 @@
                     <i class="w-5 text-center fas fa-home"></i> Início
                 </a>
                 <a href="{% url 'core:student_lesson' %}" class="flex items-center gap-3 px-4 py-3 font-medium transition rounded-xl hover:bg-white/60 text-slate-600">
-                    <i class="w-5 text-center text-indigo-500 fas fa-chalkboard"></i> Lumenios (Aula)
+                    <i class="w-5 text-center text-indigo-500 fas fa-chalkboard"></i> Aula
                 </a>
                 <a href="{% url 'pedagogical:listar_turmas' %}" class="flex items-center gap-3 px-4 py-3 font-medium transition rounded-xl hover:bg-white/60 text-slate-600">
                     <i class="w-5 text-center text-blue-500 fas fa-users"></i> Turmas
+                </a>
+                <a href="{% url 'lumenio:dashboard_professor' %}" class="flex items-center gap-3 px-4 py-3 font-medium transition rounded-xl hover:bg-white/60 text-slate-600 {% if 'lumenio' in request.path %}active{% endif %}">
+                    <i class="w-5 text-center fas fa-lightbulb"></i> Lumenio (AVA)
                 </a>
                 
                 <p class="px-4 pt-4 text-[10px] font-bold uppercase tracking-wider opacity-50 mb-2 text-slate-500 font-display">Ferramentas</p>
@@ -223,12 +217,6 @@
                 </a>
                 <a href="{% url 'pedagogical:gerador_provas' %}" class="flex items-center gap-3 px-4 py-3 font-medium transition rounded-xl hover:bg-white/60 text-slate-600">
                     <i class="w-5 text-center text-red-500 fas fa-file-alt"></i> Avaliações
-                </a>
-                <a href="{% url 'lumenios:professor_painel' %}" 
-                   class="flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-white/60 text-slate-600 font-medium group"
-                   :class="window.location.pathname.includes('/lumenios/') ? 'bg-white shadow-sm text-indigo-600 font-bold' : ''">
-                    <i class="fas fa-layer-group w-5 text-center text-lg text-slate-400 group-hover:text-purple-500 transition"></i>
-                    <span>Lumenios (Editor)</span>
                 </a>
             </nav>
         </div>

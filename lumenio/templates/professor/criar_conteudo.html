@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-3xl px-4 py-10 mx-auto sm:px-6 lg:px-8">
+    
+    <nav class="flex mb-6 text-sm font-medium text-gray-500">
+        <a href="{% url 'dashboard_professor' %}" class="hover:text-gray-900">Painel</a>
+        <span class="mx-2">/</span>
+        <span class="text-gray-900">Novo Curso</span>
+    </nav>
+
+    <div class="overflow-hidden bg-white border border-gray-100 shadow-lg rounded-xl">
+        <div class="px-8 py-6 border-b border-gray-100 bg-gray-50">
+            <h2 class="text-xl font-bold text-gray-900">Criar Novo Curso</h2>
+            <p class="text-sm text-gray-500">Preencha as informações básicas para iniciar.</p>
+        </div>
+        
+        <form method="post" enctype="multipart/form-data" class="p-8 space-y-6">
+            {% csrf_token %}
+
+            <div>
+                <label for="{{ form.titulo.id_for_label }}" class="block mb-1 text-sm font-medium text-gray-700">Título do Curso</label>
+                <input type="text" name="titulo" id="{{ form.titulo.id_for_label }}" required 
+                    class="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-lumenio-purple focus:border-lumenio-purple sm:text-sm"
+                    placeholder="Ex: Introdução à Programação Python">
+                {% if form.titulo.errors %}
+                    <p class="mt-1 text-xs text-red-500">{{ form.titulo.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="{{ form.categoria.id_for_label }}" class="block mb-1 text-sm font-medium text-gray-700">Categoria</label>
+                <select name="categoria" id="{{ form.categoria.id_for_label }}" 
+                    class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-lumenio-purple focus:border-lumenio-purple sm:text-sm">
+                    {% for value, text in form.fields.categoria.choices %}
+                        <option value="{{ value }}">{{ text }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="{{ form.descricao.id_for_label }}" class="block mb-1 text-sm font-medium text-gray-700">Descrição Detalhada</label>
+                <textarea name="descricao" id="{{ form.descricao.id_for_label }}" rows="4" 
+                    class="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-lumenio-purple focus:border-lumenio-purple sm:text-sm"></textarea>
+            </div>
+
+            <div>
+                <label class="block mb-1 text-sm font-medium text-gray-700">Capa do Curso</label>
+                <div class="flex justify-center px-6 pt-5 pb-6 mt-1 transition-colors border-2 border-gray-300 border-dashed rounded-md hover:bg-gray-50">
+                    <div class="space-y-1 text-center">
+                        <svg class="w-12 h-12 mx-auto text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <div class="flex justify-center text-sm text-gray-600">
+                            <label for="{{ form.imagem_capa.id_for_label }}" class="relative font-medium bg-white rounded-md cursor-pointer text-lumenio-purple hover:text-purple-500 focus-within:outline-none">
+                                <span>Fazer Upload de um arquivo</span>
+                                <input id="{{ form.imagem_capa.id_for_label }}" name="imagem_capa" type="file" class="sr-only">
+                            </label>
+                        </div>
+                        <p class="text-xs text-gray-500">PNG, JPG até 5MB</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                <a href="{% url 'dashboard_professor' %}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Cancelar</a>
+                <button type="submit" class="px-6 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm bg-lumenio-purple hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                    Criar Curso
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

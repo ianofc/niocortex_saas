@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="px-4 py-10 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    
+    <div class="flex flex-col mb-8 md:flex-row md:items-center md:justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Painel do Instrutor</h1>
+            <p class="mt-1 text-gray-500">Gerencie seus cursos e acompanhe o desempenho dos alunos.</p>
+        </div>
+        <div class="mt-4 md:mt-0">
+            <a href="{% url 'criar_curso' %}" class="inline-flex items-center px-5 py-3 text-sm font-medium text-white transition-colors border border-transparent rounded-lg shadow-sm bg-lumenio-purple hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                <svg class="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Novo Curso
+            </a>
+        </div>
+    </div>
+
+    <div class="overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Curso</th>
+                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Categoria</th>
+                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Alunos</th>
+                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Status</th>
+                        <th scope="col" class="relative px-6 py-3"><span class="sr-only">Ações</span></th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for curso in cursos %}
+                    <tr class="transition-colors hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 w-10 h-10">
+                                    {% if curso.imagem_capa %}
+                                        <img class="object-cover w-10 h-10 rounded" src="{{ curso.imagem_capa.url }}" alt="">
+                                    {% else %}
+                                        <div class="flex items-center justify-center w-10 h-10 text-xs text-gray-500 bg-gray-200 rounded">IMG</div>
+                                    {% endif %}
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">{{ curso.titulo }}</div>
+                                    <div class="w-48 text-sm text-gray-500 truncate">{{ curso.descricao }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex px-2 text-xs font-semibold leading-5 text-blue-800 bg-blue-100 rounded-full">
+                                {{ curso.get_categoria_display }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                            {{ curso.alunos.count }} Matriculados
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                            <span class="flex items-center gap-1 text-xs font-bold text-green-600 uppercase">
+                                <span class="w-2 h-2 bg-green-500 rounded-full"></span> Ativo
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
+                            <a href="#" class="mr-4 text-lumenio-purple hover:text-purple-900">Editar</a>
+                            <a href="#" class="text-gray-400 hover:text-gray-600">Conteúdo</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-10 text-center text-gray-500">
+                            <svg class="w-12 h-12 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            <p class="mt-2 text-sm">Você ainda não criou nenhum curso.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
