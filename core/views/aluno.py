@@ -25,11 +25,9 @@ def aluno_dashboard(request):
     if 'ALUNO' not in request.user.role:
         return redirect('core:dashboard')
     
-    # Simulação: Recupera dados do aluno (substituir por query real)
-    # Ex: aluno = request.user.aluno_profile
-    # Mock para teste:
+    # Mock de dados para evitar erro se o perfil não existir ainda
     aluno_mock = {
-        'nivel_ensino': getattr(request.user, 'nivel_ensino', 'medio'), # infantil, fundamental, medio, superior, pos
+        'nivel_ensino': getattr(request.user, 'nivel_ensino', 'medio'),
         'turma': {'nome': '3º Ano A'},
         'nivel_xp': 5
     }
@@ -42,76 +40,83 @@ def aluno_dashboard(request):
         'is_homeschooling': request.user.tenant_type == 'INDIVIDUAL',
         'is_premium': is_premium,
     }
-    return render(request, 'core/aluno_dashboard_base.html', context)
+    # CORREÇÃO: Aponta para a nova pasta 'aluno/dashboard/'
+    return render(request, 'aluno/dashboard/home.html', context)
+
+# --- Sub-páginas atualizadas ---
 
 @login_required
-def student_id_card(request):
-    """ Carteirinha Digital do Aluno (Visualização Full) """
-    if 'ALUNO' not in request.user.role:
-        return redirect('core:dashboard')
-    
-    is_premium = getattr(request.user, 'is_premium', False)
-    
-    context = {
-        'user': request.user,
-        'is_premium': is_premium,
-        'aluno': getattr(request.user, 'aluno', {'nivel_ensino': 'medio', 'turma': {'nome': '3º A'}, 'serie': '3', 'matricula': request.user.id})
-    }
-    return render(request, 'aluno/student_id_card.html', context)
+def student_subjects(request):
+    return render(request, 'aluno/academico/disciplinas.html')
 
-# --- Módulos Administrativos & Extras ---
+@login_required
+def student_grades(request):
+    return render(request, 'aluno/academico/boletim.html')
+
+@login_required
+def student_calendar(request):
+    return render(request, 'aluno/calendar.html') # Se não moveu para academico, mantenha aqui
+
+@login_required
+def student_files(request):
+    return render(request, 'aluno/academico/arquivos.html')
+
+@login_required
+def student_timetable(request):
+    return render(request, 'aluno/academico/grade_horaria.html')
+
+@login_required
+def student_lesson(request):
+    return render(request, 'aluno/academico/sala_aula.html')
 
 @login_required
 def student_financial(request):
-    """ Financeiro do Aluno (Boletos) """
-    is_premium = getattr(request.user, 'is_premium', False)
-    return render(request, 'aluno/financial.html', {'is_premium': is_premium})
+    return render(request, 'aluno/administrativo/financeiro.html')
 
 @login_required
 def student_services(request):
-    """ Secretaria Virtual (Solicitações) """
-    is_premium = getattr(request.user, 'is_premium', False)
-    return render(request, 'aluno/services.html', {'is_premium': is_premium})
+    return render(request, 'aluno/administrativo/secretaria.html')
 
 @login_required
+def student_id_card(request):
+    return render(request, 'aluno/administrativo/carteirinha.html')
+
+# --- Módulos Extras ---
+@login_required
 def daily_diary(request):
-    """ Diário Infantil (Para Pais) """
-    is_premium = getattr(request.user, 'is_premium', False)
-    return render(request, 'aluno/daily_diary.html', {'is_premium': is_premium})
+    return render(request, 'aluno/extras/diario_infantil.html')
 
 @login_required
 def gamification_store(request):
-    """ NioStore - Loja de Gamificação """
-    is_premium = getattr(request.user, 'is_premium', False)
-    return render(request, 'aluno/gamification_store.html', {'is_premium': is_premium})
+    return render(request, 'aluno/extras/loja.html')
 
 @login_required
-def talkio_view(request):
-    """ Interface Full-Screen do Chat """
-    context = {
-        'user': request.user,
-        'is_premium': getattr(request.user, 'is_premium', False)
-    }
-    return render(request, 'core/talkio.html', context)
+def student_library(request):
+    return render(request, 'aluno/extras/biblioteca.html')
 
-# --- Premium e Perfil ---
+@login_required
+def career_center(request):
+    return render(request, 'aluno/extras/carreira.html')
+
+@login_required
+def thesis_manager(request):
+    return render(request, 'aluno/extras/tcc.html')
+
+# --- Perfil e Premium ---
+@login_required
+def student_profile(request):
+    return render(request, 'aluno/dashboard/perfil.html')
 
 @login_required
 def student_premium(request):
-    """ Página de Venda/Upgrade para Aluno Premium """
-    # Se já for premium, redireciona para stats
     if getattr(request.user, 'is_premium', False):
         return redirect('core:student_premium_stats')
-    return render(request, 'aluno/premium.html')
+    return render(request, 'aluno/premium/landing.html')
 
 @login_required
 def student_premium_stats(request):
-    """ Painel de Analytics Premium (Acesso Restrito) """
-    is_premium = getattr(request.user, 'is_premium', False)
-    return render(request, 'aluno/premium_stats.html', {'is_premium': is_premium})
+    return render(request, 'aluno/premium/stats.html')
 
 @login_required
-def student_profile(request):
-    """ Perfil Gamificado do Aluno """
-    is_premium = getattr(request.user, 'is_premium', False)
-    return render(request, 'aluno/profile.html', {'is_premium': is_premium})
+def student_activity(request):
+    return render(request, 'aluno/academico/atividade.html')
