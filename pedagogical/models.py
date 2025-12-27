@@ -170,3 +170,10 @@ class Frequencia(models.Model):
 
     class Meta:
         unique_together = ('diario', 'aluno')
+
+class Disciplina(models.Model):
+    nome = models.CharField(max_length=100, verbose_name="Nome da Disciplina")
+    descricao = models.TextField(blank=True, verbose_name="Descrição")
+
+    def __str__(self):
+        return self.nome

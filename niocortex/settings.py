@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'crm_sales',                      # Captação de Alunos, Funil
     'hr',                             # RH: Funcionários
     'secretariat',                    # Documentos
+    'lumenios',                      # Adicionado para registrar a app Lumenios
 ]
 
 # ----------------------------------------------------

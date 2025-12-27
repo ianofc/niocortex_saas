@@ -1,0 +1,55 @@
+{% extends "professor/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="space-y-8">
+    
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold font-display text-slate-800">Painel Lumenios</h1>
+            <p class="text-sm text-slate-500">Gerencie suas salas virtuais e conteúdos.</p>
+        </div>
+        </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for sala in salas %}
+            <div class="group bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
+                 onclick="window.location.href='{% url 'lumenios:professor_editor' sala.id %}'">
+                
+                <div class="h-32 bg-gradient-to-br from-slate-800 to-slate-900 relative p-6 flex flex-col justify-end group-hover:from-indigo-900 group-hover:to-purple-900 transition-colors duration-500">
+                    <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-sm p-2 rounded-lg text-white">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-1">{{ sala.disciplina.nome }}</h3>
+                    <span class="text-xs text-slate-300 bg-black/30 px-2 py-1 rounded w-fit">{{ sala.turma.nome }}</span>
+                </div>
+
+                <div class="p-6">
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="text-center p-3 bg-slate-50 rounded-xl border border-slate-100 group-hover:border-indigo-100 transition">
+                            <span class="block text-2xl font-bold text-indigo-600">{{ sala.modulos.count }}</span>
+                            <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Módulos</span>
+                        </div>
+                        <div class="text-center p-3 bg-slate-50 rounded-xl border border-slate-100 group-hover:border-indigo-100 transition">
+                            <span class="block text-2xl font-bold text-emerald-500">--</span>
+                            <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Alunos</span>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'lumenios:professor_editor' sala.id %}" class="block w-full py-3 text-center text-sm font-bold text-white bg-slate-800 rounded-xl hover:bg-indigo-600 transition shadow-md group-hover:shadow-indigo-500/30">
+                        <i class="fas fa-pen mr-2"></i> Editar Conteúdo
+                    </a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-span-full p-12 text-center bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+                <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                    <i class="fas fa-folder-open"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-600">Nenhuma sala encontrada</h3>
+                <p class="text-sm text-slate-400">Você ainda não foi vinculado a nenhuma turma com disciplina ativa.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
