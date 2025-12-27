@@ -9,7 +9,7 @@ logger = logging.getLogger("ioconscius")
 
 # --- IMPORTAÇÃO DOS LÓBULOS CEREBRAIS (ROUTERS) ---
 # Certifique-se de que estes arquivos existem na pasta 'routers/'
-from routers import education, chat, proactive, judge
+from .routers import education, chat, proactive
 
 app = FastAPI(
     title="IO CONSCIOS API",
@@ -43,7 +43,7 @@ def health_check():
     return {
         "status": "active", 
         "system": "IO CONSCIOS", 
-        "modules": ["Education", "Chat", "Proactive", "Judge"],
+        "modules": ["Education", "Chat", "Proactive"],
         "mode": os.getenv("APP_ENV", "guerrilla")
     }
 
@@ -64,12 +64,6 @@ app.include_router(
 # 3. Módulo Proativo (O Observador/Guardião)
 app.include_router(
     proactive.router, 
-    dependencies=[Depends(verify_token)]
-)
-
-# 4. Módulo Juiz (Segurança e Moderação)
-app.include_router(
-    judge.router, 
     dependencies=[Depends(verify_token)]
 )
 

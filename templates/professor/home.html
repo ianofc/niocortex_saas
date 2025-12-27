@@ -28,7 +28,7 @@
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 text-center relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-16 bg-gradient-to-r from-indigo-500 to-purple-600 opacity-10"></div>
             <div class="relative inline-block mt-2">
-                {% if current_user.foto_perfil_path %}
+                {% if user.foto_perfil_path %}
                     <img class="h-16 w-16 rounded-xl object-cover border-2 border-white dark:border-gray-700 shadow-md mx-auto" 
                          src="{{ url_for('alunos.download_material', filename=current_user.foto_perfil_path) }}" alt="Perfil">
                 {% else %}

@@ -1,7 +1,7 @@
 # niocortex/core/urls.py
 
 from django.urls import path, include
-from .views.professor import professor_dashboard, corporate_dashboard
+from .views.professor import professor_dashboard, corporate_dashboard, teacher_schedule
 from .views.aluno import (
     aluno_dashboard, student_profile, student_subjects, student_grades, student_calendar,
     student_timetable, student_files, student_lesson, student_activity, student_financial,
@@ -52,6 +52,7 @@ urlpatterns = [
     path('dashboard/', dashboard_router_view, name='dashboard'),
     path('dashboard/gestao/', corporate_dashboard, name='corporate_dashboard'),
     path('dashboard/professor/', professor_dashboard, name='professor_dashboard'),
+    path('dashboard/professor/horario/', teacher_schedule, name='teacher_schedule'),
     
     # --- Dashboard Principal do Aluno ---
     path('dashboard/aluno/', aluno_dashboard, name='aluno_dashboard'),

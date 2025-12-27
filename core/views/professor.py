@@ -29,3 +29,9 @@ def gradebook_view(request):
 def planning_view(request):
     """ Planejamento de Aulas """
     return render(request, 'professor/planejamento/meus_planos.html', {'user': request.user})
+
+@login_required
+def teacher_schedule(request):
+    """ Grade Horária do Professor """
+    # Se tiver lógica específica, adicione aqui
+    return render(request, 'professor/teacher_schedule.html', {'user': request.user})

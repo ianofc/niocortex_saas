@@ -49,12 +49,6 @@ INSTALLED_APPS = [
     'crm_sales',                      # Captação de Alunos, Funil
     'hr',                             # RH: Funcionários
     'secretariat',                    # Documentos
-    'core',  # Manter apenas esta ocorrência única
-    'pedagogical',
-    'financial',
-    'hr',
-    'secretariat',
-    'crm_sales',
 ]
 
 # ----------------------------------------------------
