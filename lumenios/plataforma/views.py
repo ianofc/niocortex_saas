@@ -130,7 +130,7 @@ def sala_de_aula_demo(request):
     modulos = [mod1, mod2]
     
     # Renderiza o template normal com dados falsos
-    return render(request, 'aluno/sala_de_aula.html', {
+    return render(request, 'extras/sala_de_aula.html', {
         'curso': curso,
         'modulos': modulos,
         'conteudo_atual': aula1, # Já começa na aula 1

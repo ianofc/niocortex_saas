@@ -14,7 +14,7 @@ urlpatterns = [
     
     path('aluno/conscios/', views.conscios_investigate, name='conscios'),
     
-    path('aluno/aula/demo/', views.sala_de_aula_demo, name='sala_de_aula_demo'),
+    path('extras/aula/demo/', views.sala_de_aula_demo, name='sala_de_aula_demo'),
 
     path('aluno/desempenho/', views.desempenho_analytics, name='desempenho'),
     

@@ -19,7 +19,7 @@ urlpatterns = [
     path('financial/', include('financial.urls')),
     path('crm/', include('crm_sales.urls')),
     path('secretaria/', include('secretariat.urls')),
-    path('lumenio/', include('lumenio.plataforma.urls')),
+    path('lumenios/', include('lumenios.plataforma.urls')),
 
     # Auth padrão
     path('accounts/', include('django.contrib.auth.urls')),

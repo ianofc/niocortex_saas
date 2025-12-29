@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'crm_sales',                      # Captação de Alunos, Funil
     'hr',                             # RH: Funcionários
     'secretariat',                    # Secretaria
-    'lumenio.plataforma',             # Documentos
+    'lumenios.plataforma',             # Documentos
 ]
 
 # ----------------------------------------------------
@@ -76,7 +76,7 @@ ROOT_URLCONF = 'niocortex.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates', BASE_DIR / 'lumenio/templates'], # Pasta global de templates
+        'DIRS': [BASE_DIR / 'templates', BASE_DIR / 'lumenios/templates'], # Pasta global de templates
         
         'APP_DIRS': True,
         'OPTIONS': {
