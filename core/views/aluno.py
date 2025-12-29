@@ -14,6 +14,7 @@ from financial.models import Transacao
 from ..forms import CustomUserCreationForm, CustomAuthenticationForm
 from ..models import CustomUser
 from core.services.ai_client import AIClient
+from lumenios.plataforma.models import Curso
 
 # ==============================================================================
 # 4. PORTAL DO ALUNO (SUB-PÁGINAS NÃO PEDAGÓGICAS)
@@ -67,7 +68,14 @@ def student_timetable(request):
 
 @login_required
 def student_lesson(request):
-    return render(request, 'aluno/academico/sala_aula.html')
+    # Pega o primeiro curso disponível só para não dar erro na tela de demonstração
+    curso = Curso.objects.first() 
+    modulos = curso.modulos.all() if curso else []
+    
+    return render(request, 'aluno/sala_de_aula.html', {
+    'curso': curso, 
+    'modulos': modulos
+})
 
 @login_required
 def student_financial(request):

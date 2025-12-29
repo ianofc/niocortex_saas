@@ -1,9 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.conf import settings # Importa a referência ao usuário do Core
 
-class Usuario(AbstractUser):
-    is_aluno = models.BooleanField(default=False)
-    is_professor = models.BooleanField(default=False)
+# REMOVIDO: class Usuario(AbstractUser)... Não podemos ter dois usuários.
 
 class Curso(models.Model):
     CATEGORIAS = (
@@ -13,8 +11,11 @@ class Curso(models.Model):
     titulo = models.CharField(max_length=200)
     descricao = models.TextField()
     categoria = models.CharField(max_length=10, choices=CATEGORIAS)
-    imagem_capa = models.ImageField(upload_to='cursos/', blank=True, null=True) # Para ficar igual a Udemy
-    professor = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='cursos_criados')
+    imagem_capa = models.ImageField(upload_to='cursos/', blank=True, null=True)
+    
+    # ALTERADO: Aponta para o usuário padrão do sistema (core.CustomUser)
+    professor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='cursos_criados')
+    
     criado_em = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -40,14 +41,15 @@ class Conteudo(models.Model):
     titulo = models.CharField(max_length=200)
     tipo = models.CharField(max_length=10, choices=TIPOS)
     arquivo = models.FileField(upload_to='aulas/', blank=True, null=True)
-    link = models.URLField(blank=True, null=True) # Para YouTube ou Link de Live
-    texto_apoio = models.TextField(blank=True) # Descrição estilo Udemy abaixo do vídeo
+    link = models.URLField(blank=True, null=True)
+    texto_apoio = models.TextField(blank=True)
 
     def __str__(self):
         return self.titulo
 
 class Matricula(models.Model):
-    aluno = models.ForeignKey(Usuario, related_name='matriculas', on_delete=models.CASCADE)
+    # ALTERADO: Aponta para o usuário padrão do sistema
+    aluno = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='matriculas_lumenios', on_delete=models.CASCADE)
     curso = models.ForeignKey(Curso, related_name='alunos', on_delete=models.CASCADE)
-    progresso = models.FloatField(default=0.0) # Para a barra de progresso (0 a 100)
+    progresso = models.FloatField(default=0.0)
     data_matricula = models.DateTimeField(auto_now_add=True)

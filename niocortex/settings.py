@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'financial',                      # Contratos, Boletos, Mercado Pago
     'crm_sales',                      # Captação de Alunos, Funil
     'hr',                             # RH: Funcionários
-    'secretariat',                    # Documentos
+    'secretariat',                    # Secretaria
+    'lumenio.plataforma',             # Documentos
 ]
 
 # ----------------------------------------------------
@@ -75,7 +76,8 @@ ROOT_URLCONF = 'niocortex.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'], # Pasta global de templates
+        'DIRS': [BASE_DIR / 'templates', BASE_DIR / 'lumenio/templates'], # Pasta global de templates
+        
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

@@ -1,0 +1,233 @@
+{% extends 'aluno/base_lumenio.html' %}
+
+{% block content %}
+<div class="flex flex-col lg:flex-row h-[calc(100vh-140px)] max-w-[1800px] mx-auto gap-6 px-6 pb-6" 
+     x-data="{ sidebarTab: 'aulas' }">
+
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden rounded-[2.5rem] shadow-2xl bg-white/80 backdrop-blur-xl border border-white/60 relative group">
+        
+        <div class="relative w-full aspect-video bg-slate-900 group-player overflow-hidden">
+            {% if conteudo_atual.tipo == 'VIDEO' and conteudo_atual.link %}
+                <iframe src="{{ conteudo_atual.link|replace:'watch?v=,embed/' }}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            {% else %}
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-slate-500">
+                    <div class="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mb-4 backdrop-blur-sm shadow-lg">
+                        <i class="fas fa-play text-3xl text-white ml-1"></i>
+                    </div>
+                    <p class="text-sm font-medium text-slate-400">Selecione uma aula para começar</p>
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-tr from-slate-900 via-slate-800 to-indigo-900 opacity-90 -z-10"></div>
+            {% endif %}
+        </div>
+
+        <div class="flex-1 p-8 overflow-y-auto custom-scrollbar bg-gradient-to-b from-white to-slate-50/50">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <h1 class="text-3xl font-display font-bold text-slate-800 leading-tight">
+                        {{ conteudo_atual.titulo|default:"Bem-vindo à Sala de Aula" }}
+                    </h1>
+                    <p class="text-sm text-slate-500 mt-1 flex items-center gap-2">
+                        <i class="far fa-clock"></i> 12 min • Módulo 1
+                    </p>
+                </div>
+                <div class="flex gap-2">
+                    <button class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition flex items-center justify-center" title="Favoritar">
+                        <i class="far fa-heart"></i>
+                    </button>
+                    <button class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 hover:bg-indigo-50 hover:text-indigo-600 transition flex items-center justify-center" title="Dúvidas">
+                        <i class="far fa-comment-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="prose prose-slate max-w-none text-slate-600 leading-relaxed">
+                {{ conteudo_atual.texto_apoio|default:"Selecione um conteúdo na barra lateral para visualizar os detalhes da aula."|linebreaks }}
+            </div>
+            
+            {% if conteudo_atual.arquivo %}
+            <div class="mt-8 pt-6 border-t border-slate-200">
+                <h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+                    <i class="fas fa-paperclip text-indigo-500"></i> Material de Apoio
+                </h4>
+                <a href="{{ conteudo_atual.arquivo.url }}" target="_blank" class="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl hover:border-indigo-300 hover:shadow-md transition group w-fit">
+                    <div class="w-10 h-10 bg-red-50 text-red-500 rounded-lg flex items-center justify-center text-lg">
+                        <i class="far fa-file-pdf"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-slate-700 group-hover:text-indigo-700">Baixar Arquivo da Aula</p>
+                        <p class="text-xs text-slate-400">PDF • 2.4 MB</p>
+                    </div>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="w-full lg:w-[400px] flex flex-col bg-white/90 backdrop-blur-xl border border-white/60 rounded-[2.5rem] shadow-2xl overflow-hidden h-full shrink-0">
+        
+        <div class="p-4 bg-slate-50/80 border-b border-slate-100">
+            <div class="flex p-1 bg-slate-200/50 rounded-xl">
+                <button @click="sidebarTab = 'aulas'" 
+                        :class="sidebarTab === 'aulas' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                        class="flex-1 py-2.5 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2">
+                    <i class="fas fa-list-ul"></i> Conteúdo
+                </button>
+                <button @click="sidebarTab = 'ferramentas'" 
+                        :class="sidebarTab === 'ferramentas' ? 'bg-white text-purple-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                        class="flex-1 py-2.5 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2">
+                    <i class="fas fa-toolbox"></i> Tools
+                </button>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto custom-scrollbar px-4 py-4 space-y-4">
+            
+            <div x-show="sidebarTab === 'aulas'" class="space-y-3" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-x-4" x-transition:enter-end="opacity-100 translate-x-0">
+                {% for modulo in modulos %}
+                <div x-data="{ open: true }" class="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
+                    <button @click="open = !open" class="w-full flex items-center justify-between p-4 bg-slate-50/50 hover:bg-slate-100 transition">
+                        <span class="font-bold text-xs text-slate-500 uppercase tracking-widest">{{ modulo.titulo }}</span>
+                        <i class="fas fa-chevron-down text-slate-400 text-xs transition-transform" :class="{'rotate-180': open}"></i>
+                    </button>
+                    <div x-show="open" class="divide-y divide-slate-50">
+                        {% for aula in modulo.conteudos.all %}
+                        <a href="?aula={{ aula.id }}" class="flex items-center gap-3 p-3 hover:bg-indigo-50 transition group border-l-4 {% if conteudo_atual.id == aula.id %}border-indigo-500 bg-indigo-50/50{% else %}border-transparent hover:border-indigo-300{% endif %}">
+                            <div class="w-6 h-6 rounded-full border border-slate-200 flex items-center justify-center text-[10px] text-slate-400 group-hover:border-indigo-400 group-hover:text-indigo-500 bg-white">
+                                <i class="fas fa-play ml-0.5"></i>
+                            </div>
+                            <span class="text-sm font-medium text-slate-600 group-hover:text-indigo-800 line-clamp-1">{{ aula.titulo }}</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-10 text-slate-400">
+                    <p>Nenhum módulo disponível.</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div x-show="sidebarTab === 'ferramentas'" class="space-y-6" x-data="classroomTools()" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-x-4" x-transition:enter-end="opacity-100 translate-x-0">
+                
+                <div class="bg-indigo-50/50 rounded-2xl p-4 border border-indigo-100">
+                    <h4 class="font-bold text-indigo-900 text-xs uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <i class="fas fa-language text-lg"></i> Dicionário
+                    </h4>
+                    <div class="relative group">
+                        <input type="text" x-model="dictQuery" @keydown.enter="fetchDict()" placeholder="Palavra em inglês..." class="w-full pl-4 pr-10 py-2.5 rounded-xl text-sm border-0 shadow-sm focus:ring-2 focus:ring-indigo-300 bg-white">
+                        <button @click="fetchDict()" class="absolute right-3 top-2.5 text-indigo-300 hover:text-indigo-600 transition"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div x-show="dictResult" class="mt-3 bg-white p-4 rounded-xl shadow-sm border border-indigo-50 animate-float">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-bold text-indigo-900 text-lg" x-text="dictResult.word"></p>
+                                <p class="text-xs text-indigo-400 italic" x-text="dictResult.phonetic"></p>
+                            </div>
+                            <button @click="playAudio(dictResult.audio)" x-show="dictResult.audio" class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center hover:bg-indigo-200 transition">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-slate-600 mt-2 leading-relaxed" x-text="dictResult.definition"></p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800 rounded-2xl p-5 text-white shadow-lg relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                    <h4 class="font-bold text-xs uppercase tracking-wider mb-3 flex items-center gap-2 text-teal-300 relative z-10">
+                        <i class="fas fa-square-root-alt text-lg"></i> Oráculo Matemático
+                    </h4>
+                    <div class="flex gap-2 relative z-10">
+                        <input type="text" x-model="mathQuery" placeholder="Ex: 2x + 5 = 15" class="flex-1 bg-slate-700/50 border-0 rounded-xl px-4 py-2.5 text-sm text-white focus:ring-1 focus:ring-teal-500 placeholder-slate-500">
+                        <button @click="solveMath()" class="bg-teal-600 hover:bg-teal-500 w-10 rounded-xl text-white font-bold transition flex items-center justify-center">
+                            =
+                        </button>
+                    </div>
+                    <div x-show="mathResult" class="mt-3 p-3 bg-slate-900/50 rounded-xl border border-slate-700/50 relative z-10">
+                        <p class="text-xs font-mono text-teal-300 break-all" x-text="mathResult"></p>
+                    </div>
+                </div>
+
+                <div class="bg-emerald-50/50 rounded-2xl p-4 border border-emerald-100">
+                    <h4 class="font-bold text-emerald-900 text-xs uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <i class="fas fa-globe-americas text-lg"></i> Atlas
+                    </h4>
+                    <input type="text" x-model="countryQuery" @keydown.enter="fetchCountry()" placeholder="País (em inglês)..." class="w-full px-4 py-2.5 rounded-xl text-sm border-0 shadow-sm focus:ring-2 focus:ring-emerald-300 bg-white mb-2">
+                    
+                    <div x-show="countryData" class="bg-white p-3 rounded-xl shadow-sm mt-2 flex gap-4 items-center border border-emerald-50 animate-float">
+                        <img :src="countryData.flag" class="w-12 h-9 object-cover rounded-md shadow-sm border border-slate-100">
+                        <div>
+                            <p class="font-bold text-sm text-slate-800" x-text="countryData.name"></p>
+                            <div class="flex gap-2 mt-1">
+                                <span class="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded" x-text="countryData.pop"></span>
+                                <span class="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded" x-text="countryData.cap"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function classroomTools() {
+        return {
+            dictQuery: '',
+            dictResult: null,
+            mathQuery: '',
+            mathResult: null,
+            countryQuery: '',
+            countryData: null,
+
+            async fetchDict() {
+                if(!this.dictQuery) return;
+                try {
+                    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${this.dictQuery}`);
+                    const data = await res.json();
+                    if(data[0]) {
+                        this.dictResult = {
+                            word: data[0].word,
+                            phonetic: data[0].phonetic,
+                            definition: data[0].meanings[0].definitions[0].definition,
+                            audio: data[0].phonetics.find(p => p.audio)?.audio
+                        };
+                    }
+                } catch(e) { this.dictResult = { definition: 'Não encontrado.' }; }
+            },
+
+            playAudio(url) {
+                if(url) new Audio(url).play();
+            },
+
+            solveMath() {
+                this.mathResult = "Calculando...";
+                setTimeout(() => {
+                    try {
+                        // Demo: apenas para visualização. Em produção, use API.
+                        this.mathResult = "Resultado: " + eval(this.mathQuery.replace('=', '==')); 
+                    } catch(e) {
+                        this.mathResult = "Erro de sintaxe.";
+                    }
+                }, 500);
+            },
+
+            async fetchCountry() {
+                if(!this.countryQuery) return;
+                try {
+                    const res = await fetch(`https://restcountries.com/v3.1/name/${this.countryQuery}`);
+                    const data = await res.json();
+                    if(data[0]) {
+                        this.countryData = {
+                            name: data[0].translations.por?.common || data[0].name.common,
+                            flag: data[0].flags.svg,
+                            pop: (data[0].population / 1000000).toFixed(1) + ' mi',
+                            cap: data[0].capital ? data[0].capital[0] : 'N/A'
+                        };
+                    }
+                } catch(e) { this.countryData = null; }
+            }
+        }
+    }
+</script>
+{% endblock %}

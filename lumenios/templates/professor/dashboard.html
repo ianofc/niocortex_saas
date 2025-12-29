@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'professor/base_lumenios.html.html' %}
 
 {% block content %}
 <div class="px-4 py-10 mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -9,7 +9,7 @@
             <p class="mt-1 text-gray-500">Gerencie seus cursos e acompanhe o desempenho dos alunos.</p>
         </div>
         <div class="mt-4 md:mt-0">
-            <a href="{% url 'criar_curso' %}" class="inline-flex items-center px-5 py-3 text-sm font-medium text-white transition-colors border border-transparent rounded-lg shadow-sm bg-lumenio-purple hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+            <a href="{% url 'lumenios:criar_curso' %}" class="inline-flex items-center px-5 py-3 text-sm font-medium text-white transition-colors border border-transparent rounded-lg shadow-sm bg-lumenios-purple hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
                 <svg class="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 Novo Curso
             </a>
@@ -60,7 +60,7 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                            <a href="#" class="mr-4 text-lumenio-purple hover:text-purple-900">Editar</a>
+                            <a href="#" class="mr-4 text-lumenios-purple hover:text-purple-900">Editar</a>
                             <a href="#" class="text-gray-400 hover:text-gray-600">Conteúdo</a>
                         </td>
                     </tr>
