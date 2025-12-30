@@ -4,7 +4,7 @@ from django.db import models
 from django.utils import timezone
 from decimal import Decimal
 from core.models import School, CustomUser
-from pedagogical.models import Aluno
+from lumenios.pedagogico.models import Aluno
 from django.conf import settings
 import uuid
 

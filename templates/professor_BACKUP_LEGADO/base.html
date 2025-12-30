@@ -204,8 +204,8 @@
                 <a href="{% url 'pedagogical:listar_turmas' %}" class="flex items-center gap-3 px-4 py-3 font-medium transition rounded-xl hover:bg-white/60 text-slate-600">
                     <i class="w-5 text-center text-blue-500 fas fa-users"></i> Turmas
                 </a>
-                <a href="{% url 'lumenio:dashboard_professor' %}" class="flex items-center gap-3 px-4 py-3 font-medium transition rounded-xl hover:bg-white/60 text-slate-600 {% if 'lumenio' in request.path %}active{% endif %}">
-                    <i class="w-5 text-center fas fa-lightbulb"></i> Lumenio (AVA)
+                <a href="{% url 'lumenios:dashboard_professor' %}" class="flex items-center gap-3 px-4 py-3 font-medium transition rounded-xl hover:bg-white/60 text-slate-600 {% if 'lumenios' in request.path %}active{% endif %}">
+                    <i class="w-5 text-center fas fa-lightbulb"></i> Lumenios (AVA)
                 </a>
                 
                 <p class="px-4 pt-4 text-[10px] font-bold uppercase tracking-wider opacity-50 mb-2 text-slate-500 font-display">Ferramentas</p>

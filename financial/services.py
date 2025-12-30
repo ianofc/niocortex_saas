@@ -19,7 +19,7 @@ from .models import (
     Patrimonio,
     Transacao
 )
-from pedagogical.models import Aluno
+from lumenios.pedagogico.models import Aluno
 from core.models import CustomUser
 
 # ==========================================================================

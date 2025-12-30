@@ -3,7 +3,7 @@
 from django.template import Template, Context
 from django.core.exceptions import ValidationError
 from core.models import CustomUser
-from pedagogical.models import Aluno
+from lumenios.pedagogico.models import Aluno
 from .models import ModeloDocumento, DocumentoEmitido
 
 class SecretariatService:

@@ -8,7 +8,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'niocortex.settings')
 django.setup()
 
 from core.models import CustomUser, School
-from pedagogical.models import Turma, Aluno
+from lumenios.pedagogico.models import Turma, Aluno
 
 def dict_fetchall(cursor):
     "Converte linhas do SQL em dicionários"

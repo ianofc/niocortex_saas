@@ -1,80 +1,102 @@
-{% extends 'professor/base_lumenios.html.html' %}
+{% extends 'professor/base_professor.html' %}
 
 {% block content %}
-<div class="px-4 py-10 mx-auto max-w-7xl sm:px-6 lg:px-8">
-    
-    <div class="flex flex-col mb-8 md:flex-row md:items-center md:justify-between">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900">Painel do Instrutor</h1>
-            <p class="mt-1 text-gray-500">Gerencie seus cursos e acompanhe o desempenho dos alunos.</p>
+<div class="space-y-8">
+
+    <div class="flex flex-col gap-6 md:flex-row">
+        <div class="flex-1 p-8 bg-white border border-slate-200 rounded-[2rem] shadow-sm relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-64 h-64 -mt-10 -mr-10 rounded-full bg-indigo-50 blur-3xl"></div>
+            <div class="relative z-10">
+                <h1 class="text-3xl font-bold font-display text-slate-800">Olá, Prof. {{ user.last_name|default:user.username }} 👋</h1>
+                <p class="max-w-md mt-2 text-slate-500">Você tem <strong class="text-indigo-600">{{ atividades|length }} atividades</strong> pendentes para hoje. Mantenha o ritmo!</p>
+                <div class="flex gap-3 mt-6">
+                    <button class="px-5 py-2.5 bg-slate-900 text-white text-sm font-bold rounded-xl hover:bg-slate-800 transition">Ver Agenda</button>
+                </div>
+            </div>
         </div>
-        <div class="mt-4 md:mt-0">
-            <a href="{% url 'lumenios:criar_curso' %}" class="inline-flex items-center px-5 py-3 text-sm font-medium text-white transition-colors border border-transparent rounded-lg shadow-sm bg-lumenios-purple hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-                <svg class="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                Novo Curso
-            </a>
+
+        <div class="flex gap-4 md:w-1/3">
+            <div class="flex-1 p-6 bg-white border border-slate-200 rounded-[2rem] shadow-sm flex flex-col justify-center items-center">
+                <div class="flex items-center justify-center w-10 h-10 mb-2 rounded-full bg-emerald-100 text-emerald-600"><i class="fas fa-users"></i></div>
+                <span class="text-3xl font-bold text-slate-800">{{ stats.alunos }}</span>
+                <span class="text-xs font-bold uppercase text-slate-400">Alunos Totais</span>
+            </div>
+            <div class="flex-1 p-6 bg-white border border-slate-200 rounded-[2rem] shadow-sm flex flex-col justify-center items-center">
+                <div class="flex items-center justify-center w-10 h-10 mb-2 text-blue-600 bg-blue-100 rounded-full"><i class="fas fa-layer-group"></i></div>
+                <span class="text-3xl font-bold text-slate-800">{{ stats.cursos }}</span>
+                <span class="text-xs font-bold uppercase text-slate-400">Turmas Ativas</span>
+            </div>
         </div>
     </div>
 
-    <div class="overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl">
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Curso</th>
-                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Categoria</th>
-                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Alunos</th>
-                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Status</th>
-                        <th scope="col" class="relative px-6 py-3"><span class="sr-only">Ações</span></th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    {% for curso in cursos %}
-                    <tr class="transition-colors hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0 w-10 h-10">
-                                    {% if curso.imagem_capa %}
-                                        <img class="object-cover w-10 h-10 rounded" src="{{ curso.imagem_capa.url }}" alt="">
-                                    {% else %}
-                                        <div class="flex items-center justify-center w-10 h-10 text-xs text-gray-500 bg-gray-200 rounded">IMG</div>
-                                    {% endif %}
-                                </div>
-                                <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">{{ curso.titulo }}</div>
-                                    <div class="w-48 text-sm text-gray-500 truncate">{{ curso.descricao }}</div>
-                                </div>
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        
+        <div class="space-y-6 lg:col-span-2">
+            <div class="flex items-end justify-between">
+                <h3 class="text-xl font-bold text-slate-800">Minhas Turmas e Conteúdos</h3>
+                <a href="{% url 'lumenios:criar_curso' %}" class="text-sm font-bold text-indigo-600 hover:underline">Criar Nova Turma</a>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                {% for curso in cursos %}
+                <div class="relative p-4 overflow-hidden transition bg-white border border-slate-200 rounded-2xl hover:shadow-md group">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+                    <div class="pl-4">
+                        <div class="flex items-start justify-between mb-2">
+                            <span class="px-2 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase rounded-md tracking-wider">{{ curso.categoria }}</span>
+                            <div class="flex gap-1">
+                                <a href="{% url 'lumenios:gerenciar_curso' curso.id %}" class="flex items-center justify-center w-8 h-8 transition rounded-lg bg-slate-100 text-slate-500 hover:bg-indigo-600 hover:text-white" title="Editar Conteúdo"><i class="fas fa-pen"></i></a>
                             </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex px-2 text-xs font-semibold leading-5 text-blue-800 bg-blue-100 rounded-full">
-                                {{ curso.get_categoria_display }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                            {{ curso.alunos.count }} Matriculados
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                            <span class="flex items-center gap-1 text-xs font-bold text-green-600 uppercase">
-                                <span class="w-2 h-2 bg-green-500 rounded-full"></span> Ativo
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                            <a href="#" class="mr-4 text-lumenios-purple hover:text-purple-900">Editar</a>
-                            <a href="#" class="text-gray-400 hover:text-gray-600">Conteúdo</a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="px-6 py-10 text-center text-gray-500">
-                            <svg class="w-12 h-12 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                            <p class="mt-2 text-sm">Você ainda não criou nenhum curso.</p>
-                        </td>
-                    </tr>
+                        </div>
+                        <h4 class="mb-1 text-lg font-bold text-slate-800 line-clamp-1">{{ curso.titulo }}</h4>
+                        <p class="mb-4 text-xs text-slate-500">{{ curso.modulos.count }} Módulos • Atualizado há 2 dias</p>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="py-12 text-center border-2 border-dashed col-span-full border-slate-200 rounded-2xl">
+                    <div class="inline-flex items-center justify-center w-16 h-16 mb-3 rounded-full bg-slate-50 text-slate-300"><i class="text-2xl fas fa-chalkboard"></i></div>
+                    <p class="font-medium text-slate-500">Você ainda não tem turmas.</p>
+                    <a href="{% url 'lumenios:criar_curso' %}" class="block mt-2 text-sm font-bold text-indigo-600">Começar agora</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            
+            <div class="p-6 bg-gradient-to-br from-slate-900 to-indigo-900 rounded-[2rem] text-white shadow-xl relative overflow-hidden">
+                <div class="relative z-10">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="text-yellow-400 fas fa-sparkles"></i>
+                        <span class="text-xs font-bold tracking-wider text-indigo-200 uppercase">Assistente Pedagógico</span>
+                    </div>
+                    <h4 class="mb-2 text-lg font-bold">Precisa de ajuda no plano de aula?</h4>
+                    <p class="mb-4 text-sm text-indigo-100">A IA pode sugerir atividades e questões de prova.</p>
+                    <button class="w-full py-3 text-sm font-bold text-indigo-900 transition bg-white rounded-xl hover:bg-indigo-50">Gerar Plano de Aula</button>
+                </div>
+                <div class="absolute bottom-0 right-0 w-32 h-32 rounded-full bg-purple-500/20 blur-2xl"></div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-[2rem] p-6 shadow-sm">
+                <h4 class="flex items-center justify-between mb-4 font-bold text-slate-800">
+                    Pendências
+                    <span class="px-2 py-1 text-xs text-red-600 bg-red-100 rounded-full">{{ atividades|length }}</span>
+                </h4>
+                <div class="space-y-3">
+                    {% for atv in atividades %}
+                    <div class="flex items-center gap-3 p-3 transition border border-transparent cursor-pointer rounded-xl hover:bg-slate-50 hover:border-slate-100">
+                        <div class="w-2 h-2 rounded-full {% if atv.tipo == 'urgente' %}bg-red-500{% else %}bg-blue-500{% endif %}"></div>
+                        <div class="flex-1">
+                            <p class="text-sm font-bold text-slate-700">{{ atv.titulo }}</p>
+                            <p class="text-xs text-slate-400">Vence: {{ atv.data }}</p>
+                        </div>
+                    </div>
                     {% endfor %}
-                </tbody>
-            </table>
+                </div>
+            </div>
+
         </div>
     </div>
+
 </div>
 {% endblock %}

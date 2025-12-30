@@ -44,7 +44,7 @@ INSTALLED_APPS = [
 
     # 🚨 NOSSOS APPS/SERVIÇOS
     'core.apps.CoreConfig',           # Autenticação, Tenancy, Base
-    'pedagogical.apps.PedagogicalConfig', # Alunos, Turmas, Notas
+    'lumenios.pedagogico', # Alunos, Turmas, Notas
     'financial',                      # Contratos, Boletos, Mercado Pago
     'crm_sales',                      # Captação de Alunos, Funil
     'hr',                             # RH: Funcionários

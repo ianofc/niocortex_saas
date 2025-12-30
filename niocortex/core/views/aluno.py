@@ -1,3 +1,3 @@
 from django.shortcuts import render
-from pedagogical.models import Aluno, Turma
+from lumenios.pedagogico.models import Aluno, Turma
 

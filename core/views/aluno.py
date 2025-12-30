@@ -72,7 +72,7 @@ def student_lesson(request):
     curso = Curso.objects.first() 
     modulos = curso.modulos.all() if curso else []
     
-    return render(request, 'aluno/sala_de_aula.html', {
+    return render(request, 'extras/sala_de_aula.html', {
     'curso': curso, 
     'modulos': modulos
 })

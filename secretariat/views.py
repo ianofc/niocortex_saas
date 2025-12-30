@@ -6,7 +6,7 @@ from django.contrib import messages
 from .models import ModeloDocumento, DocumentoEmitido
 from .forms import ModeloDocumentoForm
 from .services import SecretariatService
-from pedagogical.models import Aluno
+from lumenios.pedagogico.models import Aluno
 
 # --- MODELOS (TEMPLATES) ---
 

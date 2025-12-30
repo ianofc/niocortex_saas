@@ -111,7 +111,7 @@ urlpatterns = [
     # ==========================================================================
     # INCLUSÃO DE URLs DOS NOVOS APPS
     # ==========================================================================
-    path('pedagogical/', include('pedagogical.urls')),
+    path('lumenios/pedagogico/', include('lumenios.pedagogico.urls')),
     path('financial/', include('financial.urls')),
     path('hr/', include('hr.urls')),
     path('secretariat/', include('secretariat.urls')),

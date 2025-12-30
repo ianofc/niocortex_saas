@@ -2,7 +2,7 @@
 
 from django.db import models
 from core.models import CustomUser
-from pedagogical.models import Aluno
+from lumenios.pedagogico.models import Aluno
 import uuid
 
 class ModeloDocumento(models.Model):

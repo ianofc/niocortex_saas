@@ -10,7 +10,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'niocortex.settings')
 django.setup()
 
 from core.models import CustomUser
-from pedagogical.models import Turma, Aluno
+from lumenios.pedagogico.models import Turma, Aluno
 
 # --- CONFIGURAÇÕES DE CONEXÃO (TRANSACTION POOLER - IPv4 COMPATÍVEL) ---
 DB_HOST = "aws-1-us-east-2.pooler.supabase.com"

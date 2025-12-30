@@ -2,7 +2,7 @@
 
 from django import forms
 from .models import ContratoAluno
-from pedagogical.models import Aluno
+from lumenios.pedagogico.models import Aluno
 from .models import Fornecedor, Patrimonio
 
 # --- GESTÃO DE COMPRAS E PATRIMÓNIO ---
