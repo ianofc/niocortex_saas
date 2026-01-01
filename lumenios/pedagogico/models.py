@@ -128,3 +128,23 @@ class Frequencia(models.Model):
 
     class Meta:
         unique_together = ('diario', 'aluno')
+
+class Horario(models.Model):
+    DIAS_SEMANA = [
+        (0, 'Segunda-feira'), (1, 'Terça-feira'), (2, 'Quarta-feira'),
+        (3, 'Quinta-feira'), (4, 'Sexta-feira'), (5, 'Sábado'), (6, 'Domingo')
+    ]
+    
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='horarios')
+    dia_semana = models.IntegerField(choices=DIAS_SEMANA)
+    hora_inicio = models.TimeField()
+    hora_fim = models.TimeField()
+    disciplina = models.CharField(max_length=100, blank=True, null=True, help_text="Ex: Matemática")
+    
+    class Meta:
+        ordering = ['dia_semana', 'hora_inicio']
+        verbose_name = 'Horário'
+        verbose_name_plural = 'Horários'
+
+    def __str__(self):
+        return f"{self.get_dia_semana_display()} - {self.hora_inicio} ({self.turma.nome})"

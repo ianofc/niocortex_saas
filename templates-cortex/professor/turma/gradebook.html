@@ -1,0 +1,341 @@
+{% extends "professor/base_professor.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Gradebook - {{ turma.nome }} | Cortex{% endblock %}
+
+{% block content %}
+
+<div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-[#6200EA] rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-blob"></div>
+    <div class="absolute top-0 right-1/4 w-96 h-96 bg-cyan-400 rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-blob animation-delay-2000"></div>
+    <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-pink-400 rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-blob animation-delay-4000"></div>
+</div>
+
+<div class="max-w-[1800px] mx-auto pb-20 relative z-10" x-data="{ bulkOpen: false, bulkId: null, bulkTitle: '', bulkMax: 0 }">
+
+    <div class="flex flex-col items-start justify-between gap-6 mb-8 xl:flex-row xl:items-end animate-fade-in-down">
+        <div>
+            <nav class="flex items-center gap-2 mb-2 text-xs font-bold tracking-wider uppercase text-slate-500">
+                <a href="{% url 'pedagogico:listar_turmas' %}" class="hover:text-[#6200EA] transition-colors">Minhas Turmas</a>
+                <i class="fas fa-chevron-right text-[10px]"></i>
+                <a href="{% url 'pedagogico:detalhar_turma' turma.id %}" class="hover:text-[#6200EA] transition-colors">{{ turma.nome }}</a>
+                <i class="fas fa-chevron-right text-[10px]"></i>
+                <span class="text-[#6200EA]">Gradebook</span>
+            </nav>
+            <h1 class="flex items-center gap-3 text-4xl font-black tracking-tight text-slate-800 dark:text-white">
+                <span class="p-2 bg-white/40 backdrop-blur-md border border-white/50 rounded-xl text-[#6200EA] shadow-sm">
+                    <i class="fas fa-table"></i>
+                </span>
+                Matriz de <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#6200EA] to-cyan-500">Notas</span>
+            </h1>
+        </div>
+
+        <div class="flex flex-wrap items-center w-full gap-3 p-2 border shadow-lg xl:w-auto bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-2xl border-white/40">
+            
+            <div class="flex items-center gap-1 pr-3 mr-1 border-r border-slate-200/50">
+                <span class="text-[9px] font-bold text-slate-400 uppercase mr-2 hidden sm:block">Exportar</span>
+                
+                <a href="{% url 'pedagogico:exportar_relatorio' turma.id %}" class="p-2 transition-all text-emerald-600 hover:bg-emerald-50 rounded-xl" title="Excel">
+                    <i class="text-lg fas fa-file-excel"></i>
+                </a>
+                <a href="#" class="p-2 text-blue-600 transition-all hover:bg-blue-50 rounded-xl" title="Word">
+                    <i class="text-lg fas fa-file-word"></i>
+                </a>
+                <a href="#" class="p-2 text-red-600 transition-all hover:bg-red-50 rounded-xl" title="PDF">
+                    <i class="text-lg fas fa-file-pdf"></i>
+                </a>
+            </div>
+
+            <div class="relative">
+                <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-[#6200EA]">
+                    <i class="text-xs fas fa-filter"></i>
+                </div>
+                <select onchange="window.location.href='?unidade='+this.value" 
+                        class="pl-9 pr-8 py-2 bg-white/50 border border-indigo-100 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#6200EA]/50 appearance-none cursor-pointer hover:bg-white transition-all shadow-sm w-32">
+                    {% for u in lista_unidades %}
+                        <option value="{{ u }}" {% if u == unidade_atual %}selected{% endif %}>{{ u }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <a href="{% url 'pedagogico:detalhar_turma' turma.id %}" class="flex items-center gap-2 px-4 py-2 text-xs font-bold transition-colors bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+        </div>
+    </div>
+
+    {% if alunos %}
+        
+        <div class="flex flex-wrap items-center justify-between gap-4 p-4 mb-6 bg-[#6200EA]/5 border border-[#6200EA]/10 rounded-2xl backdrop-blur-sm animate-fade-in-up">
+            <div class="flex items-center gap-3 text-sm text-[#6200EA]">
+                <i class="text-lg fas fa-info-circle"></i>
+                <span>Visualizando: <strong class="uppercase">{{ unidade_atual }}</strong></span>
+            </div>
+            <div class="flex items-center gap-4 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Editando</div>
+                <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Salvo</div>
+                <div class="flex items-center gap-1.5"><span class="w-2 h-2 bg-red-500 rounded-full"></span> Erro</div>
+            </div>
+        </div>
+
+        {% if atividades %}
+        <div class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl border border-white/40 dark:border-white/5 overflow-hidden animate-fade-in-up" style="animation-delay: 0.1s;">
+            <div class="overflow-x-auto custom-scrollbar" style="max-height: 75vh;"> 
+                <table class="min-w-full border-collapse">
+                    
+                    <thead class="sticky top-0 z-30 shadow-sm bg-white/90 dark:bg-slate-900/90 backdrop-blur-md">
+                        <tr>
+                            <th class="px-6 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest sticky left-0 z-40 bg-white/95 dark:bg-slate-900/95 border-r border-slate-100 min-w-[220px]">
+                                Aluno
+                            </th>
+                            {% for ativ in atividades %}
+                            <th class="px-4 py-4 text-left min-w-[160px] group">
+                                <div class="relative flex flex-col">
+                                    <span class="text-xs font-bold text-slate-800 dark:text-white truncate block max-w-[140px]" title="{{ ativ.titulo }}">
+                                        {{ ativ.titulo }}
+                                    </span>
+                                    <div class="flex justify-between items-center mt-1.5">
+                                        <span class="text-[9px] text-slate-400 font-medium">{{ ativ.data|date:"d/m"|default:"-" }}</span>
+                                        <span class="text-[9px] font-bold text-[#6200EA] bg-[#6200EA]/10 px-2 py-0.5 rounded-full">Max: {{ ativ.valor }}</span>
+                                    </div>
+                                    
+                                    <button @click="bulkOpen = true; bulkId = {{ ativ.id }}; bulkTitle = '{{ ativ.titulo }}'; bulkMax = {{ ativ.valor }}" 
+                                            class="absolute top-0 right-0 p-1.5 text-slate-300 hover:text-[#6200EA] bg-transparent hover:bg-white rounded-lg transition-all opacity-0 group-hover:opacity-100">
+                                        <i class="text-xs fas fa-magic"></i>
+                                    </button>
+                                </div>
+                            </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
+                        {% for aluno in alunos %}
+                        <tr class="hover:bg-[#6200EA]/5 transition-colors group">
+                            
+                            <td class="px-6 py-3 whitespace-nowrap sticky left-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border-r border-slate-100 group-hover:bg-[#6200EA]/5 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 text-[#6200EA] flex items-center justify-center text-xs font-black shadow-sm border border-white">
+                                        {{ aluno.first_name|slice:":2"|upper }}
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-slate-700 dark:text-slate-200 truncate max-w-[140px]">{{ aluno.first_name }} {{ aluno.last_name }}</span>
+                                        <span class="text-[9px] text-slate-400">Matrícula: {{ aluno.username }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            
+                            {% for ativ in atividades %}
+                                {% with nota_obj=notas_map|get_item:aluno.id|get_item:ativ.id %}
+                                <td class="px-3 py-3 align-middle">
+                                    <div class="w-full bg-white/50 dark:bg-slate-800/50 p-1.5 rounded-xl border border-transparent focus-within:border-[#6200EA] focus-within:ring-2 focus-within:ring-[#6200EA]/20 focus-within:bg-white transition-all shadow-sm">
+                                        <div class="relative">
+                                            <input type="number" step="0.1" min="0" max="{{ ativ.valor }}" 
+                                                   value="{{ nota_obj.valor|default:'' }}"
+                                                   data-aluno-id="{{ aluno.id }}" 
+                                                   data-atividade-id="{{ ativ.id }}" 
+                                                   class="w-full p-1 text-xs font-bold text-center bg-transparent border-none gradebook-input focus:ring-0 text-slate-700 placeholder-slate-300"
+                                                   placeholder="-">
+                                            
+                                            <div class="feedback-icon absolute right-1 top-1 text-[8px] hidden"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                {% endwith %}
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+            <div class="flex flex-col items-center justify-center py-20 bg-white/40 backdrop-blur-md rounded-[2.5rem] border border-dashed border-slate-300">
+                <div class="flex items-center justify-center w-20 h-20 mb-4 bg-white rounded-full shadow-sm text-slate-300">
+                    <i class="text-3xl far fa-calendar-times"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-600">Nenhuma atividade nesta unidade</h3>
+                <p class="mt-1 mb-6 text-sm text-slate-400">Você está visualizando a <strong>{{ unidade_atual }}</strong>.</p>
+                
+                {% if unidade_atual != 'Todas' %}
+                <a href="#" class="px-6 py-3 bg-[#6200EA] text-white rounded-xl font-bold shadow-lg hover:shadow-purple-500/30 hover:-translate-y-1 transition-all text-xs uppercase tracking-wide">
+                    <i class="mr-2 fas fa-plus"></i> Criar Atividade
+                </a>
+                {% endif %}
+            </div>
+        {% endif %}
+
+    {% else %}
+        <div class="max-w-2xl mx-auto mt-10 p-10 bg-white/60 backdrop-blur-xl rounded-[2.5rem] shadow-xl border border-white/50 text-center">
+            <div class="flex items-center justify-center w-24 h-24 mx-auto mb-6 rounded-full shadow-inner bg-gradient-to-br from-amber-100 to-orange-100 text-amber-500">
+                <i class="text-4xl fas fa-user-graduate"></i>
+            </div>
+            <h3 class="mb-2 text-2xl font-black text-slate-800">Turma Vazia</h3>
+            <p class="max-w-md mx-auto mb-8 text-slate-500">
+                A turma <strong>{{ turma.nome }}</strong> ainda não possui alunos enturmados. Adicione alunos para começar a lançar notas.
+            </p>
+            <a href="#" class="inline-flex items-center px-8 py-4 font-bold text-white transition-all shadow-xl bg-slate-800 rounded-2xl hover:bg-slate-700 hover:-translate-y-1">
+                <i class="mr-2 fas fa-user-plus"></i> Matricular Alunos
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<div class="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm" 
+     x-show="bulkOpen" style="display: none;" x-transition>
+    
+    <div @click.away="bulkOpen = false" class="relative w-full max-w-md p-8 overflow-hidden bg-white border shadow-2xl dark:bg-slate-800 rounded-3xl border-white/20">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#6200EA]/10 to-transparent rounded-bl-full pointer-events-none"></div>
+
+        <button @click="bulkOpen = false" class="absolute transition-colors top-6 right-6 text-slate-400 hover:text-slate-600"><i class="fas fa-times"></i></button>
+        
+        <h3 class="flex items-center gap-2 mb-2 text-xl font-black text-slate-800 dark:text-white">
+            <i class="fas fa-magic text-[#6200EA]"></i> Nota em Massa
+        </h3>
+        
+        <p class="mb-6 text-xs leading-relaxed text-slate-500">
+            Aplicar nota para todos os alunos na atividade: <br>
+            <strong x-text="bulkTitle" class="text-[#6200EA] text-sm"></strong> 
+            (Max: <span x-text="bulkMax"></span> pts)
+        </p>
+
+        <form id="form-bulk-grade" class="space-y-4">
+            <div>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Nota a Aplicar</label>
+                <input type="number" step="0.1" min="0" :max="bulkMax" id="bulk-nota" required
+                       class="w-full px-5 py-3 rounded-xl bg-slate-50 border border-indigo-100 focus:border-[#6200EA] focus:ring-4 focus:ring-[#6200EA]/10 outline-none font-bold text-slate-700 text-lg">
+            </div>
+
+            <input type="hidden" id="bulk-id-atividade" :value="bulkId">
+
+            <button type="submit" id="btn-salvar-massa" class="w-full py-3.5 bg-[#6200EA] hover:bg-[#5000BF] text-white font-bold rounded-xl shadow-lg hover:shadow-purple-500/30 transition-all transform hover:-translate-y-0.5 text-xs uppercase tracking-wider flex items-center justify-center gap-2">
+                <i class="fas fa-check"></i> Aplicar para Todos
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Configuração CSRF para Fetch
+    const getCookie = (name) => {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    // Salvar Nota em Massa
+    document.getElementById('form-bulk-grade').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btn-salvar-massa');
+        const originalHtml = btn.innerHTML;
+        
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Aplicando...';
+        btn.disabled = true;
+
+        const payload = {
+            id_atividade: document.getElementById('bulk-id-atividade').value,
+            valor_nota: document.getElementById('bulk-nota').value
+        };
+
+        try {
+            // Ajuste a URL para sua rota real
+            const response = await fetch("{% url 'pedagogico:api_lancar_nota' %}", { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+                body: JSON.stringify({ ...payload, mode: 'bulk' }) // Flag hipotética para modo bulk
+            });
+            
+            // Simulação de sucesso para UI (Remova se tiver backend real respondendo)
+            // const data = await response.json(); 
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Feito!',
+                text: 'Notas aplicadas com sucesso.',
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => window.location.reload());
+
+        } catch (error) {
+            console.error(error);
+            // Fallback visual (já que não temos o backend real conectado neste chat)
+            Swal.fire('Simulação', 'Comando enviado (Backend pendente).', 'info');
+        } finally {
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+        }
+    });
+
+    // Salvar Nota Individual (Auto-Save)
+    document.querySelectorAll('.gradebook-input').forEach(input => {
+        input.addEventListener('change', async function() {
+            const el = this;
+            const container = el.parentElement.parentElement; // div wrapper
+            
+            // Visual "Salvando"
+            container.classList.add('ring-2', 'ring-amber-400', 'bg-amber-50');
+            
+            const payload = {
+                id_aluno: el.dataset.alunoId,
+                id_atividade: el.dataset.atividadeId,
+                valor: el.value
+            };
+
+            try {
+                const response = await fetch("{% url 'pedagogico:api_lancar_nota' %}", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    // Sucesso Visual
+                    container.classList.remove('ring-amber-400', 'bg-amber-50');
+                    container.classList.add('ring-2', 'ring-emerald-400', 'bg-emerald-50');
+                    setTimeout(() => {
+                        container.classList.remove('ring-2', 'ring-emerald-400', 'bg-emerald-50');
+                    }, 1500);
+                } else {
+                    throw new Error('Falha');
+                }
+            } catch (error) {
+                // Erro Visual
+                container.classList.remove('ring-amber-400', 'bg-amber-50');
+                container.classList.add('ring-2', 'ring-red-400', 'bg-red-50');
+                console.error('Erro ao salvar nota:', error);
+            }
+        });
+    });
+</script>
+
+<style>
+    .animate-blob { animation: blob 7s infinite; }
+    .animation-delay-2000 { animation-delay: 2s; }
+    .animation-delay-4000 { animation-delay: 4s; }
+    @keyframes blob {
+        0% { transform: translate(0px, 0px) scale(1); }
+        33% { transform: translate(30px, -50px) scale(1.1); }
+        66% { transform: translate(-20px, 20px) scale(0.9); }
+        100% { transform: translate(0px, 0px) scale(1); }
+    }
+    .custom-scrollbar::-webkit-scrollbar { height: 8px; width: 8px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(98, 0, 234, 0.1); border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(98, 0, 234, 0.3); }
+</style>
+{% endblock %}

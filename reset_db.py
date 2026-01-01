@@ -6,18 +6,42 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'niocortex.settings')
 django.setup()
 
 with connection.cursor() as cursor:
-    print("Apagando tabelas conflitantes...")
-    # Apaga tabelas financeiras e pedagógicas para recriar limpo
-    cursor.execute("DROP TABLE IF EXISTS financial_transacao CASCADE;")
-    cursor.execute("DROP TABLE IF EXISTS financial_contratoaluno CASCADE;")
-    cursor.execute("DROP TABLE IF EXISTS financial_boletoaluno CASCADE;")
-    cursor.execute("DROP TABLE IF EXISTS financial_patrimonio CASCADE;")
-    cursor.execute("DROP TABLE IF EXISTS financial_fornecedor CASCADE;")
-    cursor.execute("DROP TABLE IF EXISTS financial_pedidocompra CASCADE;")
+    print("☢️  INICIANDO LIMPEZA PROFUNDA DO BANCO DE DADOS...")
 
-    cursor.execute("DROP TABLE IF EXISTS pedagogical_aluno CASCADE;")
-    cursor.execute("DROP TABLE IF EXISTS pedagogical_turma CASCADE;")
+    # 1. Lista de Apps do Projeto para limpar tabelas
+    # Inclui nomes antigos e novos para garantir
+    apps_to_clean = [
+        'financial', 
+        'pedagogical', 'pedagogico', 'lumenios_pedagogico',
+        'secretariat', 
+        'hr', 
+        'crm_sales', 
+        'plataforma', 'lumenios_plataforma',
+        'core' 
+    ]
 
-    # Limpa o histórico de migrações desses apps
-    cursor.execute("DELETE FROM django_migrations WHERE app IN ('pedagogical', 'financial');")
-    print("Tabelas limpas! Agora pode rodar o migrate.")
+    # 2. Drop dinâmico das tabelas desses apps
+    for app in apps_to_clean:
+        print(f"   Procurando tabelas de: {app}...")
+        cursor.execute("""
+            SELECT table_name FROM information_schema.tables 
+            WHERE table_schema = 'public' 
+            AND table_name LIKE %s
+        """, [app + '_%'])
+        
+        tables = cursor.fetchall()
+        for (table_name,) in tables:
+            print(f"   🗑️  Apagando tabela: {table_name}")
+            cursor.execute(f'DROP TABLE IF EXISTS "{table_name}" CASCADE;')
+
+    # 3. LIMPEZA TOTAL DAS MIGRAÇÕES
+    # Apaga tudo para o Django achar que é uma instalação nova
+    print("   🧹 Limpando histórico de migrações (django_migrations)...")
+    try:
+        cursor.execute("DELETE FROM django_migrations WHERE app IN %s;", (tuple(apps_to_clean),))
+        # Se quiser ser radical e apagar TUDO (incluindo admin/auth):
+        # cursor.execute("DELETE FROM django_migrations;") 
+    except Exception as e:
+        print(f"   ⚠️  Erro ao limpar migrações: {e}")
+
+    print("\n✅ BANCO LIMPO! Agora o 'python manage.py migrate' deve funcionar.")

@@ -113,7 +113,7 @@ document.getElementById('form-atividade').addEventListener('submit', async funct
     };
 
     try {
-        const response = await fetch("{% url 'pedagogical:api_gerar_atividade' %}", {
+        const response = await fetch("{% url 'pedagogico:api_gerar_atividade' %}", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

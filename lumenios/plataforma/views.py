@@ -1,39 +1,133 @@
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from datetime import datetime, time, timedelta
+from types import SimpleNamespace
+
+# Imports dos Models e Forms
 from .models import Curso, Matricula, Conteudo, Modulo
 from .forms import CursoForm
-from types import SimpleNamespace
-import pandas as pd
+from lumenios.pedagogico.models import Turma, Aluno, Horario
 
 # ==============================================================================
-# ÁREA DO PROFESSOR (LUMENIOS - AVA)
+# 1. DASHBOARD PROFESSOR (COM GRADE E STATS)
 # ==============================================================================
 
 @login_required
 def dashboard_professor(request):
-    cursos = Curso.objects.filter(professor=request.user)
-    total_alunos = Matricula.objects.filter(curso__in=cursos).count()
-    total_cursos = cursos.count()
-    atividades_pendentes = [
-        {'titulo': 'Correção: Redação 3º Ano', 'data': 'Hoje', 'tipo': 'urgente'},
-        {'titulo': 'Planejamento: Física Quântica', 'data': 'Amanhã', 'tipo': 'normal'},
+    user = request.user
+    
+    # Busca dados
+    if user.is_superuser:
+        turmas = Turma.objects.all()
+        horarios = Horario.objects.all()
+        cursos = Curso.objects.all()
+    else:
+        turmas = Turma.objects.filter(professor_regente=user)
+        horarios = Horario.objects.filter(turma__professor_regente=user)
+        cursos = Curso.objects.filter(professor=user)
+    
+    # Grade Horária
+    dias_semana = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta']
+    tempos_aula = [
+        '07:00 - 07:50', '07:50 - 08:40', '08:40 - 09:30', '09:50 - 10:40', '10:40 - 11:30',
+        '13:00 - 13:50', '13:50 - 14:40', '14:40 - 15:30', '15:50 - 16:40', '16:40 - 17:30',
+        '19:00 - 19:50', '19:50 - 20:40', '20:50 - 21:40', '21:40 - 22:30'
     ]
+    
+    grade = {tempo: {dia: None for dia in dias_semana} for tempo in tempos_aula}
+    dia_map = {0: 'Segunda', 1: 'Terça', 2: 'Quarta', 3: 'Quinta', 4: 'Sexta', 5: 'Sábado', 6: 'Domingo'}
+    
+    for h in horarios:
+        dia_str = dia_map.get(h.dia_semana)
+        if not dia_str: continue
+        
+        h_inicio_str = h.hora_inicio.strftime('%H:%M')
+        
+        for slot in grade.keys():
+            if slot.startswith(h_inicio_str):
+                is_ac = "AC" in (h.disciplina or "") or (h.turma and h.disciplina != h.turma.nome)
+                
+                grade[slot][dia_str] = {
+                    'id': h.turma.id if h.turma else 0,
+                    'nome': h.disciplina if h.disciplina else (h.turma.nome if h.turma else 'Aula'),
+                    'turma_nome': h.turma.nome if h.turma else '',
+                    'alunos_count': h.turma.alunos.count() if h.turma else 0,
+                    'is_ac': is_ac
+                }
+                break
+
+    stats = {
+        'total_turmas': turmas.count(),
+        'total_alunos': Aluno.objects.filter(turma__in=turmas).count(),
+        'aulas_hoje': horarios.filter(dia_semana=timezone.now().weekday()).count(),
+        'cursos': cursos.count()
+    }
+
     return render(request, 'professor/dashboard.html', {
-        'cursos': cursos,
-        'stats': {'alunos': total_alunos, 'cursos': total_cursos},
-        'atividades': atividades_pendentes
+        'user': user, 'turmas': turmas, 'grade': grade, 
+        'dias_semana': dias_semana, 'stats': stats, 'cursos': cursos
     })
 
 @login_required
-def gerenciar_curso(request, curso_id):
-    # Fallback se o curso não for do professor ou não existir
-    try:
-        curso = get_object_or_404(Curso, id=curso_id) # Remover professor=request.user para teste se necessário
-    except:
-        return redirect('lumenios:dashboard_professor')
+def salvar_horario(request):
+    if request.method == 'POST':
+        dia_str = request.POST.get('dia_semana')
+        hora_range = request.POST.get('hora_inicio')
+        tipo = request.POST.get('tipo')
+        id_turma = request.POST.get('id_turma')
+        texto_ac = request.POST.get('texto_ac')
         
-    modulos = curso.modulos.all().prefetch_related('conteudos')
-    return render(request, 'professor/gerenciar_curso.html', {'curso': curso, 'modulos': modulos})
+        mapa_dias = {'Segunda': 0, 'Terça': 1, 'Quarta': 2, 'Quinta': 3, 'Sexta': 4, 'Sábado': 5}
+        dia_int = mapa_dias.get(dia_str)
+        
+        hora_inicio = None
+        hora_fim = None
+        try:
+            inicio_str = hora_range.split(' - ')[0].strip()
+            hora_inicio = datetime.strptime(inicio_str, '%H:%M').time()
+            dummy_dt = datetime(2000, 1, 1, hora_inicio.hour, hora_inicio.minute)
+            hora_fim = (dummy_dt + timedelta(minutes=50)).time()
+        except:
+            return redirect('lumenios:dashboard_professor')
+
+        if dia_int is not None and hora_inicio:
+            Horario.objects.filter(
+                dia_semana=dia_int,
+                hora_inicio=hora_inicio,
+                turma__professor_regente=request.user
+            ).delete()
+            
+            novo = None
+            if tipo == 'turma' and id_turma:
+                turma = get_object_or_404(Turma, id=id_turma)
+                novo = Horario(
+                    dia_semana=dia_int,
+                    hora_inicio=hora_inicio,
+                    hora_fim=hora_fim,
+                    turma=turma,
+                    disciplina=turma.nome
+                )
+            elif tipo == 'ac' and texto_ac:
+                t_padrao = Turma.objects.filter(professor_regente=request.user).first()
+                if t_padrao:
+                    novo = Horario(
+                        dia_semana=dia_int,
+                        hora_inicio=hora_inicio,
+                        hora_fim=hora_fim,
+                        turma=t_padrao,
+                        disciplina=f"AC - {texto_ac}"
+                    )
+
+            if novo:
+                novo.save()
+
+    return redirect('lumenios:dashboard_professor')
+
+# ==============================================================================
+# 2. GESTÃO DE CURSOS (RESTAURADO)
+# ==============================================================================
 
 @login_required
 def criar_curso(request):
@@ -49,11 +143,20 @@ def criar_curso(request):
     return render(request, 'professor/criar_conteudo.html', {'form': form})
 
 @login_required
+def gerenciar_curso(request, curso_id):
+    try:
+        curso = get_object_or_404(Curso, id=curso_id)
+    except:
+        return redirect('lumenios:dashboard_professor')
+    modulos = curso.modulos.all().prefetch_related('conteudos')
+    return render(request, 'professor/gerenciar_curso.html', {'curso': curso, 'modulos': modulos})
+
+@login_required
 def editor_conteudo(request, curso_id):
     return render(request, 'professor/editor_conteudo.html', {'curso_id': curso_id})
 
 # ==============================================================================
-# ÁREA DO ALUNO (LEGADO / ESTUDO)
+# 3. ÁREA DO ALUNO (RESTAURADO)
 # ==============================================================================
 
 @login_required
@@ -92,7 +195,6 @@ def sala_de_aula(request, conteudo_id=None):
 
 @login_required
 def sala_de_aula_demo(request):
-    # ... código demo mantido (resumido para caber no script) ...
     class MockQuerySet(list): 
         def all(self): return self
         def count(self): return len(self)

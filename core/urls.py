@@ -1,6 +1,6 @@
-# niocortex/core/urls.py
+# core/urls.py
 
-from django.urls import path, include
+from django.urls import path
 from .views.professor import professor_dashboard, corporate_dashboard, teacher_schedule
 from .views.aluno import (
     aluno_dashboard, student_profile, student_subjects, student_grades, student_calendar,
@@ -67,7 +67,7 @@ urlpatterns = [
     path('dashboard/aluno/disciplinas/', student_subjects, name='student_subjects'),
     path('dashboard/aluno/boletim/', student_grades, name='student_grades'),
     path('dashboard/aluno/agenda/', student_calendar, name='student_calendar'),
-    path('dashboard/aluno/horario/', student_timetable, name='student_timetable'), # <--- NOVA ROTA
+    path('dashboard/aluno/horario/', student_timetable, name='student_timetable'),
     path('dashboard/aluno/arquivos/', student_files, name='student_files'),
     path('dashboard/aluno/aula/', student_lesson, name='student_lesson'),
     path('dashboard/aluno/atividade/', student_activity, name='student_activity'),
@@ -77,12 +77,12 @@ urlpatterns = [
     path('dashboard/aluno/servicos/', student_services, name='student_services'),
     path('dashboard/aluno/carteirinha/', student_id_card, name='student_id_card'),
     
-    # --- Módulos Específicos (Novos) ---
-    path('dashboard/aluno/diario/', daily_diary, name='daily_diary'),           # Infantil
-    path('dashboard/aluno/loja/', gamification_store, name='gamification_store'), # Gamificação
-    path('dashboard/aluno/biblioteca/', student_library, name='student_library'), # Todos
-    path('dashboard/aluno/carreira/', career_center, name='career_center'),     # Superior
-    path('dashboard/aluno/tcc/', thesis_manager, name='thesis_manager'),        # Pós/Superior
+    # --- Módulos Específicos ---
+    path('dashboard/aluno/diario/', daily_diary, name='daily_diary'),
+    path('dashboard/aluno/loja/', gamification_store, name='gamification_store'),
+    path('dashboard/aluno/biblioteca/', student_library, name='student_library'),
+    path('dashboard/aluno/carreira/', career_center, name='career_center'),
+    path('dashboard/aluno/tcc/', thesis_manager, name='thesis_manager'),
 
     # --- Premium ---
     path('dashboard/aluno/premium/', student_premium, name='student_premium'),
@@ -92,7 +92,7 @@ urlpatterns = [
     # ==========================================================================
     # 5. COMUNICAÇÃO & IA
     # ==========================================================================
-    path('talkio/', talkio_view, name='talkio'), # Chat Full Screen
+    path('talkio/', talkio_view, name='talkio'),
     path('api/ia/check/', api_check_conscios, name='api_check_conscios'),
     path('api/ia/chat/', api_chat_conscios, name='api_chat_conscios'),
 
@@ -104,16 +104,7 @@ urlpatterns = [
     path('checkout/processar/', processar_pagamento, name='processar_pagamento'),
     path('checkout/sucesso/', checkout_sucesso, name='checkout_sucesso'),
     
-    # Rotas de fallback para evitar erro 404 no retorno do MP
     path('checkout/erro/', pricing, name='checkout_erro'),
     path('checkout/pendente/', pricing, name='checkout_pendente'),
-
-    # ==========================================================================
-    # INCLUSÃO DE URLs DOS NOVOS APPS
-    # ==========================================================================
-    path('lumenios/pedagogico/', include('lumenios.pedagogico.urls')),
-    path('financial/', include('financial.urls')),
-    path('hr/', include('hr.urls')),
-    path('secretariat/', include('secretariat.urls')),
-    path('crm_sales/', include('crm_sales.urls')),
+    
 ]

@@ -4,6 +4,7 @@ from . import views
 app_name = 'lumenios'
 
 urlpatterns = [
+    path('professor/horario/salvar/', views.salvar_horario, name='salvar_horario'),
     # --- ÁREA DO PROFESSOR (NOVO) ---
     path('professor/dashboard/', views.dashboard_professor, name='dashboard_professor'),
     path('professor/criar-curso/', views.criar_curso, name='criar_curso'),

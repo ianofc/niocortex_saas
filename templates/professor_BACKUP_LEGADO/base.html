@@ -95,7 +95,7 @@
                 <button @click="sidebarOpen = !sidebarOpen" class="p-2 transition lg:hidden text-slate-600 hover:bg-black/5 rounded-xl">
                     <i class="text-xl fas fa-bars"></i>
                 </button>
-                <a href="{% url 'core:professor_dashboard' %}" class="flex items-center gap-3 group">
+                <a href="{% url 'lumenios:dashboard_professor' %}" class="flex items-center gap-3 group">
                     <div class="flex items-center justify-center w-10 h-10 text-lg font-bold text-white transition-transform shadow-lg rounded-xl group-hover:scale-110" style="background: var(--gradient-sidebar)">N</div>
                     <div class="flex flex-col">
                         <span class="text-xl font-bold leading-none font-display text-slate-800">Nio<span style="color: var(--color-primary)">Docente</span></span>
@@ -105,13 +105,13 @@
             </div>
 
             <div class="items-center justify-center flex-1 hidden gap-6 xl:gap-8 lg:flex">
-                <a href="{% url 'core:professor_dashboard' %}" class="relative flex flex-col items-center p-2 group" title="Dashboard">
+                <a href="{% url 'lumenios:dashboard_professor' %}" class="relative flex flex-col items-center p-2 group" title="Dashboard">
                     <i class="mb-1 text-2xl transition-colors duration-300 fas fa-home" :class="currentPath.includes('dashboard') ? 'text-[var(--color-primary)]' : 'text-slate-400 group-hover:text-[var(--color-primary)]'"></i>
                 </a>
-                <a href="{% url 'pedagogical:listar_turmas' %}" class="relative flex flex-col items-center p-2 rounded-lg group hover:bg-black/5" title="Turmas">
+                <a href="{% url 'pedagogico:listar_turmas' %}" class="relative flex flex-col items-center p-2 rounded-lg group hover:bg-black/5" title="Turmas">
                     <i class="fas fa-users text-2xl mb-1 transition-colors duration-300 text-slate-400 group-hover:text-[var(--color-primary)]"></i>
                 </a>
-                <a href="{% url 'pedagogical:gerador_atividades' %}" class="relative flex flex-col items-center p-2 rounded-lg group hover:bg-black/5" title="Atividades">
+                <a href="{% url 'pedagogico:gerador_atividades' %}" class="relative flex flex-col items-center p-2 rounded-lg group hover:bg-black/5" title="Atividades">
                     <i class="fas fa-pencil-ruler text-2xl mb-1 transition-colors duration-300 text-slate-400 group-hover:text-[var(--color-primary)]"></i>
                 </a>
                 <button @click="consciosOpen = true" class="relative flex flex-col items-center p-2 transition rounded-lg group hover:bg-purple-50" title="Conscios IA">
@@ -198,10 +198,10 @@
 
             <nav class="flex-1 p-3 space-y-1 overflow-y-auto border custom-scroll glass-panel rounded-2xl bg-white/50 border-white/50">
                 <p class="px-4 pt-2 text-[10px] font-bold uppercase tracking-wider opacity-50 mb-2 text-slate-500 font-display">Principal</p>
-                <a href="{% url 'core:professor_dashboard' %}" class="flex items-center gap-3 px-4 py-3 font-medium transition rounded-xl hover:bg-white/60 group text-slate-600">
+                <a href="{% url 'lumenios:dashboard_professor' %}" class="flex items-center gap-3 px-4 py-3 font-medium transition rounded-xl hover:bg-white/60 group text-slate-600">
                     <i class="w-5 text-center fas fa-home"></i> Início
                 </a>
-                <a href="{% url 'pedagogical:listar_turmas' %}" class="flex items-center gap-3 px-4 py-3 font-medium transition rounded-xl hover:bg-white/60 text-slate-600">
+                <a href="{% url 'pedagogico:listar_turmas' %}" class="flex items-center gap-3 px-4 py-3 font-medium transition rounded-xl hover:bg-white/60 text-slate-600">
                     <i class="w-5 text-center text-blue-500 fas fa-users"></i> Turmas
                 </a>
                 <a href="{% url 'lumenios:dashboard_professor' %}" class="flex items-center gap-3 px-4 py-3 font-medium transition rounded-xl hover:bg-white/60 text-slate-600 {% if 'lumenios' in request.path %}active{% endif %}">
@@ -209,10 +209,10 @@
                 </a>
                 
                 <p class="px-4 pt-4 text-[10px] font-bold uppercase tracking-wider opacity-50 mb-2 text-slate-500 font-display">Ferramentas</p>
-                <a href="{% url 'pedagogical:gerador_planejamentos' %}" class="flex items-center gap-3 px-4 py-3 font-medium transition rounded-xl hover:bg-white/60 text-slate-600">
+                <a href="{% url 'pedagogico:gerador_planejamentos' %}" class="flex items-center gap-3 px-4 py-3 font-medium transition rounded-xl hover:bg-white/60 text-slate-600">
                     <i class="w-5 text-center text-purple-500 fas fa-wand-magic-sparkles"></i> Planejamento
                 </a>
-                <a href="{% url 'pedagogical:gerador_provas' %}" class="flex items-center gap-3 px-4 py-3 font-medium transition rounded-xl hover:bg-white/60 text-slate-600">
+                <a href="{% url 'pedagogico:gerador_provas' %}" class="flex items-center gap-3 px-4 py-3 font-medium transition rounded-xl hover:bg-white/60 text-slate-600">
                     <i class="w-5 text-center text-red-500 fas fa-file-alt"></i> Avaliações
                 </a>
             </nav>

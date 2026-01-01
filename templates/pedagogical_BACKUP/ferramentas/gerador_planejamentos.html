@@ -129,7 +129,7 @@ document.getElementById('form-planejamento').addEventListener('submit', async fu
     };
 
     try {
-        const response = await fetch("{% url 'pedagogical:api_gerar_planejamento' %}", {
+        const response = await fetch("{% url 'pedagogico:api_gerar_planejamento' %}", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
