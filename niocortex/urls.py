@@ -20,7 +20,7 @@ urlpatterns = [
 
     # ERP (Administrativo)
     path('rh/', include('hr.urls')),
-    path('financial/', include('financial.urls')),
+    path('finexio/', include('financial.urls')),
     path('crm/', include('crm_sales.urls')),
     path('secretaria/', include('secretariat.urls')),
 

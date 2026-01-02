@@ -19,7 +19,7 @@ urlpatterns = [
     path('aluno/aula/<int:conteudo_id>/', views.sala_de_aula, name='sala_de_aula'),
     
     # Extras
-    path('aluno/biblioteca/', views.biblioteca_aluno, name='biblioteca'),
+    path('aluno/biblioteca/', views.biblioteca_user, name='biblioteca'),
     path('aluno/complementar/', views.ensino_complementar, name='complementar'),
     path('aluno/avaliacoes/', views.avaliacoes_aluno, name='avaliacoes'),
     path('aluno/desempenho/', views.desempenho_analytics, name='desempenho'),

@@ -1,3 +1,6 @@
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -201,3 +204,49 @@ def gerador_provas(request):
 @login_required
 def gerador_planejamentos(request):
     return render(request, 'pedagogico/ferramentas/gerador_planejamentos.html')
+
+
+@login_required
+def api_gerar_atividade(request):
+    # API Stub para evitar erro
+    return JsonResponse({'status': 'success', 'message': 'Simulação: Atividade gerada'})
+
+
+@login_required
+def gerar_prova_docx(request):
+    # Stub para evitar erro
+    return HttpResponse("Funcionalidade de gerar DOCX em implementação.", content_type='text/plain')
+
+
+@login_required
+def api_gerar_planejamento(request):
+    # API Stub
+    return JsonResponse({'status': 'success', 'message': 'Simulação: Planejamento gerado'})
+
+
+@login_required
+def criar_aluno(request):
+    # Redireciona ou renderiza form
+    return render(request, 'pedagogico/alunos/form_alunos.html')
+
+
+@login_required
+def criar_turma(request):
+    # View para criar nova turma
+    if request.method == 'POST':
+        # Lógica de salvamento (Simplificada para evitar erros de importação imediata)
+        # Aqui você deve integrar com seu TurmaForm
+        return redirect('pedagogico:listar_turmas')
+    
+    return render(request, 'pedagogico/turmas/form_turmas.html')
+
+
+@login_required
+def adicionar_aluno_turma(request, turma_id):
+    # Stub para adicionar aluno
+    return redirect('pedagogico:detalhar_turma', turma_id=turma_id)
+
+@login_required
+def gradebook_view(request):
+    # Renderiza a página de notas/gradebook
+    return render(request, 'pedagogico/gradebook/gradebook.html')

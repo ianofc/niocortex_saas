@@ -205,7 +205,13 @@ def sala_de_aula_demo(request):
     return render(request, 'extras/sala_de_aula.html', {'curso': curso, 'modulos': [mod1], 'conteudo_atual': aula1, 'is_demo': True})
 
 @login_required
-def biblioteca_aluno(request): return render(request, 'extras/biblioteca.html')
+def biblioteca_user(request):
+    # Lógica inteligente para definir o template base
+    base_template = 'aluno/base_alunos.html'
+    if hasattr(request.user, 'role') and 'PROFESSOR' in str(request.user.role):
+        base_template = 'professor/base_professor.html'
+    
+    return render(request, 'extras/biblioteca.html', {'base_template': base_template})
 @login_required
 def ensino_complementar(request): return render(request, 'extras/complementar.html')
 @login_required

@@ -45,10 +45,10 @@ INSTALLED_APPS = [
     # 🚨 NOSSOS APPS/SERVIÇOS
     'core.apps.CoreConfig',           # Autenticação, Tenancy, Base
     'lumenios.pedagogico', # Alunos, Turmas, Notas
-    'financial',                      # Contratos, Boletos, Mercado Pago
-    'crm_sales',                      # Captação de Alunos, Funil
-    'hr',                             # RH: Funcionários
-    'secretariat',                    # Secretaria
+    'finexio',                      # Contratos, Boletos, Mercado Pago
+    'vionex',                      # Captação de Alunos, Funil
+    'humaniox',                             # RH: Funcionários
+    'cognios',                    # Secretaria
     'lumenios.plataforma',             # Documentos
 ]
 
