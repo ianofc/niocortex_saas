@@ -11,11 +11,11 @@ with connection.cursor() as cursor:
     # 1. Lista de Apps do Projeto para limpar tabelas
     # Inclui nomes antigos e novos para garantir
     apps_to_clean = [
-        'finexio', 
+        'financial', 
         'pedagogical', 'pedagogico', 'lumenios_pedagogico',
-        'cognios', 
-        'humaniox', 
-        'vionex', 
+        'secretariat', 
+        'hr', 
+        'crm_sales', 
         'plataforma', 'lumenios_plataforma',
         'core' 
     ]

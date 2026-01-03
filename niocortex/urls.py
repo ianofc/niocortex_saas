@@ -1,3 +1,4 @@
+# niocortex/urls.py
 
 from django.contrib import admin
 from django.urls import path, include
@@ -5,24 +6,25 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    # 1. Rota Administrativa (Django Admin)
     path('admin/', admin.site.urls),
     
-    # Rotas Organizadas por Marca
-    path('direcao/', include('prioris.direcao.urls')),
-    path('rh/', include('humanex.rh.urls')),
-    path('financeiro/', include('ledger.financeiro.urls')),
-    path('secretaria/', include('hub.secretaria.urls')),
-    path('coordenacao/', include('orbit.coordenacao.urls')),
-    path('crm/', include('vionex.crm.urls')),
-    path('social/', include('yourlife.social.urls')),
-    path('', include('stage.publico.urls')), # Home/Site
-    path('core/', include('core.base.urls')),
+    # 2. Rotas do Core (Landing Page, Auth, Dashboards)
+    # A raiz ('') vai para o core
+    path('', include('core.urls')), 
     
-    # Lumenios
-    path('lumenios/', include('lumenios.pedagogico.urls')),
-    path('plataforma/', include('lumenios.plataforma.urls')),
-]
+    # 3. Módulos do Sistema (ERP e AVA)
+    # AVA (Lumenios) - Inclui Plataforma e Pedagógico
+    path('lumenios/', include('lumenios.plataforma.urls')), 
+    path('lumenios/pedagogico/', include('lumenios.pedagogico.urls')), 
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    # ERP (Administrativo)
+    path('rh/', include('hr.urls')),
+    path('financial/', include('financial.urls')),
+    path('crm/', include('crm_sales.urls')),
+    path('secretaria/', include('secretariat.urls')),
+
+    # 4. Auth Padrão (Reset de senha, etc)
+    path('accounts/', include('django.contrib.auth.urls')),
+
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

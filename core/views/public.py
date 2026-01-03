@@ -10,7 +10,7 @@ from django.http import HttpResponseForbidden, JsonResponse
 from django.views.decorators.http import require_POST
 
 # Models e Forms
-from finexio.models import Transacao
+from financial.models import Transacao
 from ..forms import CustomUserCreationForm, CustomAuthenticationForm
 from ..models import CustomUser
 from ..services.ai_client import AIClient

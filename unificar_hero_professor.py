@@ -1,156 +1,131 @@
 import os
-import re
 
-# Definição da Nova Arquitetura: Marca -> Responsabilidade
-# A "Responsabilidade" será o nome técnico do App Django
-STRUCTURE = {
-    'prioris': 'direcao',       # Estratégia
-    'humanex': 'rh',            # Recursos Humanos
-    'ledger':  'financeiro',    # Contabilidade/Finanças
-    'hub':     'secretaria',    # Atendimento/Documentação
-    'orbit':   'coordenacao',   # Logística Pedagógica
-    'vionex':  'crm',           # Vendas
-    'yourlife':'social',        # Rede Social
-    'stage':   'publico',       # Site/Landing Pages
-    'core':    'base'           # Funcionalidades Comuns
-}
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATE_PATH = os.path.join(BASE_DIR, 'lumenios', 'templates', 'pedagogico', 'turmas', 'form_turmas.html')
 
-# Lumenios mantemos separado pois já tem estrutura própria (pedagogico/plataforma)
-LUMENIOS_APPS = ['lumenios.pedagogico', 'lumenios.plataforma']
-
-def create_folders():
-    print(">>> 1. CRIANDO ESTRUTURA MARCA/RESPONSABILIDADE <<<")
+def update_template():
+    print(f"🎨 Aplicando estilo Glass Aurora em: {TEMPLATE_PATH}")
     
-    for brand, sub in STRUCTURE.items():
-        # Caminho: Marca/Responsabilidade (ex: humanex/rh)
-        base_path = os.path.join(brand, sub)
+    html = """{% extends "professor/base_professor.html" %}
+{% load static %}
+
+{% block title %}Gerenciar Turma | Cortex{% endblock %}
+
+{% block content %}
+
+<div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-[#6200EA] rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-blob"></div>
+    <div class="absolute top-0 right-1/4 w-96 h-96 bg-cyan-400 rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-blob animation-delay-2000"></div>
+    <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-pink-400 rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-blob animation-delay-4000"></div>
+</div>
+
+<div class="relative z-10 max-w-2xl pt-10 pb-20 mx-auto">
+
+    <div class="mb-10 text-center animate-fade-in-down">
+        <span class="inline-flex items-center gap-2 px-3 py-1 text-[10px] font-bold tracking-widest text-[#6200EA] uppercase bg-white/40 border border-white/50 rounded-full backdrop-blur-md mb-4 shadow-sm">
+            {% if form.instance.pk %}
+                <i class="fas fa-edit"></i> Edição
+            {% else %}
+                <i class="fas fa-plus"></i> Cadastro
+            {% endif %}
+        </span>
+        <h1 class="mb-2 text-4xl font-black tracking-tight text-slate-800 dark:text-white">
+            Gerenciar <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#6200EA] to-purple-500">Turma</span>
+        </h1>
+        <p class="font-medium text-slate-500">
+            Configure os detalhes da turma para o ano letivo.
+        </p>
+    </div>
+
+    <div class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl border border-white/40 dark:border-white/5 p-8 md:p-12 relative overflow-hidden animate-fade-in-up">
         
-        # Garante que a pasta existe
-        if not os.path.exists(base_path):
-            os.makedirs(base_path)
-            os.makedirs(os.path.join(base_path, 'migrations'))
-            os.makedirs(os.path.join(base_path, 'templates', sub)) # Namespace de template
-            print(f"✨ Criado: {brand}/{sub}")
+        <div class="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-[#6200EA]/10 to-transparent rounded-bl-full pointer-events-none"></div>
 
-        # Cria __init__.py na Marca (para ser um pacote)
-        with open(os.path.join(brand, '__init__.py'), 'w') as f: f.write("")
-        
-        # Cria __init__.py na Subpasta
-        with open(os.path.join(base_path, '__init__.py'), 'w') as f: f.write("")
+        <form method="POST" class="relative z-10 space-y-8">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="flex items-start gap-3 p-4 border border-red-100 bg-red-50 rounded-2xl">
+                    <i class="fas fa-exclamation-circle text-red-500 mt-0.5"></i>
+                    <div class="text-xs font-bold text-red-600">
+                        {{ form.non_field_errors }}
+                    </div>
+                </div>
+            {% endif %}
 
-        # Cria apps.py (Configuração do App)
-        app_config_name = f"{brand.capitalize()}{sub.capitalize()}Config"
-        app_name = f"{brand}.{sub}"
-        
-        with open(os.path.join(base_path, 'apps.py'), 'w') as f:
-            f.write(f"""from django.apps import AppConfig
+            <div class="group">
+                <label for="{{ form.nome.id_for_label }}" class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2 group-hover:text-[#6200EA] transition-colors pl-2">
+                    Nome da Turma <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                    <input type="text" name="nome" id="{{ form.nome.id_for_label }}" 
+                           value="{{ form.nome.value|default:'' }}"
+                           class="w-full px-6 py-4 rounded-2xl bg-white/50 border border-indigo-100 focus:border-[#6200EA] focus:ring-4 focus:ring-[#6200EA]/10 outline-none font-bold text-slate-700 placeholder-slate-400 transition-all"
+                           placeholder="Ex: 9º Ano A - Matutino" required>
+                    <div class="absolute inset-y-0 right-0 flex items-center px-6 pointer-events-none text-slate-400">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                </div>
+                {% if form.nome.errors %}
+                    <p class="flex items-center gap-1 pl-2 mt-2 text-xs font-bold text-red-500">
+                        <i class="fas fa-exclamation-circle"></i> {{ form.nome.errors.0 }}
+                    </p>
+                {% endif %}
+            </div>
 
-class {app_config_name}(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = '{app_name}'
-    label = '{brand}_{sub}'  # Label único para evitar conflitos
-""")
+            <div class="group">
+                <label for="{{ form.ano_letivo.id_for_label }}" class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2 group-hover:text-[#6200EA] transition-colors pl-2">
+                    Ano Letivo <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                    <input type="number" name="ano_letivo" id="{{ form.ano_letivo.id_for_label }}" 
+                           value="{{ form.ano_letivo.value|default:'2025' }}"
+                           class="w-full px-6 py-4 rounded-2xl bg-white/50 border border-indigo-100 focus:border-[#6200EA] focus:ring-4 focus:ring-[#6200EA]/10 outline-none font-bold text-slate-700 placeholder-slate-400 transition-all">
+                    <div class="absolute inset-y-0 right-0 flex items-center px-6 pointer-events-none text-slate-400">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </div>
+                {% if form.ano_letivo.errors %}
+                    <p class="flex items-center gap-1 pl-2 mt-2 text-xs font-bold text-red-500">
+                        <i class="fas fa-exclamation-circle"></i> {{ form.ano_letivo.errors.0 }}
+                    </p>
+                {% endif %}
+            </div>
 
-        # Cria models.py básico
-        if not os.path.exists(os.path.join(base_path, 'models.py')):
-            with open(os.path.join(base_path, 'models.py'), 'w') as f:
-                f.write("from django.db import models\n\n# Defina seus modelos aqui\n")
+            <div class="flex flex-col-reverse gap-4 pt-6 border-t md:flex-row border-indigo-50 dark:border-indigo-900/20">
+                <a href="{% url 'pedagogico:listar_turmas' %}" 
+                   class="w-full py-4 text-xs font-bold tracking-wider text-center uppercase transition-colors shadow-sm md:w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-2xl">
+                    Cancelar
+                </a>
+                
+                <button type="submit" 
+                        class="w-full md:w-2/3 py-4 bg-gradient-to-r from-[#6200EA] to-purple-600 hover:from-[#5000BF] hover:to-purple-700 text-white rounded-2xl shadow-xl shadow-purple-500/30 font-bold uppercase tracking-wider text-xs transition-all transform hover:-translate-y-1 hover:shadow-2xl flex items-center justify-center gap-3">
+                    <i class="fas fa-save"></i> 
+                    {% if form.instance.pk %}Salvar Alterações{% else %}Criar Turma{% endif %}
+                </button>
+            </div>
 
-        # Cria urls.py básico
-        if not os.path.exists(os.path.join(base_path, 'urls.py')):
-            with open(os.path.join(base_path, 'urls.py'), 'w') as f:
-                f.write(f"from django.urls import path\n\napp_name = '{app_name}'\n\nurlpatterns = []\n")
+        </form>
+    </div>
+</div>
 
-def update_settings():
-    print("\n>>> 2. ATUALIZANDO SETTINGS.PY (INSTALLED_APPS) <<<")
-    
-    settings_path = os.path.join('niocortex', 'settings.py')
-    if not os.path.exists(settings_path):
-        print("❌ Erro: niocortex/settings.py não encontrado.")
-        return
+<style>
+    .animate-blob { animation: blob 7s infinite; }
+    .animation-delay-2000 { animation-delay: 2s; }
+    .animation-delay-4000 { animation-delay: 4s; }
+    @keyframes blob {
+        0% { transform: translate(0px, 0px) scale(1); }
+        33% { transform: translate(30px, -50px) scale(1.1); }
+        66% { transform: translate(-20px, 20px) scale(0.9); }
+        100% { transform: translate(0px, 0px) scale(1); }
+    }
+</style>
 
-    # Gera a nova lista de apps
-    new_apps_list = "INSTALLED_APPS = [\n"
-    new_apps_list += "    'django.contrib.admin',\n"
-    new_apps_list += "    'django.contrib.auth',\n"
-    new_apps_list += "    'django.contrib.contenttypes',\n"
-    new_apps_list += "    'django.contrib.sessions',\n"
-    new_apps_list += "    'django.contrib.messages',\n"
-    new_apps_list += "    'django.contrib.staticfiles',\n\n"
-    new_apps_list += "    # --- MÓDULOS NIOCORTEX ---\n"
-    
-    for brand, sub in STRUCTURE.items():
-        new_apps_list += f"    '{brand}.{sub}',\n"
-        
-    new_apps_list += "\n    # --- LUMENIOS (LMS) ---\n"
-    for app in LUMENIOS_APPS:
-        new_apps_list += f"    '{app}',\n"
-        
-    new_apps_list += "]"
-
-    # Lê o arquivo atual
-    with open(settings_path, 'r', encoding='utf-8') as f:
-        content = f.read()
-
-    # Substitui o bloco INSTALLED_APPS usando Regex
-    # Procura por INSTALLED_APPS = [ ... ] (multiline)
-    pattern = r"INSTALLED_APPS\s*=\s*\[.*?\]"
-    
-    if re.search(pattern, content, re.DOTALL):
-        new_content = re.sub(pattern, new_apps_list, content, flags=re.DOTALL)
-        with open(settings_path, 'w', encoding='utf-8') as f:
-            f.write(new_content)
-        print("✅ settings.py atualizado com a nova estrutura!")
-    else:
-        print("⚠️  Não consegui achar o bloco INSTALLED_APPS para substituir automaticamente.")
-        print("   Por favor, copie e cole isso no seu settings.py:")
-        print(new_apps_list)
-
-def update_urls_root():
-    print("\n>>> 3. ATUALIZANDO URLS.PY PRINCIPAL <<<")
-    urls_path = os.path.join('niocortex', 'urls.py')
-    
-    new_urls = """
-from django.contrib import admin
-from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    
-    # Rotas Organizadas por Marca
-    path('direcao/', include('prioris.direcao.urls')),
-    path('rh/', include('humanex.rh.urls')),
-    path('financeiro/', include('ledger.financeiro.urls')),
-    path('secretaria/', include('hub.secretaria.urls')),
-    path('coordenacao/', include('orbit.coordenacao.urls')),
-    path('crm/', include('vionex.crm.urls')),
-    path('social/', include('yourlife.social.urls')),
-    path('', include('stage.publico.urls')), # Home/Site
-    path('core/', include('core.base.urls')),
-    
-    # Lumenios
-    path('lumenios/', include('lumenios.pedagogico.urls')),
-    path('plataforma/', include('lumenios.plataforma.urls')),
-]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+{% endblock %}
 """
-    with open(urls_path, 'w', encoding='utf-8') as f:
-        f.write(new_urls)
-    print("✅ urls.py atualizado!")
+    with open(TEMPLATE_PATH, 'w', encoding='utf-8') as f:
+        f.write(html)
+    print("✅ Template form_turmas.html atualizado com estilo Glass Aurora!")
 
 if __name__ == "__main__":
-    create_folders()
-    update_settings()
-    update_urls_root()
-    
-    print("\n" + "="*50)
-    print("ESTRUTURA RECRIADA COM SUCESSO!")
-    print("Agora execute:")
-    print("1. python manage.py makemigrations")
-    print("2. python manage.py migrate")
-    print("="*50)
+    update_template()

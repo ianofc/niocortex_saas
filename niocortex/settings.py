@@ -34,6 +34,7 @@ CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS',
 # ----------------------------------------------------
 
 INSTALLED_APPS = [
+    # Apps Padrão do Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,20 +42,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # --- MÓDULOS NIOCORTEX ---
-    'prioris.direcao',
-    'humanex.rh',
-    'ledger.financeiro',
-    'hub.secretaria',
-    'orbit.coordenacao',
-    'vionex.crm',
-    'yourlife.social',
-    'stage.publico',
-    'core.base',
-
-    # --- LUMENIOS (LMS) ---
-    'lumenios.pedagogico',
-    'lumenios.plataforma',
+    # 🚨 NOSSOS APPS/SERVIÇOS
+    'core.apps.CoreConfig',           # Autenticação, Tenancy, Base
+    'lumenios.pedagogico', # Alunos, Turmas, Notas
+    'financial',                      # Contratos, Boletos, Mercado Pago
+    'crm_sales',                      # Captação de Alunos, Funil
+    'hr',                             # RH: Funcionários
+    'secretariat',                    # Secretaria
+    'lumenios.plataforma',             # Documentos
 ]
 
 # ----------------------------------------------------
