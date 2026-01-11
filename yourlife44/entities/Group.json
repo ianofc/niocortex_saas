@@ -1,0 +1,50 @@
+{
+  "name": "Group",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome do grupo"
+    },
+    "description": {
+      "type": "string"
+    },
+    "cover_image": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "tecnologia",
+        "esportes",
+        "musica",
+        "arte",
+        "games",
+        "educacao",
+        "negocios",
+        "outro"
+      ]
+    },
+    "privacy": {
+      "type": "string",
+      "enum": [
+        "public",
+        "private"
+      ],
+      "default": "public"
+    },
+    "admin_email": {
+      "type": "string"
+    },
+    "members": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Lista de emails dos membros"
+    },
+    "members_count": {
+      "type": "number",
+      "default": 1
+    }
+ 

@@ -1,0 +1,30 @@
+{% load static %}
+<div class="flex items-center justify-end flex-1 gap-4">
+    <button @click="$store.nav.toggle('talkio')" class="flex items-center justify-center w-10 h-10 border rounded-full bg-white/20 border-primary/30">
+        <img src="{% static 'imgs/talkio/Talkio_logo.png' %}" class="w-6 h-6">
+    </button>
+    <button @click="$store.nav.toggle('notif')" class="flex items-center justify-center w-10 h-10 border rounded-full bg-white/20 border-primary/30">
+        <i class="far fa-bell text-main"></i>
+    </button>
+    <div class="relative">
+        <button @click="$store.nav.toggle('profile')" class="flex items-center gap-2 py-1 pl-1 pr-3 border rounded-full bg-white/20 border-primary/30">
+            <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}https://ui-avatars.com/api/?name={{ user.first_name }}{% endif %}" class="object-cover w-8 h-8 rounded-full">
+            <i class="fas fa-chevron-down text-[10px]" :class="$store.nav.drawers.profile ? 'rotate-180' : ''"></i>
+        </button>
+        <div x-show="$store.nav.drawers.profile" @click.away="$store.nav.drawers.profile = false" x-cloak
+             class="absolute top-14 right-0 w-72 bg-white rounded-2xl shadow-[0_15px_50px_rgba(0,0,0,0.2)] z-[120] border border-slate-200">
+            <div class="p-4 border-b bg-slate-50/50">
+                <p class="font-bold leading-tight text-slate-800">{{ user.get_full_name }}</p>
+                <a href="{% url 'yourlife_social:meu_perfil' %}" class="text-xs font-bold text-primary">Ver Perfil</a>
+            </div>
+            <div class="p-2 space-y-1">
+                <a href="{% url 'yourlife_social:settings_page' %}" class="block px-3 py-2 text-sm font-medium hover:bg-slate-100 rounded-xl text-slate-700">Configurações</a>
+                <a href="{% url 'yourlife_social:support_page' %}" class="block px-3 py-2 text-sm font-medium hover:bg-slate-100 rounded-xl text-slate-700">Suporte</a>
+                <button @click="$store.nav.toggle('theme')" class="w-full px-3 py-2 text-sm font-medium text-left hover:bg-slate-100 rounded-xl text-slate-700">Temas</button>
+                <button @click="$store.nav.toggle('a11y')" class="w-full px-3 py-2 text-sm font-medium text-left hover:bg-slate-100 rounded-xl text-slate-700">Acessibilidade</button>
+            </div>
+            <div class="p-2 border-t"><a href="{% url 'yourlife_social:logout' %}" class="block px-3 py-2 text-sm font-medium text-red-500 hover:bg-red-50 rounded-xl">Sair</a></div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'core/js/navbar.js' %}"></script>

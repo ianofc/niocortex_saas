@@ -1,0 +1,40 @@
+
+{% load static %}
+<aside class="sticky hidden space-y-6 lg:block lg:col-span-3 top-24">
+    <div class="rounded-[2rem] p-6 relative overflow-hidden shadow-2xl group border border-slate-700/50 bg-[#1a1b2e] text-white">
+        <div class="absolute top-0 right-0 w-32 h-32 -mt-10 -mr-10 rounded-full bg-violet-600/30 blur-3xl"></div>
+        <div class="relative z-10">
+            <div class="flex items-start justify-between mb-6">
+                <i class="text-2xl fas fa-fingerprint text-slate-500"></i>
+                <div class="w-12 h-8 rounded-lg bg-gradient-to-r from-yellow-400 to-orange-500 opacity-80"></div>
+            </div>
+            <h3 class="text-xl font-bold tracking-wide font-display">{{ user.get_full_name }}</h3>
+            <p class="mb-8 text-xs tracking-widest uppercase text-slate-400">{{ user.role }}</p>
+            <div class="flex items-end justify-between opacity-60">
+                <span class="text-[10px]">VALID THRU 12/26</span>
+                <i class="text-lg rotate-90 fas fa-wifi"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="glass-panel p-5 rounded-[2rem] border border-white/40 shadow-lg relative overflow-hidden">
+        <div class="flex items-center justify-between mb-4">
+            <h4 class="flex items-center gap-2 text-xs font-bold tracking-wider uppercase text-slate-700">
+                <img src="{% static 'imgs/talkio/Talkio_logo.png' %}" class="w-5 h-5"> Talkio AI
+            </h4>
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        </div>
+        <p class="mb-4 text-xs leading-relaxed text-slate-500">Seu assistente pessoal está online.</p>
+        <button @click="talkioOpen = true" class="w-full py-2.5 bg-white border border-slate-200 rounded-xl text-[10px] font-bold uppercase tracking-widest text-slate-600 hover:text-violet-600 hover:border-violet-200 transition shadow-sm">Iniciar Conversa</button>
+    </div>
+
+    <div class="glass-panel p-5 rounded-[2rem] border border-white/40">
+        <h4 class="font-bold text-slate-400 mb-4 text-[10px] uppercase tracking-[0.2em] flex items-center gap-2">
+            <i class="fas fa-hashtag text-violet-400"></i> Tendências
+        </h4>
+        <div class="space-y-4">
+            <a href="#" class="block group"><p class="text-xs font-bold transition text-slate-700 group-hover:text-violet-600">#SemanaDeProvas</p><p class="text-[10px] text-slate-400">12k posts</p></a>
+            <a href="#" class="block group"><p class="text-xs font-bold transition text-slate-700 group-hover:text-violet-600">#NioCortex</p><p class="text-[10px] text-slate-400">5.3k posts</p></a>
+        </div>
+    </div>
+</aside>

@@ -1,0 +1,62 @@
+{% extends 'social/base_universal.html' %}
+{% load static %}
+
+{% block content %}
+
+    <div class="flex gap-3 p-4 mb-6 transition shadow-sm cursor-pointer glass-panel rounded-2xl hover:shadow-md">
+        <div class="w-10 h-10 overflow-hidden bg-gray-200 rounded-full shrink-0">
+             {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" class="object-cover w-full h-full">
+            {% else %}
+                <img src="https://ui-avatars.com/api/?name={{ user.first_name }}+{{ user.last_name }}&background=random&color=fff" class="object-cover w-full h-full">
+            {% endif %}
+        </div>
+        <div class="flex-1 text-left bg-gray-50/50 hover:bg-gray-100/50 border border-transparent hover:border-gray-200 rounded-full px-4 py-2.5 text-sm transition text-slate-500 flex items-center justify-between">
+            <span>{% if 'PROFESSOR' in user.role %}Publicar aviso para as turmas...{% else %}Compartilhar com a turma...{% endif %}</span>
+            <i class="fas fa-pen text-slate-400"></i>
+        </div>
+    </div>
+
+    <div x-data="{ 
+        feed: [
+            {id: 1, author: 'Coordenação', time: '2h atrás', content: 'Lembramos a todos que o prazo para entrega de notas é sexta-feira.', avatarColor: '#6366f1', icon: 'fas fa-bullhorn', type: 'alert', borderColor: '#6366f1'},
+            {id: 2, author: 'Grêmio Estudantil', time: '4h atrás', content: 'Campeonato de Futsal confirmado! Inscrições na secretaria.', avatarColor: '#10b981', icon: 'fas fa-futbol', type: 'event'}
+        ] 
+    }">
+        <template x-for="post in feed" :key="post.id">
+            <div class="relative p-5 mb-4 overflow-hidden transition shadow-sm glass-panel rounded-2xl hover:shadow-md" 
+                 :class="{'border-l-4': post.type === 'alert'}" 
+                 :style="post.borderColor ? `border-left-color: ${post.borderColor}` : ''">
+                
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center justify-center w-10 h-10 overflow-hidden text-xs font-bold text-white rounded-full shadow-sm" :style="`background: ${post.avatarColor}`">
+                            <i :class="post.icon" class="text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-800" x-text="post.author"></h4>
+                            <p class="text-xs text-slate-500" x-text="post.time"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="pl-1">
+                    <p class="mb-4 text-sm leading-relaxed text-slate-600" x-text="post.content"></p>
+                </div>
+                
+                <div class="flex items-center justify-between pt-3 mt-2 border-t border-gray-100/50">
+                    <div class="flex gap-4">
+                        <button class="flex items-center gap-1 text-xs font-bold transition text-slate-500 hover:text-red-500"><i class="far fa-heart"></i> Curtir</button>
+                        <button class="flex items-center gap-1 text-xs font-bold transition text-slate-500 hover:text-blue-500"><i class="far fa-comment"></i> Comentar</button>
+                    </div>
+                </div>
+            </div>
+        </template>
+        
+        <div class="py-10 text-center text-slate-400">
+            <i class="mb-2 text-4xl opacity-50 fas fa-check-circle"></i>
+            <p>Você está em dia com as atualizações!</p>
+        </div>
+    </div>
+
+{% endblock %}

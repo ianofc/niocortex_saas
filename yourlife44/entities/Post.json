@@ -1,0 +1,50 @@
+{
+  "name": "Post",
+  "type": "object",
+  "properties": {
+    "content": {
+      "type": "string",
+      "description": "Conte\u00fado do post"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "URL da imagem do post"
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Nome do autor"
+    },
+    "author_email": {
+      "type": "string",
+      "description": "Email do autor"
+    },
+    "author_avatar": {
+      "type": "string",
+      "description": "Avatar do autor"
+    },
+    "likes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Lista de emails que curtiram"
+    },
+    "shares_count": {
+      "type": "number",
+      "default": 0
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "public",
+        "friends",
+        "private"
+      ],
+      "default": "public"
+    }
+  },
+  "required": [
+    "content",
+    "author_email"
+  ]
+}

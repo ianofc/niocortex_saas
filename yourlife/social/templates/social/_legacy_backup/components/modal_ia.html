@@ -1,0 +1,74 @@
+<div id="modal-analise-ia" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    
+    <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity opacity-0" id="modal-backdrop"></div>
+
+    <div class="fixed inset-0 z-10 overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            
+            <div class="relative transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-2xl opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" id="modal-panel">
+                
+                <div class="bg-gradient-to-r from-[#6200EA] to-purple-600 px-6 py-4 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2" id="modal-title">
+                        <i class="fas fa-robot text-purple-200"></i> 
+                        Análise Pedagógica NioCortex
+                    </h3>
+                    <button type="button" onclick="fecharModalIA()" class="text-white/70 hover:text-white transition-colors focus:outline-none">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <div class="px-6 py-6 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                    
+                    <div>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
+                            Resumo do Desempenho
+                        </h4>
+                        <div class="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl border border-purple-100 dark:border-purple-800/30">
+                            <p id="ia-resumo" class="text-gray-800 dark:text-gray-200 text-sm leading-relaxed"></p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <h4 class="text-green-700 dark:text-green-400 font-bold text-sm flex items-center gap-2">
+                                <i class="fas fa-check-circle"></i> Pontos Fortes
+                            </h4>
+                            <ul id="ia-fortes" class="space-y-2"></ul>
+                        </div>
+
+                        <div class="space-y-2">
+                            <h4 class="text-amber-700 dark:text-amber-400 font-bold text-sm flex items-center gap-2">
+                                <i class="fas fa-exclamation-triangle"></i> Pontos de Atenção
+                            </h4>
+                            <ul id="ia-atencao" class="space-y-2"></ul>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">
+                            Sugestões Práticas
+                        </h4>
+                        <div id="ia-sugestoes" class="grid gap-3"></div>
+                    </div>
+
+                </div>
+
+                <div class="bg-gray-50 dark:bg-gray-700/50 px-6 py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-t border-gray-100 dark:border-gray-700">
+                    <div class="flex items-center gap-3 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm">
+                        <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">Risco de Evasão:</span>
+                        <span id="ia-risco" class="px-2 py-0.5 rounded text-xs font-bold uppercase"></span>
+                    </div>
+                    
+                    <div class="flex gap-3 w-full sm:w-auto">
+                        <button type="button" onclick="fecharModalIA()" class="flex-1 sm:flex-none justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600">
+                            Fechar
+                        </button>
+                        <button type="button" class="flex-1 sm:flex-none justify-center rounded-lg border border-transparent bg-[#6200EA] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#5000BF] focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
+                            <i class="fas fa-file-pdf mr-1"></i> Baixar PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,231 @@
+{% extends 'social/base.html' %}
+
+{% block title %}
+    {{ turma.nome }} | Detalhes da Turma
+{% endblock %}
+
+{% block content %}
+<div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-indigo-200/20 dark:bg-indigo-900/20 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen animate-blob"></div>
+    <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-200/20 dark:bg-purple-900/20 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-2000"></div>
+    <div class="absolute top-1/2 left-1/2 w-96 h-96 bg-pink-200/20 dark:bg-pink-900/20 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-4000"></div>
+</div>
+
+<div class="space-y-8 relative">
+
+    <div class="relative h-80 md:h-96 w-full rounded-[2.5rem] overflow-hidden shadow-glass-lg group ring-1 ring-black/5 dark:ring-white/10">
+        {% if turma.foto_path %}
+            <img src="{{ url_for('alunos.download_material', filename=turma.foto_path) }}"
+                 alt="Foto da turma {{ turma.nome }}"
+                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out">
+            <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/40 to-transparent"></div>
+        {% else %}
+            <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
+                <i class="fas fa-users text-white/20 text-9xl transform scale-150 blur-sm"></i>
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent"></div>
+        {% endif %}
+
+        <div class="absolute bottom-0 left-0 p-8 md:p-12 z-10 w-full">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div class="space-y-4">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/20 text-xs font-bold uppercase tracking-wider text-white">
+                            <i class="fas fa-graduation-cap"></i> Área da Turma
+                        </span>
+                        {% if turma.turno %}
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/30 backdrop-blur-md border border-purple-400/30 text-xs font-bold uppercase tracking-wider text-purple-100">
+                                <i class="far fa-clock"></i> {{ turma.turno }}
+                            </span>
+                        {% endif %}
+                    </div>
+                    
+                    <div>
+                        <h1 class="text-4xl md:text-6xl font-black text-white tracking-tight drop-shadow-lg mb-2">
+                            {{ turma.nome }}
+                        </h1>
+                        {% if turma.descricao_curta %}
+                            <p class="text-lg md:text-xl text-gray-200 max-w-3xl font-medium leading-relaxed drop-shadow-md text-balance">
+                                {{ turma.descricao_curta }}
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <div class="lg:col-span-8 space-y-8">
+            
+            <section class="bg-white/70 dark:bg-gray-800/60 backdrop-blur-xl rounded-3xl p-8 shadow-glass border border-white/50 dark:border-gray-700/50 relative overflow-hidden ring-1 ring-black/5 dark:ring-white/5">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-100/30 to-purple-100/30 dark:from-indigo-900/10 dark:to-purple-900/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+                
+                <div class="relative z-10">
+                    <h2 class="flex items-center gap-3 text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                        <div class="p-2 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        Sobre a Turma
+                    </h2>
+                    <div class="prose prose-lg prose-indigo text-gray-600 dark:text-gray-300 leading-relaxed max-w-none">
+                        {{ turma.descricao_longa | default('Nenhuma descrição detalhada foi adicionada para esta turma ainda.', true) | safe }}
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white/70 dark:bg-gray-800/60 backdrop-blur-xl rounded-3xl p-8 shadow-glass border border-white/50 dark:border-gray-700/50 ring-1 ring-black/5 dark:ring-white/5">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="flex items-center gap-3 text-2xl font-bold text-gray-900 dark:text-white">
+                        <div class="p-2 rounded-xl bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        Atividades Recentes
+                    </h2>
+                    <a href="{{ url_for('alunos.add_atividade', id_turma=turma.id) }}" 
+                       class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-xl text-sm font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors">
+                        <i class="fas fa-plus"></i> Nova
+                    </a>
+                </div>
+
+                {% if total_atividades and total_atividades > 0 %}
+                    <div class="space-y-4">
+                        <div class="group p-5 rounded-2xl bg-white/50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 hover:border-indigo-200 dark:hover:border-indigo-800 transition-all shadow-sm hover:shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div class="flex items-center gap-5 w-full sm:w-auto">
+                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center shadow-inner">
+                                    <i class="fas fa-tasks text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-lg font-bold text-gray-900 dark:text-white">{{ total_atividades }} atividades cadastradas</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Acesse o gradebook para gerenciar notas e entregas.</p>
+                                </div>
+                            </div>
+                            <a href="{{ url_for('alunos.gradebook', id_turma=turma.id) }}" 
+                               class="w-full sm:w-auto inline-flex justify-center items-center gap-2 px-5 py-2.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 text-sm font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors shadow-sm">
+                                Ver Gradebook
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="flex flex-col items-center justify-center py-16 px-4 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl bg-gray-50/50 dark:bg-gray-800/30">
+                        <div class="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mb-4 text-gray-400 dark:text-gray-500">
+                            <i class="fas fa-box-open text-3xl"></i>
+                        </div>
+                        <p class="text-gray-500 dark:text-gray-400 font-medium mb-4">Nenhuma atividade registrada.</p>
+                        <a href="{{ url_for('alunos.add_atividade', id_turma=turma.id) }}" 
+                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-xl text-sm font-bold shadow-lg shadow-indigo-500/30 transition-all transform hover:-translate-y-0.5">
+                            <i class="fas fa-plus"></i> Criar Primeira Atividade
+                        </a>
+                    </div>
+                {% endif %}
+            </section>
+
+        </div>
+
+        <div class="lg:col-span-4 space-y-8 lg:sticky lg:top-8 h-fit">
+            
+            <div class="bg-white/70 dark:bg-gray-800/60 backdrop-blur-xl rounded-3xl shadow-glass p-6 border border-white/50 dark:border-gray-700/50 ring-1 ring-black/5 dark:ring-white/5">
+                <h3 class="text-xs font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-5 flex items-center gap-2">
+                    <i class="fas fa-bolt text-yellow-400"></i> Ações Rápidas
+                </h3>
+                
+                <div class="space-y-3">
+                    <a href="{{ url_for('alunos.add_aluno', id_turma=turma.id) }}" 
+                       class="group relative w-full flex items-center justify-between px-5 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-2xl font-bold transition-all duration-300 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:-translate-y-0.5 overflow-hidden">
+                        <div class="flex items-center gap-3 relative z-10">
+                            <div class="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm">
+                                <i class="fas fa-user-plus text-sm"></i>
+                            </div>
+                            <span>Matricular Aluno</span>
+                        </div>
+                        <i class="fas fa-arrow-right opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all relative z-10"></i>
+                        
+                        <div class="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                    </a>
+                    
+                    <a href="{{ url_for('alunos.editar_turma', id_turma=turma.id) }}" 
+                       class="w-full flex items-center gap-3 px-5 py-4 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 rounded-2xl font-bold transition-all duration-300 hover:shadow-md group">
+                        <div class="p-1.5 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-400 rounded-lg group-hover:text-indigo-500 transition-colors">
+                            <i class="fas fa-cog text-sm"></i>
+                        </div>
+                        <span>Configurações</span>
+                    </a>
+
+                    <a href="{{ url_for('alunos.gradebook', id_turma=turma.id) }}" 
+                       class="w-full flex items-center gap-3 px-5 py-4 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 rounded-2xl font-bold transition-all duration-300 group">
+                        <div class="p-1.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-lg">
+                            <i class="fas fa-th text-sm"></i>
+                        </div>
+                        <span>Grade de Notas</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white/70 dark:bg-gray-800/60 backdrop-blur-xl rounded-3xl shadow-glass p-6 border border-white/50 dark:border-gray-700/50 ring-1 ring-black/5 dark:ring-white/5">
+                <h3 class="text-xs font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-5 flex items-center gap-2">
+                    <i class="fas fa-chart-pie text-pink-400"></i> Estatísticas
+                </h3>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 rounded-2xl bg-indigo-50/50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-900/30 flex flex-col items-center justify-center text-center">
+                        <div class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mb-2">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <span class="text-2xl font-black text-gray-800 dark:text-white">{{ total_alunos | default(0) }}</span>
+                        <span class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Alunos</span>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-emerald-50/50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/30 flex flex-col items-center justify-center text-center">
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-2">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <span class="text-2xl font-black text-gray-800 dark:text-white">{{ "%.1f"|format(desempenho_medio_turma | default(0)) }}</span>
+                        <span class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Média</span>
+                    </div>
+                </div>
+                
+                <div class="mt-6 pt-6 border-t border-gray-100 dark:border-gray-700/50 text-center">
+                    <p class="text-[10px] uppercase tracking-wider font-bold text-gray-400 mb-3">Professor Responsável</p>
+                    <div class="inline-flex items-center gap-3 px-4 py-2 bg-gray-50 dark:bg-gray-700/50 rounded-full border border-gray-100 dark:border-gray-600">
+                        <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white text-xs">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <span class="text-sm font-bold text-gray-700 dark:text-gray-200">
+                            {{ turma.autor.username if turma.autor else 'Você' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </div> 
+    </div> 
+</div>
+
+<style>
+    .shadow-glass {
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    }
+    .shadow-glass-lg {
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    }
+    
+    @keyframes blob {
+        0% { transform: translate(0px, 0px) scale(1); }
+        33% { transform: translate(30px, -50px) scale(1.1); }
+        66% { transform: translate(-20px, 20px) scale(0.9); }
+        100% { transform: translate(0px, 0px) scale(1); }
+    }
+    .animate-blob {
+        animation: blob 7s infinite;
+    }
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
+    .animation-delay-4000 {
+        animation-delay: 4s;
+    }
+</style>
+{% endblock %}

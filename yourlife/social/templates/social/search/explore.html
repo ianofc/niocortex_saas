@@ -1,0 +1,161 @@
+{% extends 'social/layout/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="relative min-h-screen pb-20 -mt-6">
+
+    <div class="sticky top-[60px] z-40 px-4 py-4 backdrop-blur-xl bg-white/5 border-b border-white/10 transition-all duration-300" id="explore-header">
+        <div class="flex flex-col items-center justify-between gap-4 mx-auto max-w-7xl md:flex-row">
+            
+            <div class="relative w-full md:max-w-md group">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                    <i class="transition fas fa-search text-white/50 group-focus-within:text-violet-400"></i>
+                </div>
+                <input type="text" 
+                       class="block w-full pl-11 pr-4 py-2.5 rounded-2xl bg-black/10 border border-white/10 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 focus:bg-white/20 backdrop-blur-md transition-all shadow-inner" 
+                       placeholder="Explorar o universo NioCortex...">
+            </div>
+
+            <div class="flex w-full gap-2 pb-1 overflow-x-auto md:w-auto scrollbar-hide">
+                {% for cat in categorias %}
+                <button class="whitespace-nowrap px-5 py-2 rounded-full text-sm font-medium transition-all duration-300
+                               {% if forloop.first %}
+                                 bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-lg shadow-violet-500/30 border border-transparent
+                               {% else %}
+                                 bg-white/20 text-slate-700 border border-white/20 hover:bg-white/40 hover:border-white/40 hover:scale-105
+                               {% endif %}">
+                    {{ cat }}
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="px-4 mx-auto mt-6 space-y-8 max-w-7xl">
+
+        <div class="relative w-full h-[400px] md:h-[500px] rounded-[2rem] overflow-hidden shadow-2xl shadow-violet-900/20 group cursor-pointer border border-white/20">
+            <video src="{{ hero_post.video_url }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-105" autoplay muted loop playsinline></video>
+            
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90"></div>
+            
+            <div class="absolute bottom-0 left-0 w-full p-8 md:p-12 md:w-2/3">
+                <span class="inline-block px-3 py-1 mb-4 text-[10px] font-bold tracking-widest text-white uppercase bg-violet-600/80 backdrop-blur-md rounded-full border border-white/20 shadow-glow">
+                    Destaque do Dia
+                </span>
+                <h1 class="mb-4 text-4xl font-black tracking-tight text-white md:text-6xl drop-shadow-lg font-display">
+                    {{ hero_post.titulo }}
+                </h1>
+                <p class="mb-8 text-lg leading-relaxed text-white/80 line-clamp-2">
+                    {{ hero_post.descricao }}
+                </p>
+                <div class="flex items-center gap-4">
+                    <button class="flex items-center gap-3 px-8 py-3 font-bold text-black transition transform bg-white shadow-xl rounded-xl hover:bg-slate-200 hover:scale-105">
+                        <i class="fas fa-play"></i> Assistir Agora
+                    </button>
+                    <button class="flex items-center gap-3 px-8 py-3 font-bold text-white transition border bg-white/10 backdrop-blur-md rounded-xl border-white/20 hover:bg-white/20">
+                        <i class="fas fa-plus"></i> Minha Lista
+                    </button>
+                </div>
+            </div>
+            
+            <div class="absolute bottom-8 right-8">
+                <button class="flex items-center justify-center w-12 h-12 text-white transition border rounded-full bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/20">
+                    <i class="fas fa-volume-mute"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-[200px] grid-flow-dense">
+            
+            {% for post in mock_posts %}
+            <div class="relative group rounded-3xl overflow-hidden cursor-pointer transition-all duration-500 hover:z-10 hover:shadow-2xl hover:shadow-violet-500/20 border border-white/10
+                        {% if post.is_tall %} row-span-2 {% endif %}
+                        {% if post.is_wide %} col-span-2 {% endif %}
+                        bg-slate-800">
+                
+                {% if post.is_reel %}
+                    <video src="{{ post.video_url }}" class="object-cover w-full h-full transition duration-500 opacity-80 group-hover:opacity-100" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>
+                    <div class="absolute flex items-center justify-center w-8 h-8 text-white border rounded-full top-3 right-3 bg-black/30 backdrop-blur-md border-white/20">
+                        <i class="text-xs fas fa-film"></i>
+                    </div>
+                {% else %}
+                    <img src="{{ post.imagem_url }}" class="object-cover w-full h-full transition duration-700 opacity-90 group-hover:opacity-100 group-hover:scale-110">
+                    {% if forloop.counter|divisibleby:3 %}
+                    <div class="absolute flex items-center justify-center w-8 h-8 text-white border rounded-full top-3 right-3 bg-black/30 backdrop-blur-md border-white/20">
+                        <i class="text-xs fas fa-images"></i>
+                    </div>
+                    {% endif %}
+                {% endif %}
+
+                <div class="absolute inset-x-0 bottom-0 p-4 transition-transform duration-300 ease-out translate-y-full group-hover:translate-y-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent">
+                    <div class="flex items-center justify-between text-white/90">
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-heart text-rose-500"></i>
+                                <span class="text-xs font-bold">{{ post.likes.count }}</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <i class="fas fa-comment text-white/70"></i>
+                                <span class="text-xs font-bold">{{ post.comentarios.count }}</span>
+                            </div>
+                        </div>
+                        <button class="transition transform text-white/50 hover:text-yellow-400 hover:scale-110">
+                            <i class="text-lg fas fa-bookmark"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="absolute inset-0 pointer-events-none bg-gradient-to-tr from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition duration-700 bg-[length:200%_200%] animate-shine"></div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+
+        <div class="flex justify-center py-10">
+            <button class="px-8 py-3 font-bold transition border rounded-full shadow-sm bg-white/10 border-white/20 text-slate-600 hover:bg-white/30 backdrop-blur-md">
+                Carregar Mais
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    /* Esconder scrollbar das categorias */
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    
+    /* Efeito de brilho ao passar o mouse */
+    @keyframes shine {
+        0% { background-position: 100% 100%; }
+        100% { background-position: 0% 0%; }
+    }
+    .animate-shine {
+        animation: shine 1.5s linear infinite;
+    }
+    
+    .shadow-glow {
+        box-shadow: 0 0 15px rgba(124, 58, 237, 0.5);
+    }
+</style>
+
+<script>
+    // Header Blur Effect on Scroll
+    window.addEventListener('scroll', () => {
+        const header = document.getElementById('explore-header');
+        if (window.scrollY > 50) {
+            header.classList.add('shadow-lg', 'bg-white/30');
+            header.classList.remove('bg-white/5');
+        } else {
+            header.classList.remove('shadow-lg', 'bg-white/30');
+            header.classList.add('bg-white/5');
+        }
+    });
+</script>
+{% endblock %}

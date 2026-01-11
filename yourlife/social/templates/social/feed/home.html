@@ -1,0 +1,10 @@
+{% extends 'social/layout/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="relative z-10 grid items-start grid-cols-1 gap-8 lg:grid-cols-12" x-data="{ commentOpen: null }">
+    {% include 'social/components/home/left_sidebar.html' %}
+    {% include 'social/components/home/feed_main.html' %}
+    {% include 'social/components/home/right_sidebar.html' %}
+</div>
+{% endblock %}

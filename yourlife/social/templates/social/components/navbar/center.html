@@ -1,0 +1,22 @@
+
+<div class="items-center justify-center flex-1 hidden gap-6 md:flex">
+    <a href="{% url 'yourlife_social:home' %}" class="p-2 group" title="Página Inicial"><i class="text-2xl transition fas fa-home text-violet-600"></i></a>
+    <a href="{% url 'yourlife_social:reels' %}" class="p-2 group" title="Reels (Vídeos Curtos)"><i class="text-2xl transition fas fa-film text-slate-400 group-hover:text-violet-600"></i></a>
+    <a href="{% url 'yourlife_social:search_pinterest' %}" class="p-2 group" title="Explorar Conteúdo"><i class="text-2xl transition far fa-compass text-slate-400 group-hover:text-violet-600"></i></a>
+    
+    <div class="w-px h-8 mx-2 bg-slate-300/50"></div>
+    
+    {% if 'PROFESSOR' in user.role %}
+        <a href="{% url 'pedagogico:listar_turmas' %}" class="p-2 group" title="Minhas Turmas"><i class="text-2xl transition fas fa-chalkboard-user text-slate-400 group-hover:text-violet-600"></i></a>
+        <a href="{% url 'lumenios:dashboard_professor' %}" class="p-2 group" title="Dashboard Lumenios"><i class="text-2xl transition fas fa-graduation-cap text-slate-400 group-hover:text-violet-600"></i></a>
+    {% else %}
+        {% if user.nivel_ensino != 'bebe' %}
+        <a href="{% url 'core:student_library' %}" class="p-2 group" title="Biblioteca Virtual"><i class="text-2xl transition fas fa-book-open text-slate-400 group-hover:text-violet-600"></i></a>
+        <a href="{% url 'lumenios:dashboard_aluno' %}" class="p-2 group" title="Plataforma de Estudos"><i class="text-2xl transition fas fa-graduation-cap text-slate-400 group-hover:text-violet-600"></i></a>
+        {% endif %}
+    {% endif %}
+    
+    <button @click="$store.nav.toggle('conscios')" class="p-2 group" title="Conversar com Conscios IA">
+        <i class="text-2xl text-purple-400 transition fas fa-brain group-hover:text-purple-600 animate-pulse"></i>
+    </button>
+</div>

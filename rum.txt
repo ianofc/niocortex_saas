@@ -1,0 +1,5 @@
+uvicorn fastapi_service.main:app --reload --port 8001
+
+python scp.py
+
+python manage.py runserver

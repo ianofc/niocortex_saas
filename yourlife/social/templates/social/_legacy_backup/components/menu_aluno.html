@@ -1,0 +1,45 @@
+
+<nav class="flex-1 p-2 pr-2 space-y-2 overflow-y-auto custom-scroll glass-panel rounded-2xl">
+    <p class="px-4 pt-2 text-[10px] font-bold uppercase tracking-wider opacity-50 mb-1" style="color: var(--text-muted)">Principal</p>
+    
+    <a href="{% url 'yourlife_social:feed' %}" class="flex items-center gap-3 px-4 py-3 transition-all rounded-xl hover:bg-white/40 group {% if request.resolver_match.url_name == 'feed' %}bg-white/50 shadow-sm{% endif %}">
+        <i class="text-lg fas fa-newspaper" style="color: var(--color-primary)"></i>
+        <span class="text-sm font-bold" style="color: var(--text-main)">Feed</span>
+    </a>
+
+    {% if aluno.nivel_ensino != 'infantil' %}
+        <a href="{% url 'core:student_subjects' %}" class="flex items-center gap-3 px-4 py-3 transition-all rounded-xl hover:bg-white/40 group">
+            <i class="text-lg transition fas fa-graduation-cap text-slate-400 group-hover:text-blue-500"></i>
+            <span class="text-sm font-medium" style="color: var(--text-muted)">Disciplinas</span>
+        </a>
+        <a href="{% url 'core:student_grades' %}" class="flex items-center gap-3 px-4 py-3 transition-all rounded-xl hover:bg-white/40 group">
+            <i class="text-lg transition fas fa-chart-pie text-slate-400 group-hover:text-green-500"></i>
+            <span class="text-sm font-medium" style="color: var(--text-muted)">Boletim</span>
+        </a>
+        <a href="{% url 'core:student_calendar' %}" class="flex items-center gap-3 px-4 py-3 transition-all rounded-xl hover:bg-white/40 group">
+            <i class="text-lg transition fas fa-calendar-alt text-slate-400 group-hover:text-red-500"></i>
+            <span class="text-sm font-medium" style="color: var(--text-muted)">Agenda</span>
+        </a>
+        <a href="{% url 'core:student_library' %}" class="flex items-center gap-3 px-4 py-3 transition-all rounded-xl hover:bg-white/40 group">
+            <i class="text-lg transition fas fa-book text-slate-400 group-hover:text-purple-500"></i>
+            <span class="text-sm font-medium" style="color: var(--text-muted)">Biblioteca</span>
+        </a>
+    {% else %}
+        <a href="{% url 'core:daily_diary' %}" class="flex items-center gap-3 px-4 py-3 transition-all rounded-xl hover:bg-white/40 group">
+            <i class="text-lg transition fas fa-shapes text-slate-400 group-hover:text-pink-500"></i>
+            <span class="text-sm font-medium" style="color: var(--text-muted)">Diário Infantil</span>
+        </a>
+    {% endif %}
+
+    <p class="px-4 pt-4 text-[10px] font-bold uppercase tracking-wider opacity-50 mb-1" style="color: var(--text-muted)">Apps</p>
+
+    <a href="{% url 'core:student_id_card' %}" class="flex items-center gap-3 px-4 py-3 transition-all rounded-xl hover:bg-white/40 group">
+        <i class="text-lg fas fa-id-card text-slate-400 group-hover:text-[var(--color-primary)] transition"></i>
+        <span class="text-sm font-medium" style="color: var(--text-muted)">Carteirinha</span>
+    </a>
+    
+    <a href="{% url 'lumenios:aluno_painel' %}" class="flex items-center gap-3 px-4 py-3 font-medium transition rounded-xl hover:bg-white/60 text-slate-600 group">
+        <i class="w-5 text-lg text-center transition fas fa-play-circle text-slate-400 group-hover:text-indigo-500"></i>
+        <span>Sala de Aula (Lumenios)</span>
+    </a>
+</nav>

@@ -1,0 +1,219 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Lumenios | Aurora{% endblock %}</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Plus Jakarta Sans', 'sans-serif'], 
+                        display: ['Outfit', 'sans-serif'] 
+                    },
+                    colors: {
+                        aurora: {
+                            primary: '#6366f1',   // Indigo vibrante
+                            secondary: '#a855f7', // Roxo
+                            accent: '#ec4899',    // Rosa
+                            dark: '#0f172a',
+                            success: '#10b981',   // Emerald
+                            warning: '#f59e0b',   // Amber
+                            danger: '#ef4444',    // Red
+                        }
+                    },
+                    boxShadow: {
+                        'neon': '0 0 20px rgba(99, 102, 241, 0.4)',
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.1)',
+                        'float': '0 20px 40px -5px rgba(0, 0, 0, 0.1), 0 10px 20px -5px rgba(0, 0, 0, 0.04)',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 8s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f0f4f8; 
+            color: #334155; 
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Fundo Aurora Animado (Background Dinâmico) */
+        .aurora-gradient {
+            position: fixed; 
+            top: 0; left: 0; right: 0; bottom: 0; 
+            z-index: -1;
+            background: 
+                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+            background-size: 200% 200%;
+            opacity: 0.05; 
+            pointer-events: none;
+        }
+        
+        /* Glassnav Premium (Barra de Navegação) */
+        .glass-island {
+            background: rgba(255, 255, 255, 0.85); /* Vidro Fosco */
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Tooltip de Navegação (Flutuante) */
+        .nav-tooltip {
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%) translateY(5px);
+            background: #1e293b;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            white-space: nowrap;
+            opacity: 0;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            z-index: 60;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Triângulo do Tooltip */
+        .nav-tooltip::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 0 4px 4px 4px;
+            border-color: transparent transparent #1e293b transparent;
+        }
+        
+        .group:hover .nav-tooltip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Scrollbar Estilizada */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Utilitários Extras */
+        .text-shadow { text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="relative flex flex-col min-h-screen overflow-x-hidden selection:bg-aurora-primary selection:text-white" x-data="{ userMenu: false, mobileMenu: false }">
+
+    {% include 'social/components/conscios_widget.html' %}
+
+    <div class="fixed top-0 left-0 z-0 w-full h-full overflow-hidden pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-purple-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-30 animate-float"></div>
+        <div class="absolute top-[10%] right-[-10%] w-[500px] h-[500px] bg-indigo-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-30 animate-float" style="animation-delay: 2s"></div>
+        <div class="absolute bottom-[-10%] left-[20%] w-[600px] h-[600px] bg-pink-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-30 animate-float" style="animation-delay: 4s"></div>
+    </div>
+
+    
+    <nav class="space-y-6">
+        <div>
+            <h3 class="px-4 mb-2 text-[10px] font-black uppercase text-slate-400 tracking-widest">Principal</h3>
+            <div class="glass-panel rounded-[2rem] p-2 space-y-1">
+                <a href="{% url 'yourlife_social:home' %}" class="flex items-center gap-3 px-4 py-3 transition rounded-xl hover:bg-violet-500/10 text-slate-600 hover:text-violet-600">
+                    <i class="fas fa-house"></i> <span class="text-xs font-bold">Feed</span>
+                </a>
+                {% if 'PROFESSOR' in user.role %}
+                    <a href="{% url 'yourlife_social:groups_list' %}" class="flex items-center gap-3 px-4 py-3 transition rounded-xl hover:bg-black/5 text-slate-600"><i class="fas fa-users"></i> <span class="text-xs font-bold">Grupos</span></a>
+                    <a href="{% url 'yourlife_social:events_list' %}" class="flex items-center gap-3 px-4 py-3 transition rounded-xl hover:bg-black/5 text-slate-600"><i class="fas fa-calendar-star"></i> <span class="text-xs font-bold">Eventos</span></a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div>
+            <h3 class="px-4 mb-2 text-[10px] font-black uppercase text-slate-400 tracking-widest">Ferramentas</h3>
+            <div class="glass-panel rounded-[2rem] p-2 space-y-1">
+                {% if 'PROFESSOR' in user.role %}
+                    <a href="{% url 'lumenios:dashboard_professor' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-black/5"><i class="fas fa-brain"></i> <span class="text-xs font-bold">Lumenio</span></a>
+                    <a href="{% url 'pedagogico:listar_turmas' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-black/5"><i class="fas fa-chalkboard-user"></i> <span class="text-xs font-bold">Turmas</span></a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-black/5"><i class="fas fa-map"></i> <span class="text-xs font-bold">Planejamento</span></a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-black/5"><i class="fas fa-tasks"></i> <span class="text-xs font-bold">Atividades</span></a>
+                    <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-black/5"><i class="fas fa-star"></i> <span class="text-xs font-bold">Avaliações</span></a>
+                {% elif 'ALUNO' in user.role %}
+                    {% if user.nivel_ensino == 'bebe' %}
+                        <a href="{% url 'core:daily_diary' %}" class="flex items-center gap-3 px-4 py-3 text-pink-600 rounded-xl bg-pink-50"><i class="fas fa-baby"></i> <span class="text-xs font-bold">Diário Infantil</span></a>
+                    {% else %}
+                        <a href="{% url 'lumenios:dashboard_aluno' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-black/5"><i class="fas fa-graduation-cap"></i> <span class="text-xs font-bold">Lumenios</span></a>
+                        <a href="{% url 'core:student_subjects' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-black/5"><i class="fas fa-book"></i> <span class="text-xs font-bold">Disciplinas</span></a>
+                        <a href="{% url 'core:student_calendar' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-black/5"><i class="fas fa-calendar-days"></i> <span class="text-xs font-bold">Agenda Escolar</span></a>
+                        <a href="{% url 'core:student_grades' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-black/5"><i class="fas fa-file-invoice"></i> <span class="text-xs font-bold">Boletim e Notas</span></a>
+                        <a href="{% url 'core:student_files' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-black/5"><i class="fas fa-folder-open"></i> <span class="text-xs font-bold">Arquivos e Materiais</span></a>
+                        <a href="{% url 'core:student_library' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-black/5"><i class="fas fa-book-reader"></i> <span class="text-xs font-bold">Biblioteca</span></a>
+                        <a href="{% url 'core:gamification_store' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-black/5"><i class="fas fa-shopping-bag"></i> <span class="text-xs font-bold">NioStore</span></a>
+                        {% if user.nivel_ensino == 'superior' %}
+                            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-black/5"><i class="fas fa-briefcase"></i> <span class="text-xs font-bold">Vagas e Estágios</span></a>
+                            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-black/5"><i class="fas fa-user-graduate"></i> <span class="text-xs font-bold">Orientação TCC</span></a>
+                        {% endif %}
+                        {% if user.tenant_type == 'PRIVATE' %}
+                            <a href="{% url 'core:student_financial' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-emerald-600 bg-emerald-50"><i class="fas fa-wallet"></i> <span class="text-xs font-bold">Financeiro</span></a>
+                        {% endif %}
+                    {% endif %}
+                    <a href="{% url 'core:student_services' %}" class="flex items-center gap-3 px-4 py-3 border-t rounded-xl text-slate-600 hover:bg-black/5 border-slate-100"><i class="fas fa-file-signature"></i> <span class="text-xs font-bold">Requerimentos</span></a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    
+
+    <div class="relative z-10 flex-grow pb-10 pt-28">
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="relative z-10 py-10 mt-auto border-t border-white/50 bg-white/40 backdrop-blur-md">
+        <div class="max-w-[1600px] mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 opacity-80">
+            <div class="flex items-center gap-3">
+                <div class="flex items-center justify-center w-8 h-8 text-white rounded-lg bg-slate-800">
+                    <i class="text-xs fas fa-bolt"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-slate-700">© 2025 NioCortex Lumenios.</p>
+                    <p class="text-[10px] text-slate-500">Plataforma de Educação Inteligente.</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <a href="#" class="text-xs font-medium transition text-slate-500 hover:text-indigo-600">Ajuda</a>
+                <a href="#" class="text-xs font-medium transition text-slate-500 hover:text-indigo-600">Privacidade</a>
+                <div class="flex gap-3 pl-4 border-l border-slate-300">
+                    <a href="#" class="transition text-slate-400 hover:text-pink-500 hover:scale-110"><i class="text-lg fab fa-instagram"></i></a>
+                    <a href="#" class="transition text-slate-400 hover:text-blue-400 hover:scale-110"><i class="text-lg fab fa-twitter"></i></a>
+                    <a href="#" class="transition text-slate-400 hover:text-indigo-600 hover:scale-110"><i class="text-lg fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
