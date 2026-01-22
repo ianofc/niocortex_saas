@@ -1,0 +1,156 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}YourLife | NioCortex{% endblock %}</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-light: #a78bfa;
+            --secondary: #0ea5e9;
+            --accent: #f43f5e;
+            --dark: #1e1b4b;
+        }
+        body {
+            background-image: linear-gradient(to bottom right, #f8fafc, #ffffff, #f5f3ff);
+            min-height: 100vh;
+            color: #1e293b;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .nav-item-active {
+            background: linear-gradient(135deg, #7c3aed 0%, #0ea5e9 100%);
+            color: white !important;
+            box-shadow: 0 4px 14px 0 rgba(124, 58, 237, 0.3);
+        }
+        .yourlife-gradient {
+            background: linear-gradient(135deg, #7c3aed 0%, #0ea5e9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="antialiased">
+
+    <nav class="fixed top-0 left-0 right-0 z-50 px-4 py-2 glass-nav" x-data="{ mobileMenuOpen: false, searchOpen: false }">
+        <div class="flex items-center justify-between mx-auto max-w-7xl">
+            <a href="{% url 'yourlife_social:home' %}" class="flex items-center gap-2 group">
+                <div class="flex items-center justify-center w-10 h-10 transition-transform rounded-xl bg-gradient-to-br from-violet-600 to-cyan-500 group-hover:scale-105">
+                    <i class="text-white fas fa-magic"></i>
+                </div>
+                <span class="hidden text-2xl font-bold tracking-tight yourlife-gradient sm:block">
+                    YourLife
+                </span>
+            </a>
+
+            <div class="items-center hidden gap-2 md:flex">
+                <a href="{% url 'yourlife_social:home' %}" class="flex items-center gap-2 px-5 py-2.5 rounded-full transition-all duration-300 font-medium {% if page_type == 'Home' %}nav-item-active{% else %}text-slate-600 hover:bg-slate-100{% endif %}">
+                    <i class="fas fa-home"></i> <span>Home</span>
+                </a>
+                <a href="{% url 'yourlife_social:reels' %}" class="flex items-center gap-2 px-5 py-2.5 rounded-full transition-all duration-300 font-medium {% if page_type == 'Reels' %}nav-item-active{% else %}text-slate-600 hover:bg-slate-100{% endif %}">
+                    <i class="fas fa-film"></i> <span>Reels</span>
+                </a>
+                <a href="{% url 'yourlife_social:groups_list' %}" class="flex items-center gap-2 px-5 py-2.5 rounded-full transition-all duration-300 font-medium {% if page_type == 'Groups' %}nav-item-active{% else %}text-slate-600 hover:bg-slate-100{% endif %}">
+                    <i class="fas fa-users"></i> <span>Grupos</span>
+                </a>
+                <a href="{% url 'yourlife_social:events_list' %}" class="flex items-center gap-2 px-5 py-2.5 rounded-full transition-all duration-300 font-medium {% if page_type == 'Events' %}nav-item-active{% else %}text-slate-600 hover:bg-slate-100{% endif %}">
+                    <i class="far fa-calendar-alt"></i> <span>Eventos</span>
+                </a>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button @click="searchOpen = !searchOpen" class="p-2.5 rounded-full hover:bg-slate-100 transition-colors text-slate-600">
+                    <i class="fas fa-search"></i>
+                </button>
+
+                <button class="relative p-2.5 rounded-full hover:bg-slate-100 transition-colors text-slate-600">
+                    <i class="far fa-bell"></i>
+                    <span class="absolute w-2 h-2 border border-white rounded-full top-2 right-2 bg-rose-500"></span>
+                </button>
+
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" class="flex items-center gap-2 p-1 transition-colors rounded-full hover:bg-slate-100">
+                        <div class="flex items-center justify-center overflow-hidden font-bold text-white border-2 rounded-full w-9 h-9 border-violet-200 bg-gradient-to-br from-violet-500 to-cyan-500">
+                            {% if user.avatar %}
+                                <img src="{{ user.avatar.url }}" class="object-cover w-full h-full">
+                            {% else %}
+                                {{ user.first_name|first }}
+                            {% endif %}
+                        </div>
+                    </button>
+                    
+                    <div x-show="open" @click.away="open = false" class="absolute right-0 w-48 py-1 mt-2 bg-white border shadow-lg rounded-xl border-slate-100" style="display: none;">
+                        <a href="{% url 'yourlife_social:meu_perfil' %}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
+                            <i class="mr-2 fas fa-user"></i> Meu Perfil
+                        </a>
+                        <a href="{% url 'yourlife_social:profile_edit' %}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
+                            <i class="mr-2 fas fa-cog"></i> Configurações
+                        </a>
+                        <div class="my-1 border-t border-slate-100"></div>
+                        <a href="{% url 'yourlife_social:logout' %}" class="block px-4 py-2 text-sm text-rose-600 hover:bg-rose-50">
+                            <i class="mr-2 fas fa-sign-out-alt"></i> Sair
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="searchOpen" class="py-3 border-t border-slate-100 bg-white/50" style="display: none;">
+            <div class="max-w-xl px-4 mx-auto">
+                <div class="relative">
+                    <i class="absolute -translate-y-1/2 left-4 top-1/2 text-slate-400 fas fa-search"></i>
+                    <input type="text" placeholder="Buscar no YourLife..." class="w-full py-2.5 pl-10 pr-4 rounded-full bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-violet-500">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="min-h-screen px-4 pt-24 pb-20 md:pb-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 z-50 border-t bg-white/90 backdrop-blur-md border-slate-200 md:hidden pb-safe">
+        <div class="flex items-center justify-around p-2">
+            <a href="{% url 'yourlife_social:home' %}" class="flex flex-col items-center gap-1 p-2 rounded-xl {% if page_type == 'Home' %}text-violet-600{% else %}text-slate-400{% endif %}">
+                <i class="text-xl fas fa-home"></i>
+                <span class="text-[10px] font-medium">Home</span>
+            </a>
+            <a href="{% url 'yourlife_social:reels' %}" class="flex flex-col items-center gap-1 p-2 rounded-xl {% if page_type == 'Reels' %}text-violet-600{% else %}text-slate-400{% endif %}">
+                <i class="text-xl fas fa-film"></i>
+                <span class="text-[10px] font-medium">Reels</span>
+            </a>
+             <a href="{% url 'yourlife_social:events_list' %}" class="flex flex-col items-center gap-1 p-2 rounded-xl {% if page_type == 'Events' %}text-violet-600{% else %}text-slate-400{% endif %}">
+                <i class="text-xl far fa-calendar-alt"></i>
+                <span class="text-[10px] font-medium">Eventos</span>
+            </a>
+             <a href="{% url 'yourlife_social:meu_perfil' %}" class="flex flex-col items-center gap-1 p-2 rounded-xl {% if page_type == 'Profile' %}text-violet-600{% else %}text-slate-400{% endif %}">
+                <i class="text-xl fas fa-user"></i>
+                <span class="text-[10px] font-medium">Perfil</span>
+            </a>
+        </div>
+    </nav>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

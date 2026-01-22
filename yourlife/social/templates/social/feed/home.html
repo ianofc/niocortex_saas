@@ -1,0 +1,23 @@
+{% extends 'social/layout/base_useryourlife.html' %}
+{% load static %}
+
+{% block content %}
+<div class="relative z-10 max-w-[1600px] mx-auto min-h-screen p-4 md:p-6 lg:p-8" x-data="{ feedFilter: 'all' }">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <div class="hidden lg:block lg:col-span-3 sticky top-24 transition-all duration-500 ease-out">
+            {% include 'social/components/home/left_sidebar.html' %}
+        </div>
+
+        <div class="col-span-1 lg:col-span-6 w-full mx-auto max-w-2xl lg:max-w-none">
+            {% include 'social/components/home/feed_main.html' %}
+        </div>
+
+        <div class="hidden xl:block xl:col-span-3 sticky top-24 transition-all duration-500 ease-out">
+            {% include 'social/components/home/right_sidebar.html' %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

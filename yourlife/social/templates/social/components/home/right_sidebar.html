@@ -1,0 +1,100 @@
+{% load static %}
+
+<aside class="sticky hidden pl-4 space-y-6 xl:block xl:col-span-3 top-24">
+
+    <div class="relative overflow-hidden rounded-[2rem] bg-[#1a1b2e] p-6 text-white shadow-2xl transition-transform duration-500 hover:scale-[1.02] group border border-slate-700/50">
+        
+        <div class="absolute w-32 h-32 transition-colors duration-500 rounded-full -right-6 -top-6 bg-violet-600/40 blur-3xl group-hover:bg-violet-500/50"></div>
+        <div class="absolute w-32 h-32 rounded-full -left-6 -bottom-6 bg-indigo-500/20 blur-3xl"></div>
+        
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+
+        <div class="relative z-10 flex flex-col h-full justify-between min-h-[140px]">
+            <div class="flex items-start justify-between">
+                <i class="text-3xl transition-colors fas fa-fingerprint text-slate-600 group-hover:text-violet-400"></i>
+                <div class="relative w-12 overflow-hidden border rounded-lg shadow-md h-9 bg-gradient-to-tr from-yellow-200 via-yellow-400 to-orange-500 opacity-90 border-white/20">
+                    <div class="absolute inset-0 bg-white/30 skew-x-12 translate-x-[-150%] animate-[shimmer_3s_infinite]"></div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <h3 class="text-lg font-bold tracking-wide text-white truncate font-display drop-shadow-md">
+                    {{ request.user.get_full_name|upper }}
+                </h3>
+                <p class="text-[10px] font-bold tracking-[0.2em] uppercase text-indigo-300 mt-1">
+                    {{ request.user.role|default:"MEMBER" }}
+                </p>
+            </div>
+
+            <div class="flex items-end justify-between mt-6 transition-opacity opacity-60 group-hover:opacity-100">
+                <div class="flex flex-col">
+                    <span class="text-[8px] uppercase tracking-wider">Valid Thru</span>
+                    <span class="font-mono text-xs">12/26</span>
+                </div>
+                <i class="text-lg rotate-90 fas fa-wifi"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white/70 backdrop-blur-xl border border-white/60 rounded-[2rem] p-6 shadow-sm relative overflow-hidden group">
+        <div class="flex items-center justify-between mb-3">
+            <h4 class="flex items-center gap-2 text-xs font-black tracking-widest uppercase text-slate-600">
+                <div class="p-1.5 bg-indigo-100 rounded-lg">
+                    <img src="{% static 'imgs/talkio/Talkio_logo.png' %}" class="object-contain w-4 h-4"> 
+                </div>
+                Talkio AI
+            </h4>
+            <span class="relative flex h-2.5 w-2.5">
+                <span class="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping bg-emerald-400"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+        </div>
+        
+        <p class="mb-5 text-xs font-medium leading-relaxed text-slate-500">
+            Seu assistente pessoal está pronto para ajudar nos estudos ou conversar.
+        </p>
+        
+        <button @click="$store.nav.drawers.talkio = true" 
+                class="w-full py-3 bg-white border border-indigo-100 rounded-xl text-[11px] font-bold uppercase tracking-widest text-indigo-600 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all duration-300 shadow-sm hover:shadow-indigo-200 hover:shadow-lg group/btn">
+            <span class="flex items-center justify-center gap-2">
+                Iniciar Conversa <i class="transition-transform fas fa-arrow-right group-hover/btn:translate-x-1"></i>
+            </span>
+        </button>
+    </div>
+
+    <div class="bg-white/70 backdrop-blur-xl border border-white/60 rounded-[2rem] p-6 shadow-sm">
+        <h4 class="font-black text-slate-400 mb-5 text-[10px] uppercase tracking-[0.2em] flex items-center gap-2">
+            <i class="text-orange-400 fas fa-fire"></i> Em Alta
+        </h4>
+        
+        <div class="space-y-5">
+            <a href="#" class="block group">
+                <div class="flex items-center justify-between mb-1">
+                    <p class="text-sm font-bold transition-colors text-slate-700 group-hover:text-indigo-600">#SemanaDeProvas</p>
+                    <i class="text-xs transition-opacity opacity-0 fas fa-chart-line text-emerald-400 group-hover:opacity-100"></i>
+                </div>
+                <p class="text-[10px] font-medium text-slate-400">12.5k posts • Educação</p>
+            </a>
+
+            <a href="#" class="block group">
+                <div class="flex items-center justify-between mb-1">
+                    <p class="text-sm font-bold transition-colors text-slate-700 group-hover:text-indigo-600">#NioCortexLaunch</p>
+                    <span class="bg-indigo-100 text-indigo-600 text-[9px] font-bold px-1.5 py-0.5 rounded">NEW</span>
+                </div>
+                <p class="text-[10px] font-medium text-slate-400">5.3k posts • Tecnologia</p>
+            </a>
+
+            <a href="#" class="block group">
+                <div class="flex items-center justify-between mb-1">
+                    <p class="text-sm font-bold transition-colors text-slate-700 group-hover:text-indigo-600">#DesignTrends</p>
+                </div>
+                <p class="text-[10px] font-medium text-slate-400">3.1k posts • Arte</p>
+            </a>
+        </div>
+        
+        <button class="w-full mt-6 text-xs font-bold text-center transition-colors text-slate-400 hover:text-indigo-600">
+            Ver tudo
+        </button>
+    </div>
+
+</aside>

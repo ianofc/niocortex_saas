@@ -1,0 +1,141 @@
+{% load static %}
+
+{% if '/social/' in request.path %}
+    {% with zios_greeting="E aí! Eu sou o Zios AI. 😎 Pronto para ver o que tá rolando na YourLife?" zios_role="social" %}
+    <div id="zios-context" data-greeting="{{ zios_greeting }}" data-role="{{ zios_role }}" style="display:none;"></div>
+    {% endwith %}
+{% elif '/lumenios/professor/' in request.path or '/pedagogico/' in request.path %}
+    {% with zios_greeting="Olá, Professor! Sou o Zios AI Acadêmico. 🎓 Posso ajudar no planejamento ou análise de turmas hoje?" zios_role="professor" %}
+    <div id="zios-context" data-greeting="{{ zios_greeting }}" data-role="{{ zios_role }}" style="display:none;"></div>
+    {% endwith %}
+{% elif '/lumenios/' in request.path %}
+    {% with zios_greeting="Olá, Estudante! 📚 Sou seu tutor, Zios AI. Precisa de ajuda com alguma disciplina ou cronograma?" zios_role="aluno" %}
+    <div id="zios-context" data-greeting="{{ zios_greeting }}" data-role="{{ zios_role }}" style="display:none;"></div>
+    {% endwith %}
+{% else %}
+    {% with zios_greeting="Bem-vindo ao NioCortex. Como posso auxiliar na gestão hoje?" zios_role="admin" %}
+    <div id="zios-context" data-greeting="{{ zios_greeting }}" data-role="{{ zios_role }}" style="display:none;"></div>
+    {% endwith %}
+{% endif %}
+
+<div class="flex items-center justify-end flex-1 gap-3 md:gap-4" x-data="{ profileOpen: false }">
+
+    <button @click="$dispatch('toggle-switcher')" 
+            class="flex items-center justify-center w-10 h-10 transition-all border rounded-full group bg-white/10 hover:bg-white/30 backdrop-blur-md border-white/20 text-slate-500 hover:text-slate-800"
+            title="NioCortex Apps">
+        <i class="text-lg transition-transform fas fa-th group-hover:rotate-90"></i>
+    </button>
+
+    <button @click="$store.nav.toggle('zios'); updateZios AIGreeting()" 
+            class="flex items-center justify-center w-10 h-10 transition-all border rounded-full bg-white/10 hover:bg-white/30 backdrop-blur-md border-white/20 group"
+            title="Assistente IA">
+        <i class="text-xl text-purple-400 transition fas fa-brain group-hover:text-purple-600 animate-pulse"></i>
+    </button>
+
+    <button @click="$store.nav.toggle('talkio')" 
+            class="flex items-center justify-center w-10 h-10 transition-all border rounded-full bg-white/10 hover:bg-white/30 backdrop-blur-md border-white/20"
+            title="Talkio Messenger">
+        <img src="{% static 'imgs/talkio/Talkio_logo.png' %}" class="w-6 h-6 transition-opacity opacity-90 hover:opacity-100">
+    </button>
+    
+    <button @click="$store.nav.toggle('notif')" 
+            class="flex items-center justify-center w-10 h-10 transition-all border rounded-full bg-white/10 hover:bg-white/30 backdrop-blur-md border-white/20 text-slate-500 hover:text-slate-700">
+        <i class="text-lg far fa-bell"></i>
+    </button>
+    
+    <div class="relative">
+        <button @click="profileOpen = !profileOpen" 
+                class="flex items-center gap-2 py-1 pl-1 pr-3 transition-all border rounded-full bg-white/10 hover:bg-white/30 backdrop-blur-md border-white/20">
+            
+            <img src="{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}https://ui-avatars.com/api/?name={{ user.first_name }}&background=random&color=fff{% endif %}" 
+                 class="object-cover w-8 h-8 border-2 rounded-full shadow-sm border-white/50">
+            
+            <i class="fas fa-chevron-down text-[10px] text-slate-500 transition-transform duration-300" 
+               :class="profileOpen ? 'rotate-180' : ''"></i>
+        </button>
+        
+        <div x-show="profileOpen" @click.away="profileOpen = false" x-cloak
+             class="absolute top-14 right-0 w-72 bg-white rounded-2xl shadow-[0_15px_50px_rgba(0,0,0,0.2)] z-[120] border border-slate-200 overflow-hidden"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 translate-y-2">
+             
+            {% if '/social/' in request.path %}
+                <div class="p-4 border-b bg-violet-50">
+                    <p class="font-bold leading-tight text-slate-800">{{ user.get_full_name }}</p>
+                    <a href="{% url 'yourlife_social:meu_perfil' %}" class="text-xs font-bold text-violet-600 hover:text-violet-800">Ver Perfil Social</a>
+                </div>
+            {% elif '/lumenios/' in request.path or '/pedagogico/' in request.path %}
+                <div class="p-4 border-b {% if 'PROFESSOR' in user.role %}bg-emerald-50{% else %}bg-indigo-50{% endif %}">
+                    <p class="font-bold leading-tight text-slate-800">{{ user.get_full_name }}</p>
+                    <p class="text-xs font-bold uppercase tracking-wider {% if 'PROFESSOR' in user.role %}text-emerald-600{% else %}text-indigo-600{% endif %}">
+                        {% if 'PROFESSOR' in user.role %}Docente{% else %}Estudante{% endif %}
+                    </p>
+                </div>
+            {% else %}
+                <div class="p-4 border-b bg-slate-50">
+                    <p class="font-bold leading-tight text-slate-800">{{ user.get_full_name }}</p>
+                    <p class="text-xs font-medium text-slate-500">Conta NioCortex</p>
+                </div>
+            {% endif %}
+            
+            <div class="p-2 space-y-1">
+                {% if '/social/' in request.path %}
+                    <a href="{% url 'yourlife_social:settings_page' %}" class="block px-3 py-2 text-sm font-medium hover:bg-slate-100 rounded-xl text-slate-700">
+                        <i class="w-5 fas fa-cog text-slate-400"></i> Configurações
+                    </a>
+                    <a href="{% url 'yourlife_social:support_page' %}" class="block px-3 py-2 text-sm font-medium hover:bg-slate-100 rounded-xl text-slate-700">
+                        <i class="w-5 fas fa-life-ring text-slate-400"></i> Suporte
+                    </a>
+                    <button @click="$store.nav.toggle('theme')" class="flex items-center w-full px-3 py-2 text-sm font-medium text-left hover:bg-slate-100 rounded-xl text-slate-700">
+                        <i class="w-5 fas fa-palette text-slate-400"></i> Temas
+                    </button>
+                    <button @click="$store.nav.toggle('a11y')" class="flex items-center w-full px-3 py-2 text-sm font-medium text-left hover:bg-slate-100 rounded-xl text-slate-700">
+                        <i class="w-5 fas fa-universal-access text-slate-400"></i> Acessibilidade
+                    </button>
+
+                {% elif '/lumenios/' in request.path or '/pedagogico/' in request.path %}
+                    {% if 'PROFESSOR' in user.role %}
+                        <a href="#" class="block px-3 py-2 text-sm font-medium hover:bg-emerald-50 text-slate-700">
+                            <i class="w-5 fas fa-id-badge text-emerald-500"></i> Dados Funcionais
+                        </a>
+                    {% else %}
+                        <a href="{% url 'core:carteirinha' %}" class="block px-3 py-2 text-sm font-medium hover:bg-indigo-50 text-slate-700">
+                            <i class="w-5 text-indigo-500 fas fa-id-card"></i> Carteirinha Digital
+                        </a>
+                        <a href="#" class="block px-3 py-2 text-sm font-medium hover:bg-indigo-50 text-slate-700">
+                            <i class="w-5 text-indigo-500 fas fa-file-alt"></i> Histórico
+                        </a>
+                    {% endif %}
+                    <button @click="$store.nav.toggle('theme')" class="flex items-center w-full px-3 py-2 text-sm font-medium text-left hover:bg-slate-100 rounded-xl text-slate-700">
+                        <i class="w-5 fas fa-palette text-slate-400"></i> Temas
+                    </button>
+
+                {% else %}
+                    <a href="#" class="block px-3 py-2 text-sm font-medium hover:bg-slate-100 rounded-xl text-slate-700">Minha Conta</a>
+                {% endif %}
+            </div>
+            
+            <div class="p-2 border-t border-slate-100">
+                <a href="{% url 'yourlife_social:logout' %}" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-500 hover:bg-red-50 rounded-xl">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateZios AIGreeting() {
+        const contextEl = document.getElementById('zios-context');
+        if (!contextEl) return;
+        const greeting = contextEl.getAttribute('data-greeting');
+        const role = contextEl.getAttribute('data-role');
+        const event = new CustomEvent('zios-init', { detail: { greeting: greeting, role: role } });
+        window.dispatchEvent(event);
+    }
+</script>
+<script src="{% static 'core/js/navbar.js' %}"></script>
