@@ -1,6 +1,6 @@
 from google import genai
-from identity.priors import get_liquid_prompt
-from core.config import settings
+from zios.identity.priors import get_liquid_prompt
+from zios.core.config import settings
 
 class ZiosBrain:
     """Interface Neural estabilizada para o ZIOS."""

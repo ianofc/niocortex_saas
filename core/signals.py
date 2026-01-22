@@ -1,8 +1,9 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.conf import settings
 from core.models import CustomUser
 
-# Tenta importar modelos satélites
+# Tenta importar os modelos satélites (com tratamento de erro para evitar crash)
 try:
     from lumenios.pedagogico.models import Aluno
 except ImportError:
@@ -18,21 +19,21 @@ def gerenciar_integracoes_usuario(sender, instance, created, **kwargs):
     if created:
         print(f"   ---> [Signal] Integrando usuário: {instance.username}")
         
-        # 1. Integração com Pedagógico
-        # CORREÇÃO: Usa 'matricula_escolar' e remove 'nome' (que já está no User)
+        # 1. Integração com Pedagógico (Cria Aluno se for role='ALUNO')
         if instance.role == 'ALUNO' and Aluno:
             try:
                 Aluno.objects.get_or_create(
-                    usuario=instance,
+                    usuario=instance, # CORREÇÃO: O campo é 'usuario', não 'user'
                     defaults={
-                        'matricula_escolar': instance.matricula,
+                        'nome': f"{instance.first_name} {instance.last_name}",
+                        'matricula': instance.matricula,
                         'turma': instance.turma
                     }
                 )
             except Exception as e:
                 print(f"   [!] Erro ao criar Aluno auto: {e}")
 
-        # 2. Integração com Social (Álbuns)
+        # 2. Integração com Social (Cria Álbum Padrão)
         if Album:
             try:
                 Album.objects.get_or_create(
@@ -53,10 +54,10 @@ def gerenciar_integracoes_usuario(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=CustomUser)
 def salvar_integracoes(sender, instance, **kwargs):
-    # Atualiza vinculos se necessário
+    # Atualiza dados do Aluno se o User mudar
     if instance.role == 'ALUNO' and Aluno:
         try:
-            if hasattr(instance, 'perfil_escolar'):
-                instance.perfil_escolar.save()
+            if hasattr(instance, 'aluno_perfil'):
+                instance.aluno_perfil.save()
         except:
             pass
