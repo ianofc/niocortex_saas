@@ -18,9 +18,10 @@ from django.contrib.auth.models import Group
 
 # Tenta importar Pedagogico (se falhar, segue sem turmas reais)
 try:
-    from lumenios.pedagogico.models import Turma
+    from lumenios.pedagogico.models import Turma, Aluno
 except ImportError:
     Turma = None
+    Aluno = None
 
 # ==============================================================================
 # UTILITÁRIOS DE DADOS RANDÔMICOS
@@ -34,6 +35,11 @@ def gerar_cpf():
 
 def gerar_telefone():
     return f"(71) 9{random.randint(1000,9999)}-{random.randint(1000,9999)}"
+
+def gerar_matricula_simples():
+    """Gera uma matrícula baseada em Ano + Random para garantir unicidade"""
+    ano = date.today().year
+    return f"{ano}{random.randint(100000, 999999)}"
 
 def gerar_nascimento(tipo='JOVEM'):
     ano_atual = date.today().year
@@ -65,7 +71,9 @@ def get_defaults_padrao(role='ALUNO', tipo_idade='JOVEM'):
         'is_premium': True, # Todo mundo premium no teste
         'role': role,
         'nivel_ensino': 'medio' if role == 'ALUNO' else 'superior',
-        'fase_vida': tipo_idade
+        'fase_vida': tipo_idade,
+        # Garante matricula na criação para o Signal pegar corretamente
+        'matricula': gerar_matricula_simples() 
     }
 
 # ==============================================================================
@@ -74,14 +82,13 @@ def get_defaults_padrao(role='ALUNO', tipo_idade='JOVEM'):
 
 def migrar_estrutura():
     print("\n>>> [1/5] Atualizando Banco de Dados (Migrações)...")
-    # Força a criação das tabelas novas (UserMedia, campos novos no User)
     try:
         call_command('makemigrations', 'core')
         call_command('migrate', 'core')
         # call_command('migrate') # Descomente para rodar geral se precisar
         print("    [OK] Estrutura atualizada.")
     except Exception as e:
-        print(f"    [AVISO] Erro na migração (pode já estar atualizado): {e}")
+        print(f"    [AVISO] Erro na migração: {e}")
 
 def criar_escola_base():
     print("\n>>> [2/5] Garantindo Escola Base...")
@@ -102,8 +109,8 @@ def processar_admin_ian(escola):
     ian_defaults.update({
         'first_name': 'Ian',
         'last_name': 'Santos',
-        'email': 'ianwokrtech@gmail.com', # E-mail solicitado
-        'data_nascimento': date(1993, 4, 29), # Data solicitada
+        'email': 'ianwokrtech@gmail.com',
+        'data_nascimento': date(1993, 4, 29),
         'cpf': '000.000.000-01',
         'is_staff': True,
         'is_superuser': True,
@@ -112,7 +119,8 @@ def processar_admin_ian(escola):
         'school': escola,
         'tenant_id': escola.tenant_id,
         'bio': 'Criador e Administrador do NioCortex.',
-        'atuacao': 'Full Stack Developer & Professor'
+        'atuacao': 'Full Stack Developer & Professor',
+        'matricula': 'IANADMIN01'
     })
 
     ian, created = CustomUser.objects.update_or_create(
@@ -143,6 +151,7 @@ def processar_txt_alunos(escola):
     
     nomes = re.findall(r"Creating user for: (.*?) ->", conteudo)
     
+    count = 0
     for nome_completo in nomes:
         nome_completo = nome_completo.strip().title()
         parts = nome_completo.split()
@@ -154,7 +163,7 @@ def processar_txt_alunos(escola):
         defaults.update({
             'first_name': first,
             'last_name': last,
-            'email': f"{username}@niocortex.com", # Padronizado
+            'email': f"{username}@niocortex.com",
             'school': escola,
             'tenant_id': escola.tenant_id,
             'is_aluno': True,
@@ -167,9 +176,10 @@ def processar_txt_alunos(escola):
         )
         if created:
             user.set_password('123456')
-            user.save()
+            user.save() # Signal dispara criação do Aluno
+            count += 1
             
-    print(f"    [OK] {len(nomes)} alunos processados.")
+    print(f"    [OK] {count} novos alunos processados de {len(nomes)} nomes.")
 
 def casos_uso_especiais(escola):
     print("\n>>> [5/5] Criando Casos de Uso Especiais (Faculdade & Maternal)...")
@@ -181,7 +191,8 @@ def casos_uso_especiais(escola):
         'email': 'ana.uni@niocortex.com',
         'nivel_ensino': 'superior',
         'instituicao_ensino': 'Universidade NioCortex',
-        'school': escola, 'is_aluno': True
+        'school': escola, 'is_aluno': True,
+        'matricula': 'UNI2026ANA'
     })
     ana, _ = CustomUser.objects.update_or_create(username='ana_uni', defaults=ana_defaults)
     ana.set_password('ana123456')
@@ -191,35 +202,28 @@ def casos_uso_especiais(escola):
     bebe_defaults = get_defaults_padrao('ALUNO', 'BEBE')
     bebe_defaults.update({
         'first_name': 'Enzo', 'last_name': 'Baby',
-        'email': 'enzo.baby@niocortex.com', # Email dummy
+        'email': 'enzo.baby@niocortex.com',
         'nivel_ensino': 'infantil',
         'fase_vida': 'INFANCIA',
-        'school': escola
+        'school': escola,
+        'matricula': 'BABY2026ENZO'
     })
     bebe, _ = CustomUser.objects.update_or_create(username='bebe_enzo', defaults=bebe_defaults)
+    bebe.set_password('123456'); bebe.save()
     
     pai_defaults = get_defaults_padrao('RESPONSAVEL', 'ADULTO')
+    pai_defaults.update({'matricula': 'PAI2026'})
     pai, _ = CustomUser.objects.update_or_create(username='pai_enzo', defaults=pai_defaults)
     pai.set_password('123456'); pai.save()
     
     print("    [OK] Perfis especiais criados.")
 
-def gerar_matriculas_finais():
-    print("\n>>> [EXTRA] Gerando Matrículas Faltantes...")
-    users = CustomUser.objects.filter(matricula__isnull=True)
-    ano = date.today().year
-    for u in users:
-        u.matricula = f"{ano}{u.id}{random.randint(100,999)}"
-        u.save()
-
 if __name__ == '__main__':
-    migrar_estrutura() # Garante que o banco tem as colunas novas
+    migrar_estrutura() 
     escola = criar_escola_base()
     processar_admin_ian(escola)
     processar_txt_alunos(escola)
-    # run_sqlite_migration(escola) # Opcional: Se quiser tentar ler o SQLite de novo, descomente
     casos_uso_especiais(escola)
-    gerar_matriculas_finais()
     
     print("\n=== SISTEMA PRONTO PARA USO ===")
     print("Login Ian: iansantos / 134679")

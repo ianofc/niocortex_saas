@@ -6,6 +6,7 @@ class Turma(models.Model):
     nome = models.CharField(max_length=100)
     ano_letivo = models.IntegerField(default=2026)
     periodo = models.CharField(max_length=20, default='Matutino')
+    # Adicionado related_name para facilitar acesso reverso (user.turmas_regente)
     professor_regente = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='turmas_regente')
 
     def __str__(self): return self.nome
@@ -16,29 +17,27 @@ class Disciplina(models.Model):
     professor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='disciplinas_lecionadas')
     def __str__(self): return self.nome
 
-# AQUI ESTÁ A CLASSE QUE ESTAVA FALTANDO OU INVISÍVEL
 class Horario(models.Model):
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='horarios')
-    disciplina = models.CharField(max_length=100, null=True, blank=True) # Alterado para CharField para flexibilidade ou mantido FK se preferir, mas ajustei para evitar erros de importação cruzada se houver
+    disciplina = models.ForeignKey(Disciplina, on_delete=models.CASCADE)
     dia_semana = models.IntegerField(choices=[(0,'Seg'),(1,'Ter'),(2,'Qua'),(3,'Qui'),(4,'Sex')])
     hora_inicio = models.TimeField()
     hora_fim = models.TimeField()
-    
     def __str__(self): return f"{self.turma} - {self.dia_semana}"
 
 class Aluno(models.Model):
     usuario = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='perfil_escolar')
-    turma = models.ForeignKey(Turma, on_delete=models.SET_NULL, null=True, blank=True, related_name='alunos')
-    matricula_escolar = models.CharField(max_length=50, unique=True, null=True, blank=True)
+    turma = models.ForeignKey(Turma, on_delete=models.SET_NULL, null=True, blank=True)
     
-    # Campos financeiros/estatísticos
+    # [CORREÇÃO] Renomeado de matricula_escolar -> matricula (Espelho do Core)
+    matricula = models.CharField(max_length=50, unique=True, null=True, blank=True)
+    
     nota_media = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
     taxa_frequencia = models.DecimalField(max_digits=5, decimal_places=2, default=100.0) 
     
     def __str__(self): return f"Aluno: {self.usuario}"
 
-# --- MODELOS ADICIONAIS ---
-
+# --- Demais modelos (Atividade, Nota, Frequencia...) permanecem iguais ---
 class Atividade(models.Model):
     titulo = models.CharField(max_length=200)
     descricao = models.TextField()

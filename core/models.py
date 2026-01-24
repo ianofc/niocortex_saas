@@ -33,7 +33,7 @@ class CustomUser(AbstractUser):
     instituicao_ensino = models.CharField("Instituição", max_length=200, blank=True)
     status_relacionamento = models.CharField(max_length=50, blank=True)
 
-    # --- CAMPOS QUE FALTAVAM E CAUSAVAM ERRO NO ADMIN ---
+    # --- CAMPOS ESSENCIAIS PARA O SOCIAL ---
     nivel_ensino = models.CharField(max_length=20, default='medio', null=True, blank=True)
     fase_vida = models.CharField(max_length=20, default='JOVEM', null=True, blank=True)
 

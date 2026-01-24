@@ -1,0 +1,47 @@
+{% load static %}
+
+<div class="relative mb-8">
+    <div class="flex pb-2 space-x-4 overflow-x-auto scrollbar-hide">
+        
+        <div class="flex flex-col items-center space-y-1 min-w-[70px] cursor-pointer group">
+            <div class="relative w-[68px] h-[68px]">
+                <div class="absolute inset-0 transition border-2 border-gray-300 border-dashed rounded-full group-hover:border-gray-400"></div>
+                <div class="absolute inset-1 rounded-full p-[2px] bg-white">
+                    {% if request.user.avatar %}
+                        <img src="{{ request.user.avatar.url }}" class="object-cover w-full h-full rounded-full">
+                    {% else %}
+                        <div class="flex items-center justify-center w-full h-full text-gray-400 bg-gray-100 rounded-full">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="absolute bottom-0 right-0 flex items-center justify-center w-5 h-5 text-xs text-white bg-blue-500 border-2 border-white rounded-full">
+                    <i class="fas fa-plus"></i>
+                </div>
+            </div>
+            <span class="w-16 text-xs text-center text-gray-500 truncate">Seu story</span>
+        </div>
+
+        {% for i in "12345678" %}
+        <div class="flex flex-col items-center space-y-1 min-w-[70px] cursor-pointer transform hover:scale-105 transition duration-200">
+            <div class="w-[68px] h-[68px] rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500">
+                <div class="w-full h-full overflow-hidden bg-white border-2 border-white rounded-full">
+                    <img src="https://i.pravatar.cc/150?u={{ i }}" class="object-cover w-full h-full">
+                </div>
+            </div>
+            <span class="w-16 text-xs font-medium text-center text-gray-600 truncate">usuario_{{ i }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    /* Esconder barra de rolagem mas manter funcionalidade */
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>

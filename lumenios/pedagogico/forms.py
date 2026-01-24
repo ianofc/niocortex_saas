@@ -18,11 +18,11 @@ class AlunoForm(forms.ModelForm):
     
     class Meta:
         model = Aluno
-        # Removemos 'nome', 'email', etc. pois agora pertencem ao CustomUser
-        fields = ['turma', 'matricula_escolar'] 
+        # [CORREÇÃO] Atualizado de 'matricula_escolar' para 'matricula' para bater com o Model
+        fields = ['turma', 'matricula'] 
         widgets = {
             'turma': forms.Select(attrs={'class': 'form-select'}),
-            'matricula_escolar': forms.TextInput(attrs={'class': 'form-input'}),
+            'matricula': forms.TextInput(attrs={'class': 'form-input'}),
         }
 
 class AtividadeForm(forms.ModelForm):

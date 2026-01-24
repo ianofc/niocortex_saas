@@ -148,7 +148,7 @@ def run():
         u.nivel_ensino = t['nivel']
         
         u.set_password('123456')
-        u.save()
+        u.save() # Signal deve criar Aluno automaticamente se for ALUNO
         
         # Garante Álbum
         if not u.albuns.exists():
@@ -216,12 +216,15 @@ def run():
             user.set_password('123456')
             
             try:
-                user.save()
+                user.save() # Signal dispara criação do Aluno aqui
                 
-                # Perfil Pedagógico
-                Aluno.objects.get_or_create(
+                # Perfil Pedagógico - Reforço/Update (Com nome de campo CORRIGIDO)
+                Aluno.objects.update_or_create(
                     usuario=user,
-                    defaults={'turma': turma, 'matricula_escolar': user.matricula}
+                    defaults={
+                        'turma': turma, 
+                        'matricula': user.matricula  # <-- CORRIGIDO PARA 'matricula'
+                    }
                 )
                 
                 # Álbuns

@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from ..models import Post, Comentario
+from ..models import Post, Comentario, Story
+from django.utils import timezone
 
 @login_required
 def home_feed(request):
     # --- BLOQUEIO DE BEBÊ ---
-    # Bebês não têm feed, vão direto para o Diário
     if request.user.nivel_ensino == 'bebe' or request.user.fase_vida == 'BEBE':
         return redirect('core:daily_diary')
     # ------------------------
@@ -29,14 +29,9 @@ def home_feed(request):
 
 @login_required
 def reels_view(request):
-    # Bebês também não veem Reels
     if request.user.nivel_ensino == 'bebe':
         return redirect('core:daily_diary')
-        
     return render(request, 'social/reels/index.html')
-
-
-from django.utils import timezone
 
 @login_required
 def create_story(request):
@@ -46,7 +41,6 @@ def create_story(request):
         legenda = request.POST.get('legenda')
         
         if imagem or video:
-            from ..models import Story  # Importação local para evitar ciclo
             Story.objects.create(
                 autor=request.user,
                 imagem=imagem,
@@ -56,4 +50,3 @@ def create_story(request):
             return redirect('yourlife_social:home')
             
     return render(request, 'social/create/create_story.html')
-

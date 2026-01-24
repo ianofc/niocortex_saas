@@ -16,12 +16,16 @@ urlpatterns = [
     path('logout/', auth.logout_view, name='logout'),
     path('register/', auth.register_view, name='register'),
     
+    # Follows
+    path('profile/<str:username>/followers/', profile.followers_list, name='profile_followers'),
+    path('profile/<str:username>/following/', profile.following_list, name='profile_following'),
+    
     # Perfil
     path('perfil/', profile.my_profile, name='meu_perfil'),
     path('perfil/editar/', profile.profile_edit, name='profile_edit'),
     path('perfil/<str:username>/', profile.user_profile, name='profile_detail'),
     
-    # Interações de Postagem (CORRIGIDO: Adicionado share_post)
+    # Interações
     path('post/<int:post_id>/like/', interactions.toggle_like, name='toggle_like'),
     path('post/<int:post_id>/edit/', interactions.edit_post, name='edit_post'),
     path('post/<int:post_id>/delete/', interactions.delete_post, name='delete_post'),
@@ -31,16 +35,19 @@ urlpatterns = [
     
     # Comunidades e Eventos
     path('groups/', groups.GroupListView.as_view(), name='groups_list'),
+    path('groups/create/', groups.group_create, name='group_create'),
+    path('groups/<int:group_id>/', groups.group_detail, name='group_detail'),
     path('events/', events.EventListView.as_view(), name='events_list'),
+    path('events/create/', events.event_create, name='event_create'),
+    path('events/<int:event_id>/', events.event_detail, name='event_detail'),
     
-    # IAs e Chatbots (Drawers)
+    # IAs
     path('talkio/', extras.talkio_app, name='talkio_app'),
     path('zios/', extras.zios_view, name='zios_view'),
     path('api/zios/chat/', api.api_zios_chat, name='api_zios_chat'),
     path('api/zios/finalize/', api.api_finalize, name='api_finalize'),
-    path('api/zios/finalize/', api.api_finalize, name='api_finalize'),
     
-    # Configurações e Suporte
+    # Config
     path('support/', extras.support_page, name='support_page'),
     path('settings/', extras.settings_page, name='settings_page'),
     path('settings/support/', extras.settings_support, name='settings_support'),

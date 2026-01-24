@@ -29,7 +29,7 @@ class UserMedia(models.Model):
     ativo = models.BooleanField(default=True)
     class Meta: ordering = ['-criado_em']
 
-# --- MODELOS ANTIGOS (RESTAURADOS PARA O SISTEMA FUNCIONAR) ---
+# --- REDE SOCIAL (REFATORADO PARA INGLÊS) ---
 
 class Post(models.Model):
     autor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='posts')
@@ -48,25 +48,50 @@ class Comentario(models.Model):
     texto = models.TextField()
     data_criacao = models.DateTimeField(auto_now_add=True)
 
-class Grupo(models.Model):
-    nome = models.CharField(max_length=100)
+# [CORREÇÃO] Renomeado de Grupo -> Group e campos traduzidos
+class Group(models.Model):
+    name = models.CharField(max_length=100) # era 'nome'
     slug = models.SlugField(unique=True, blank=True)
-    descricao = models.TextField(blank=True)
-    capa = models.ImageField(upload_to='grupos/', blank=True, null=True)
-    membros = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='grupos_participa', blank=True)
-    admins = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='grupos_admin', blank=True)
-    criador = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='grupos_criados', null=True)
+    description = models.TextField(blank=True) # era 'descricao'
+    cover = models.ImageField(upload_to='grupos/', blank=True, null=True) # era 'capa'
+    
+    # era 'membros' (agora members para bater com o template {{ group.members.count }})
+    members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='social_groups', blank=True)
+    admins = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='admin_groups', blank=True)
+    
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='created_groups', null=True)
+    is_private = models.BooleanField(default=False)
+
     def save(self, *args, **kwargs):
         if not self.slug: self.slug = str(uuid.uuid4())[:8]
         super().save(*args, **kwargs)
+    
+    # Propriedades de compatibilidade (se algum código antigo ainda chamar .nome ou .membros)
+    @property
+    def nome(self): return self.name
+    @property
+    def membros(self): return self.members
 
-class Evento(models.Model):
-    titulo = models.CharField(max_length=200)
-    descricao = models.TextField()
-    data_inicio = models.DateTimeField()
-    local = models.CharField(max_length=200)
-    organizador = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    participantes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='eventos_confirmados', blank=True)
+# [CORREÇÃO] Renomeado de Evento -> Event e campos traduzidos
+class Event(models.Model):
+    title = models.CharField(max_length=200) # era 'titulo'
+    description = models.TextField() # era 'descricao'
+    location = models.CharField(max_length=200) # era 'local'
+    
+    start_time = models.DateTimeField() # era 'data_inicio'
+    end_time = models.DateTimeField(null=True, blank=True) # Novo campo necessário
+    
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='created_events')
+    
+    # era 'participantes' (agora participants para bater com template)
+    participants = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='participating_events', blank=True)
+    
+    EVENT_TYPES = [('ACADEMIC', 'Acadêmico'), ('SOCIAL', 'Social'), ('WORK', 'Trabalho')]
+    event_type = models.CharField(max_length=20, choices=EVENT_TYPES, default='SOCIAL') # Novo campo
+    is_online = models.BooleanField(default=False) # Novo campo
+
+    @property
+    def data_evento(self): return self.start_time
 
 class Friendship(models.Model):
     user_from = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='friendship_creator', on_delete=models.CASCADE)
@@ -90,7 +115,7 @@ class Notification(models.Model):
     recipient = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='notifications', on_delete=models.CASCADE)
     actor = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='caused_notifications', on_delete=models.CASCADE)
     verb = models.CharField(max_length=255)
-    target_post = models.ForeignKey('Post', null=True, blank=True, on_delete=models.CASCADE)
+    target_post = models.ForeignKey(Post, null=True, blank=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
     class Meta: ordering = ['-created_at']

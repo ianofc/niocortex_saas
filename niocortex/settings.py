@@ -74,18 +74,23 @@ WSGI_APPLICATION = 'niocortex.wsgi.application'
 # ==============================================================================
 # BANCO DE DADOS (SUPABASE / POSTGRESQL)
 # ==============================================================================
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
-# Se existir DATABASE_URL no .env, usa ela (Supabase)
-# Isso substitui o SQLite automaticamente
+# Tenta pegar do arquivo .env
 database_url = os.getenv('DATABASE_URL')
-if database_url:
-    DATABASES['default'] = dj_database_url.parse(database_url)
+
+# SE O .ENV FALHAR, COLE SUA URL DO SUPABASE ABAIXO (Substitua a string vazia):
+# Exemplo: "postgresql://postgres:SUA_SENHA@db.ref.supabase.co:5432/postgres"
+if not database_url:
+    database_url = "postgresql://postgres:2511CorteXEduc@db.qnknyonohlorjfhzkkpz.supabase.co:5432/postgres"
+
+# Configuração
+if database_url and "postgres" in database_url:
+    DATABASES = {
+        'default': dj_database_url.parse(database_url)
+    }
+else:
+    # Trava o sistema se não tiver Supabase configurado (para não criar sqlite fantasma)
+    raise Exception("❌ ERRO CRÍTICO: DATABASE_URL não encontrada! Configure o .env ou o settings.py com a URL do Supabase.")
 
 # User Model
 AUTH_USER_MODEL = 'core.CustomUser'

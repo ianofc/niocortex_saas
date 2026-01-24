@@ -1,9 +1,8 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.conf import settings
 from core.models import CustomUser
 
-# Tenta importar os modelos satélites (com tratamento de erro para evitar crash)
+# Tenta importar modelos satélites
 try:
     from lumenios.pedagogico.models import Aluno
 except ImportError:
@@ -19,13 +18,14 @@ def gerenciar_integracoes_usuario(sender, instance, created, **kwargs):
     if created:
         print(f"   ---> [Signal] Integrando usuário: {instance.username}")
         
-        # 1. Integração com Pedagógico (Cria Aluno se for role='ALUNO')
+        # 1. Integração com Pedagógico
         if instance.role == 'ALUNO' and Aluno:
             try:
+                # [CORREÇÃO] Passamos apenas matricula e turma. 
+                # O 'nome' é pego via instance.first_name quando precisar exibir.
                 Aluno.objects.get_or_create(
-                    usuario=instance, # CORREÇÃO: O campo é 'usuario', não 'user'
+                    usuario=instance,
                     defaults={
-                        'nome': f"{instance.first_name} {instance.last_name}",
                         'matricula': instance.matricula,
                         'turma': instance.turma
                     }
@@ -33,7 +33,7 @@ def gerenciar_integracoes_usuario(sender, instance, created, **kwargs):
             except Exception as e:
                 print(f"   [!] Erro ao criar Aluno auto: {e}")
 
-        # 2. Integração com Social (Cria Álbum Padrão)
+        # 2. Integração com Social (Álbuns)
         if Album:
             try:
                 Album.objects.get_or_create(
@@ -54,10 +54,24 @@ def gerenciar_integracoes_usuario(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=CustomUser)
 def salvar_integracoes(sender, instance, **kwargs):
-    # Atualiza dados do Aluno se o User mudar
+    # Sincronização unidirecional Core -> Satélites
     if instance.role == 'ALUNO' and Aluno:
         try:
-            if hasattr(instance, 'aluno_perfil'):
-                instance.aluno_perfil.save()
-        except:
+            # Se já tem perfil escolar, atualiza a matricula e turma caso tenham mudado no Core
+            if hasattr(instance, 'perfil_escolar'):
+                perfil = instance.perfil_escolar
+                mudou = False
+                
+                if perfil.matricula != instance.matricula:
+                    perfil.matricula = instance.matricula
+                    mudou = True
+                
+                if perfil.turma != instance.turma:
+                    perfil.turma = instance.turma
+                    mudou = True
+                
+                if mudou:
+                    perfil.save()
+        except Exception as e:
+            # print(f"Erro sync signal: {e}")
             pass

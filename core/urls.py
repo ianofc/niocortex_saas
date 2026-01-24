@@ -1,4 +1,6 @@
 from django.urls import path
+# Importe a view nativa de logout do Django
+from django.contrib.auth.views import LogoutView 
 from .views import professor, aluno, ia, auth
 
 app_name = 'core'
@@ -7,6 +9,10 @@ urlpatterns = [
     # O Router 'app/' ainda existe para redirecionar quem tentar acessar direto,
     # mas agora ele vai mandar para o social por padrão.
     path('app/', auth.dashboard_router_view, name='dashboard'),
+
+    # --- ADICIONE ESTA LINHA PARA CORRIGIR O ERRO ---
+    # Isso cria a rota 'core:logout' que o template está procurando
+    path('logout/', LogoutView.as_view(), name='logout'),
 
     # --- Dashboards Específicos (Lumenios) ---
     path('app/gestao/', professor.corporate_dashboard, name='corporate_dashboard'),
