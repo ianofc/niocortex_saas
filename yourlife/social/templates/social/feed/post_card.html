@@ -1,97 +1,66 @@
 {% load static %}
-
-<div class="bg-white rounded-xl border border-gray-100 mb-6 shadow-sm">
-    
+<div class="mb-6 transition-all bg-white border border-gray-100 shadow-sm rounded-xl hover:shadow-md" id="post-{{ post.id }}">
     <div class="flex items-center justify-between p-3">
         <div class="flex items-center space-x-3">
-            <a href="{% url 'yourlife_social:profile_detail' post.autor.username %}" class="relative cursor-pointer">
-                <div class="w-10 h-10 rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500">
-                    <div class="w-full h-full rounded-full border-2 border-white bg-white overflow-hidden">
+            <a href="{% url 'yourlife_social:profile_detail' post.autor.username %}" class="relative cursor-pointer group">
+                <div class="w-10 h-10 rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 group-hover:scale-105 transition-transform">
+                    <div class="w-full h-full overflow-hidden bg-white border-2 border-white rounded-full">
                         {% if post.autor.avatar %}
-                            <img src="{{ post.autor.avatar.url }}" class="w-full h-full object-cover">
+                            <img src="{{ post.autor.avatar.url }}" class="object-cover w-full h-full">
                         {% else %}
-                            <div class="w-full h-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-500">
-                                {{ post.autor.first_name|first }}
-                            </div>
+                            <div class="flex items-center justify-center w-full h-full text-xs font-bold text-gray-500 bg-gray-200">{{ post.autor.first_name|first }}</div>
                         {% endif %}
                     </div>
                 </div>
             </a>
-            
             <div class="leading-tight">
-                <a href="{% url 'yourlife_social:profile_detail' post.autor.username %}" class="font-bold text-sm text-gray-900 hover:text-gray-600 transition">
-                    {{ post.autor.username }}
-                </a>
-                {% if post.location %}
-                    <p class="text-[11px] text-gray-500">{{ post.location }}</p>
-                {% endif %}
+                <a href="{% url 'yourlife_social:profile_detail' post.autor.username %}" class="text-sm font-bold text-gray-900 transition hover:text-indigo-600">{{ post.autor.username }}</a>
+                {% if post.location %}<p class="text-[11px] text-gray-500">{{ post.location }}</p>{% endif %}
             </div>
         </div>
-
-        <button class="text-gray-600 hover:text-black p-2">
-            <i class="fas fa-ellipsis-h"></i>
-        </button>
+        <button class="p-2 text-gray-400 hover:text-gray-900"><i class="fas fa-ellipsis-h"></i></button>
     </div>
 
     {% if post.imagem %}
-    <div class="w-full bg-gray-100 flex items-center justify-center overflow-hidden max-h-[600px]">
-        <img src="{{ post.imagem.url }}" class="w-full h-auto object-contain" style="min-height: 300px;">
+    <div class="w-full bg-black flex items-center justify-center overflow-hidden max-h-[600px]">
+        <img src="{{ post.imagem.url }}" class="w-full h-auto object-contain max-h-[600px]" loading="lazy">
     </div>
     {% endif %}
 
     <div class="p-3">
         <div class="flex items-center justify-between mb-3">
             <div class="flex items-center space-x-4">
-                <button class="text-2xl text-gray-800 hover:text-red-500 transition transform active:scale-90">
-                    <i class="far fa-heart"></i> </button>
-                
-                <button class="text-2xl text-gray-800 hover:text-blue-500 transition transform active:scale-90">
-                    <i class="far fa-comment"></i>
+                <button hx-post="{% url 'yourlife_social:toggle_like' post.id %}" hx-swap="outerHTML" hx-target="#like-btn-{{ post.id }}" id="like-btn-{{ post.id }}" class="text-2xl transition transform active:scale-75 hover:scale-110 focus:outline-none">
+                    {% if post.user_liked %}<i class="text-red-500 fas fa-heart animate-pulse"></i>{% else %}<i class="text-gray-800 far fa-heart hover:text-gray-500"></i>{% endif %}
                 </button>
-                
-                <button class="text-2xl text-gray-800 hover:text-green-500 transition transform active:scale-90">
-                    <i class="far fa-paper-plane"></i>
-                </button>
+                <button onclick="document.getElementById('comment-input-{{ post.id }}').focus()" class="text-2xl text-gray-800 transition transform hover:text-blue-500 active:scale-90"><i class="far fa-comment"></i></button>
+                <button class="text-2xl text-gray-800 transition transform hover:text-green-500 active:scale-90"><i class="far fa-paper-plane"></i></button>
             </div>
-            
-            <button class="text-2xl text-gray-800 hover:text-gray-600 transition">
-                <i class="far fa-bookmark"></i>
-            </button>
+            <button class="text-2xl text-gray-800 transition hover:text-yellow-500"><i class="far fa-bookmark"></i></button>
         </div>
 
-        <div class="font-bold text-sm text-gray-900 mb-2">
-            {{ post.curtidas.count }} curtidas
+        <div class="mb-2 text-sm font-bold text-gray-900">
+            <span id="likes-val-{{ post.id }}">{{ post.total_likes }}</span> curtidas
         </div>
 
         {% if post.conteudo %}
-        <div class="text-sm text-gray-800 mb-2">
-            <span class="font-bold mr-1">{{ post.autor.username }}</span>
+        <div class="mb-2 text-sm text-gray-800">
+            <span class="mr-1 font-bold">{{ post.autor.username }}</span>
             <span class="whitespace-pre-line">{{ post.conteudo|truncatechars:150 }}</span>
-            {% if post.conteudo|length > 150 %}
-                <button class="text-gray-400 text-xs ml-1">mais</button>
-            {% endif %}
         </div>
         {% endif %}
 
-        {% if post.comentarios.count > 0 %}
-            <button class="text-sm text-gray-500 mb-2 block hover:text-gray-700">
-                Ver todos os {{ post.comentarios.count }} comentários
-            </button>
+        {% if post.total_comentarios > 0 %}
+            <button class="block mb-2 text-sm font-medium text-gray-500 hover:text-gray-700">Ver todos os {{ post.total_comentarios }} comentários</button>
         {% endif %}
-
-        <p class="text-[10px] text-gray-400 uppercase tracking-wide">
-            {{ post.data_criacao|timesince }} atrás
-        </p>
+        
+        <p class="text-[10px] text-gray-400 uppercase tracking-wide">{{ post.data_criacao|timesince }} atrás</p>
     </div>
 
-    <div class="border-t border-gray-100 p-3 flex items-center">
-        <button class="text-xl mr-3 text-gray-400 hover:text-gray-600">
-            <i class="far fa-smile"></i>
-        </button>
-        <input type="text" placeholder="Adicione um comentário..." class="w-full text-sm outline-none bg-transparent text-gray-700 placeholder-gray-400">
-        <button class="text-blue-500 font-bold text-sm opacity-50 hover:opacity-100 transition ml-2">
-            Publicar
-        </button>
-    </div>
-
+    <form hx-post="{% url 'yourlife_social:add_comment' post.id %}" hx-swap="none" hx-on::after-request="this.reset()" class="relative flex items-center p-3 border-t border-gray-100">
+        {% csrf_token %}
+        <button type="button" class="mr-3 text-xl text-gray-400 hover:text-gray-600"><i class="far fa-smile"></i></button>
+        <input type="text" name="conteudo" id="comment-input-{{ post.id }}" placeholder="Adicione um comentário..." class="w-full text-sm text-gray-700 placeholder-gray-400 bg-transparent outline-none" required autocomplete="off">
+        <button type="submit" class="ml-2 text-sm font-bold text-blue-500 transition opacity-80 hover:opacity-100 hover:text-blue-700">Publicar</button>
+    </form>
 </div>

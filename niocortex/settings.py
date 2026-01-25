@@ -3,35 +3,26 @@ import os
 from dotenv import load_dotenv
 import dj_database_url
 
-# Carrega variáveis de ambiente
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-chave-padrao-dev')
 
-# Mantenha True para desenvolvimento
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-# ==============================================================================
-# SEGURANÇA E CSRF (CORREÇÃO DO ERRO 403)
-# ==============================================================================
+# --- CORREÇÃO CSRF E SEGURANÇA ---
 CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
     'http://localhost:8000',
 ]
-
-# Em desenvolvimento (HTTP), isso deve ser False
 CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False
 
-# ==============================================================================
-# APLICAÇÕES INSTALADAS
-# ==============================================================================
 INSTALLED_APPS = [
-    'daphne',  # <--- OBRIGATÓRIO: Deve ser o primeiro para ASGI/Channels funcionar bem
+    'daphne',  # OBRIGATÓRIO: Primeiro da lista para ASGI
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,10 +30,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    # Bibliotecas de Terceiros
-    'channels',  # Para WebSockets (TalkIO)
+    'channels',  # WebSockets e Gerenciamento de Background
 
-    # Módulos do Projeto (Arquitetura Modular)
+    # Apps do Projeto
     'core',
     'yourlife.social',
     'hub.secretaria',
@@ -90,19 +80,14 @@ TEMPLATES = [
     },
 ]
 
-# Configuração ASGI para suportar WebSockets e HTTP assíncrono
+# Configuração ASGI/WSGI
 ASGI_APPLICATION = 'niocortex.asgi.application'
 WSGI_APPLICATION = 'niocortex.wsgi.application'
 
-# ==============================================================================
-# BANCO DE DADOS (SUPABASE / POSTGRESQL)
-# ==============================================================================
-
-# Tenta pegar do arquivo .env
+# --- BANCO DE DADOS ---
 database_url = os.getenv('DATABASE_URL')
-
-# FALLBACK: Se o .env falhar, usa a URL direta (Modo de Segurança)
 if not database_url:
+    # Fallback seguro
     database_url = "postgresql://postgres:2511CorteXEduc@db.qnknyonohlorjfhzkkpz.supabase.co:5432/postgres"
 
 if database_url and "postgres" in database_url:
@@ -110,55 +95,55 @@ if database_url and "postgres" in database_url:
         'default': dj_database_url.parse(database_url)
     }
 else:
-    # Trava o sistema se não tiver Supabase configurado (Evita SQLite fantasma)
-    raise Exception("❌ ERRO CRÍTICO: DATABASE_URL inválida! O sistema exige conexão com o Supabase.")
+    raise Exception("ERRO CRÍTICO: DATABASE_URL do Supabase não encontrada.")
 
-# ==============================================================================
-# CANAIS E WEBSOCKETS (TALKIO)
-# ==============================================================================
+# --- CONFIGURAÇÃO REDIS (CACHE & CHANNELS) ---
+
+# 1. CACHE
+# Melhora performance geral e armazena sessões de usuário
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+# Configura o Django para salvar as sessões no Redis ao invés do Banco de Dados
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+
+# 2. CHANNELS
+# Essencial para o TalkIO funcionar rápido (WebSockets)
 CHANNEL_LAYERS = {
-    'default': {
-        # 'InMemoryChannelLayer' é ótimo para desenvolvimento rápido.
-        # Para produção, use 'channels_redis.core.RedisChannelLayer'
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
     },
 }
 
-# ==============================================================================
-# AUTENTICAÇÃO E USUÁRIOS
-# ==============================================================================
+# --- AUTH & REDIRECTS ---
 AUTH_USER_MODEL = 'core.CustomUser'
-
-AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
-]
-
-# URLs de Login/Logout
 LOGIN_REDIRECT_URL = 'yourlife_social:home'
 LOGOUT_REDIRECT_URL = 'yourlife_social:login'
 LOGIN_URL = 'yourlife_social:login'
 
-# ==============================================================================
-# INTERNACIONALIZAÇÃO E ARQUIVOS ESTÁTICOS
-# ==============================================================================
+# --- I18N / STATIC ---
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Media files (Uploads de usuários)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Configurações Extras
-MERCADO_PAGO_ACCESS_TOKEN = os.getenv('MP_ACCESS_TOKEN', '00000000-0000-0000-0000-000000000000')
+MERCADO_PAGO_ACCESS_TOKEN = os.getenv('MP_ACCESS_TOKEN', 'seu_token_aqui')
