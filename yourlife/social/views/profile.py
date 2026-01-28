@@ -66,3 +66,10 @@ def following_list(request, username):
     return render(request, 'social/profile/partials/user_list_modal.html', {
         'users_list': users, 'title': 'Seguindo', 'empty_msg': 'Não segue ninguém ainda.'
     })
+
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def meu_perfil(request):
+    return redirect('yourlife_social:profile_detail', username=request.user.username)

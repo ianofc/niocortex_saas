@@ -199,3 +199,40 @@ def thesis_manager(request):
 @login_required
 def student_premium_stats(request): 
     return render(request, 'aluno/premium/stats.html')
+
+@login_required
+def carteirinha_digital(request):
+    return render(request, 'core/ferramentas/carteirinha.html')
+
+
+@login_required
+def boletim_view(request):
+    # Renderiza o template do boletim (ajuste o caminho se necessário)
+    return render(request, 'aluno/academico/boletim.html')
+
+
+@login_required
+def grade_horaria(request):
+    return render(request, 'aluno/academico/grade_horaria.html')
+
+# --- Extras e Ferramentas ---
+
+@login_required
+def biblioteca_view(request):
+    return render(request, 'aluno/extras/biblioteca.html')
+
+@login_required
+def carreira_view(request):
+    return render(request, 'aluno/extras/carreira.html')
+
+@login_required
+def loja_view(request):
+    return render(request, 'aluno/extras/loja.html')
+
+@login_required
+def tcc_view(request):
+    return render(request, 'aluno/extras/tcc.html')
+
+@login_required
+def diario_view(request):
+    return render(request, 'aluno/extras/diario_infantil.html')

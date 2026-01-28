@@ -1,24 +1,37 @@
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
-# NOTA: As views de Login, Registro e Logout foram movidas para 'social.views'
-# pois a autenticação agora pertence ao módulo social.
+# Importamos as views reais do social para não duplicar lógica
+from yourlife.social.views.auth import login_view as social_login
+from yourlife.social.views.auth import logout_view as social_logout
+from yourlife.social.views.auth import register_view as social_register
 
+# --- Wrappers de Autenticação ---
+
+def login_view(request):
+    return social_login(request)
+
+def logout_view(request):
+    return social_logout(request)
+
+def register_view(request):
+    return social_register(request)
+
+# --- Roteador de Dashboard (A FUNÇÃO QUE FALTAVA) ---
 @login_required
 def dashboard_router_view(request):
-    """
-    Roteador Central (acessado via /core/app/).
-    
-    Lógica:
-    1. Superusuários/Staff -> Admin do Django (para manutenção).
-    2. TODOS os outros (Diretor, Professor, Aluno) -> Feed Social (YourLife).
-       O perfil social é a porta de entrada e identidade do usuário no sistema.
-    """
-    
-    # Manutenção / Admin Técnico
-    if request.user.is_superuser or request.user.is_staff:
-        return redirect('admin:index')
-    
-    # Direção, Coordenação, Professores e Alunos
-    # Todos convergem para a experiência social primeiro.
-    return redirect('yourlife_social:home')
+    user = request.user
+    # Redireciona com base no papel do usuário
+    if 'PROFESSOR' in user.role:
+        return redirect('lumenios:dashboard_professor')
+    elif 'ALUNO' in user.role:
+        return redirect('lumenios:dashboard_aluno')
+    elif 'SECRETARIA' in user.role:
+        return redirect('hub_secretaria:dashboard')
+    elif 'DIRECAO' in user.role:
+        return redirect('prioris_direcao:dashboard')
+    elif 'RH' in user.role:
+        return redirect('humanex_rh:dashboard')
+    else:
+        # Padrão para social se não tiver papel específico
+        return redirect('yourlife_social:home')
