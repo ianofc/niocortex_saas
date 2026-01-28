@@ -1,180 +1,72 @@
 {% load static %}
 
-<div class="mb-6 overflow-hidden transition-all duration-300 border shadow-sm rounded-3xl hover:shadow-lg bg-white/80 backdrop-blur-sm border-white/60" id="post-{{ post.id }}">
+<div class="mb-5 overflow-hidden transition-all border shadow-sm bg-white/90 backdrop-blur-sm border-white/60 rounded-2xl hover:shadow-md">
     
-    <div class="flex items-center justify-between px-5 py-4">
-        <div class="flex items-center space-x-3">
-            {% if not post.is_system_event %}
-                <a href="{% url 'yourlife_social:profile_detail' post.autor.username %}" class="relative cursor-pointer group">
-            {% else %}
-                <div class="relative cursor-default group">
-            {% endif %}
-            
-                <div class="w-11 h-11 rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 group-hover:scale-105 transition-transform">
-                    <div class="w-full h-full overflow-hidden bg-white border-2 border-white rounded-full">
-                        {% if post.autor.avatar %}
-                            <img src="{{ post.autor.avatar.url }}" class="object-cover w-full h-full">
-                        {% else %}
-                            <div class="flex items-center justify-center w-full h-full text-xs font-bold text-gray-500 bg-gray-200">
-                                {{ post.autor.first_name|first }}
-                            </div>
-                        {% endif %}
+    <div class="flex items-start justify-between p-4">
+        <div class="flex gap-3">
+            <a href="{% url 'yourlife_social:profile_detail' post.autor.username %}" class="shrink-0">
+                {% if post.autor.avatar %}
+                    <img src="{{ post.autor.avatar.url }}" class="object-cover w-10 h-10 rounded-full ring-2 ring-white">
+                {% else %}
+                    <div class="flex items-center justify-center w-10 h-10 text-xs font-bold rounded-full bg-slate-100 text-slate-500">
+                        {{ post.autor.first_name|first }}
                     </div>
-                </div>
-
-            {% if not post.is_system_event %}
+                {% endif %}
+            </a>
+            <div>
+                <a href="{% url 'yourlife_social:profile_detail' post.autor.username %}" class="font-bold text-slate-900 hover:text-indigo-600 transition-colors text-[15px]">
+                    {{ post.autor.get_full_name|default:post.autor.username }}
                 </a>
-            {% else %}
-                </div>
-            {% endif %}
-
-            <div class="leading-tight">
-                <div class="flex items-center">
-                    {% if not post.is_system_event %}
-                        <a href="{% url 'yourlife_social:profile_detail' post.autor.username %}" class="text-[15px] font-bold text-slate-900 hover:text-indigo-600 transition-colors">
-                            {{ post.autor.username }}
-                        </a>
-                    {% else %}
-                        <span class="text-[15px] font-bold text-slate-900">{{ post.autor.username }}</span>
-                    {% endif %}
-                    
+                <div class="flex items-center gap-1 text-xs text-slate-500">
+                    <span>{{ post.data_criacao|timesince }} atrás</span>
                     {% if post.location %}
-                        <span class="mx-1.5 text-gray-300">•</span>
-                        <span class="text-xs font-medium text-gray-500">{{ post.location }}</span>
+                        <span>• {{ post.location }}</span>
                     {% endif %}
                 </div>
-                <p class="text-xs text-gray-400">{{ post.data_criacao|timesince }} atrás</p>
             </div>
         </div>
-
+        
         {% if not post.is_system_event %}
-        <button class="p-2 text-gray-400 transition-all rounded-full hover:bg-gray-100 hover:text-slate-600">
+        <button class="p-2 transition-colors rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100">
             <i class="fas fa-ellipsis-h"></i>
         </button>
         {% endif %}
     </div>
 
     {% if post.conteudo %}
-    <div class="px-5 pb-3">
-        <p class="text-[15px] leading-relaxed text-slate-700 whitespace-pre-line font-normal">
-            {{ post.conteudo|truncatechars:280 }}
-            {% if post.conteudo|length > 280 %}
-                <button class="ml-1 text-sm font-bold text-indigo-600 hover:underline">ler mais</button>
-            {% endif %}
-        </p>
-    </div>
+        <div class="px-4 pb-3">
+            <p class="text-[15px] text-slate-800 whitespace-pre-wrap leading-relaxed">{{ post.conteudo }}</p>
+        </div>
     {% endif %}
 
     {% if post.imagem %}
-    <div class="relative flex items-center justify-center w-full overflow-hidden bg-gray-50">
-        <img src="{% if post.is_system_event %}{{ post.imagem }}{% else %}{{ post.imagem.url }}{% endif %}" 
-             class="w-full h-auto object-cover max-h-[600px] min-h-[300px]" 
-             loading="lazy" 
-             alt="Post content">
-    </div>
-    {% endif %}
-
-    {% if post.video %}
-    <div class="w-full bg-black">
-        <video controls class="w-full max-h-[600px]">
-             <source src="{% if post.is_system_event %}{{ post.video }}{% else %}{{ post.video.url }}{% endif %}" type="video/mp4">
-        </video>
-    </div>
-    {% endif %}
-
-    <div class="flex items-center justify-between px-5 py-3 text-xs font-medium text-gray-500 border-b border-gray-100">
-        <div class="flex items-center space-x-2">
-            {% if post.total_likes > 0 %}
-                <div class="flex -space-x-1.5">
-                    <div class="w-5 h-5 bg-red-500 border-2 border-white rounded-full"></div>
-                    <div class="w-5 h-5 bg-blue-500 border-2 border-white rounded-full"></div>
-                </div>
-                <span class="ml-1 text-slate-700" id="likes-val-{{ post.id }}">
-                    <span class="font-bold">{{ post.total_likes }}</span> curtidas
-                </span>
-            {% else %}
-                <span id="likes-val-{{ post.id }}">Seja o primeiro a curtir</span>
-            {% endif %}
-        </div>
-        
-        {% if post.total_comentarios > 0 %}
-            <button class="transition hover:text-indigo-600">{{ post.total_comentarios }} comentários</button>
+    <div class="w-full bg-slate-50 border-y border-slate-100">
+        {% if post.is_system_event %}
+            <img src="{% static post.imagem %}" class="w-full h-auto max-h-[500px] object-contain mx-auto" alt="Evento">
+        {% else %}
+            <img src="{{ post.imagem.url }}" class="w-full h-auto max-h-[600px] object-cover" alt="Post">
         {% endif %}
     </div>
+    {% endif %}
 
-    <div class="flex items-center justify-between px-3 py-2">
-        
-        <div class="flex items-center flex-1 space-x-1">
-            
-            {% if not post.is_system_event %}
+    <div class="flex items-center justify-between px-4 py-3 border-t border-slate-100/50">
+        <div class="flex gap-4">
             <button hx-post="{% url 'yourlife_social:toggle_like' post.id %}" 
-                    hx-swap="outerHTML" 
-                    hx-target="#like-btn-{{ post.id }}" 
-                    id="like-btn-{{ post.id }}" 
-                    class="flex items-center justify-center flex-1 py-2.5 space-x-2 transition-all rounded-xl hover:bg-rose-50 group active:scale-95">
-                {% if post.user_liked %}
-                    <i class="text-xl text-rose-500 transition-transform duration-300 scale-110 fas fa-heart"></i>
-                    <span class="text-xs font-bold text-rose-500">Curtiu</span>
-                {% else %}
-                    <i class="text-xl transition-colors far fa-heart text-slate-500 group-hover:text-rose-500"></i>
-                    <span class="text-xs font-semibold transition-colors text-slate-500 group-hover:text-rose-500">Curtir</span>
-                {% endif %}
+                    hx-target="#like-count-{{ post.id }}"
+                    class="flex items-center gap-2 transition-colors text-slate-500 hover:text-red-500 group">
+                <i class="text-xl transition-transform far fa-heart group-hover:scale-110"></i>
+                <span id="like-count-{{ post.id }}" class="text-sm font-medium">{{ post.total_likes }}</span>
             </button>
-            {% else %}
-            <button class="flex items-center justify-center flex-1 py-2.5 space-x-2 transition-all rounded-xl cursor-default opacity-50">
-                <i class="text-xl far fa-heart text-slate-400"></i>
-            </button>
-            {% endif %}
-
-            <button onclick="document.getElementById('comment-input-{{ post.id }}').focus()" 
-                    class="flex items-center justify-center flex-1 py-2.5 space-x-2 transition-all rounded-xl hover:bg-indigo-50 group active:scale-95">
-                <i class="text-xl transition-colors far fa-comment text-slate-500 group-hover:text-indigo-500"></i>
-                <span class="text-xs font-semibold transition-colors text-slate-500 group-hover:text-indigo-500">Comentar</span>
-            </button>
-
-            <button class="share-btn flex items-center justify-center flex-1 py-2.5 space-x-2 transition-all rounded-xl hover:bg-green-50 group active:scale-95">
-                <i class="text-xl transition-colors far fa-paper-plane text-slate-500 group-hover:text-green-500"></i>
-                <span class="text-xs font-semibold transition-colors text-slate-500 group-hover:text-green-500">Enviar</span>
+            
+            <button class="flex items-center gap-2 transition-colors text-slate-500 hover:text-indigo-500 group">
+                <i class="text-xl transition-transform far fa-comment group-hover:scale-110"></i>
+                <span class="text-sm font-medium">{{ post.total_comentarios }}</span>
             </button>
         </div>
-
-        {% if not post.is_system_event %}
-        <button class="save-btn p-3 transition-colors rounded-xl hover:bg-yellow-50 text-slate-400 hover:text-yellow-500 active:scale-90">
-            <i class="text-xl far fa-bookmark"></i>
+        
+        <button class="transition-colors text-slate-400 hover:text-indigo-500">
+            <i class="text-xl far fa-share-square"></i>
         </button>
-        {% endif %}
     </div>
-
-    {% if not post.is_system_event %}
-    <div class="px-5 py-4 border-t border-gray-100 bg-gray-50/50">
-        <form hx-post="{% url 'yourlife_social:add_comment' post.id %}" 
-              hx-swap="none" 
-              hx-on::after-request="this.reset()" 
-              class="flex items-center gap-3">
-            
-            {% if request.user.avatar %}
-                <img src="{{ request.user.avatar.url }}" class="w-8 h-8 border border-white shadow-sm rounded-full">
-            {% else %}
-                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-[10px] font-bold text-indigo-600 border border-white shadow-sm">
-                    {{ request.user.first_name|first }}
-                </div>
-            {% endif %}
-
-            <div class="relative flex-1">
-                <input type="text" 
-                       name="conteudo" 
-                       id="comment-input-{{ post.id }}" 
-                       placeholder="Escreva um comentário..." 
-                       class="w-full pl-4 pr-10 py-2.5 text-sm transition-all bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-slate-700 placeholder-slate-400 shadow-sm"
-                       required 
-                       autocomplete="off">
-                
-                <button type="submit" class="absolute transition right-2 top-2 text-indigo-400 hover:text-indigo-600 p-1">
-                    <i class="fas fa-paper-plane text-sm"></i>
-                </button>
-            </div>
-        </form>
-    </div>
-    {% endif %}
 
 </div>

@@ -1,17 +1,11 @@
-{% load static %}
-
 {% for post in posts %}
     {% include 'social/feed/post_card.html' %}
 {% empty %}
-    <div class="p-10 text-center border shadow-lg bg-white/40 backdrop-blur-md border-white/50 rounded-3xl animate-fade-in">
-        <div class="flex items-center justify-center w-20 h-20 mx-auto mb-4 rounded-full shadow-sm bg-gradient-to-br from-indigo-100 to-white">
-            <i class="text-3xl text-indigo-300 fas fa-wind"></i>
+    <div class="p-8 text-center bg-white border border-gray-200 shadow-sm rounded-xl">
+        <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full">
+            <i class="text-2xl text-gray-400 fas fa-newspaper"></i>
         </div>
-        <h3 class="mb-2 text-lg font-black text-slate-700">Tudo calmo por aqui</h3>
-        <p class="mb-4 text-sm text-slate-500">Parece que não há publicações recentes nesta seção.</p>
-        
-        {% if filter_type == 'following' %}
-             <a href="{% url 'yourlife_social:explore' %}" class="font-bold text-indigo-600 hover:underline">Encontrar pessoas para seguir</a>
-        {% endif %}
+        <h3 class="text-lg font-bold text-gray-800">Nada por aqui ainda</h3>
+        <p class="mt-2 text-sm text-gray-500">Comece a seguir pessoas ou participe de comunidades.</p>
     </div>
 {% endfor %}
