@@ -1,55 +1,61 @@
 {% load static %}
 
-<div class="space-y-4 w-full max-w-[290px]">
+<div class="space-y-6 w-full max-w-[300px]">
 
-    <a href="{% url 'core:carteirinha_digital' %}" 
-       class="block w-full p-4 transition-all border shadow-sm bg-white/80 backdrop-blur-md border-white/50 rounded-2xl hover:bg-white/90 group">
-        <div class="flex items-center gap-3">
-            <div class="flex items-center justify-center w-10 h-10 text-indigo-600 rounded-full bg-indigo-100/80 shrink-0">
-                <i class="fas fa-id-card"></i>
-            </div>
-            <div class="flex-1 min-w-0">
-                <h3 class="text-sm font-bold truncate text-slate-800">{{ request.user.get_full_name|default:request.user.username }}</h3>
-                <p class="text-[10px] text-slate-500 uppercase tracking-wide">
-                    {{ request.user.role|default:"Membro" }}
-                </p>
-            </div>
+    <div class="relative group">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+            <i class="fas fa-search text-slate-400 group-focus-within:text-indigo-600"></i>
         </div>
-    </a>
-    
-    <div class="p-4 border shadow-sm bg-white/80 backdrop-blur-md border-white/50 rounded-2xl">
-        <h2 class="flex items-center gap-2 mb-2 text-sm font-bold text-slate-800">
-            <i class="text-indigo-500 fas fa-robot"></i> Talkio AI
-        </h2>
-        <p class="mb-3 text-xs text-slate-500">Precisa de ajuda com os estudos?</p>
-        <button @click="talkioOpen = true" 
-                class="w-full py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-200 rounded-lg text-xs font-bold transition-colors">
-            Iniciar Chat
-        </button>
+        <input type="text" 
+               class="block w-full py-3 pr-4 leading-5 transition-shadow bg-white border rounded-full shadow-sm pl-11 border-slate-200 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
+               placeholder="Buscar no YourLife">
     </div>
 
-    <div class="p-4 border shadow-sm bg-white/80 backdrop-blur-md border-white/50 rounded-2xl">
-        <h2 class="mb-4 text-sm font-bold text-slate-800">Em Alta</h2>
+    <div class="p-4 border shadow-sm bg-white/80 backdrop-blur-md border-white/60 rounded-2xl">
+        <h3 class="mb-3 text-sm font-bold text-slate-800">Identidade</h3>
+        <div class="flex items-center gap-3">
+            <div class="flex items-center justify-center w-10 h-10 text-indigo-600 bg-indigo-100 rounded-xl">
+                <i class="fas fa-qrcode"></i>
+            </div>
+            <div>
+                <p class="text-sm font-bold text-slate-900">{{ request.user.first_name }}</p>
+                <p class="text-[10px] text-slate-500 uppercase font-bold">{{ request.user.role }}</p>
+            </div>
+        </div>
+        <a href="{% url 'core:carteirinha_digital' %}" class="block w-full py-2 mt-3 text-xs font-bold text-center transition-colors rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700">
+            Ver Carteirinha
+        </a>
+    </div>
+
+    <div class="p-4 border shadow-sm bg-white/80 backdrop-blur-md border-white/60 rounded-2xl">
+        <h3 class="mb-4 text-lg font-black text-slate-800">O que está acontecendo</h3>
         
         <div class="space-y-4">
-            <a href="#" class="block cursor-pointer group">
-                <div class="flex justify-between text-[10px] text-slate-500 mb-0.5">
-                    <span>Tecnologia</span>
+            <a href="#" class="block group">
+                <div class="flex justify-between text-[11px] text-slate-500 mb-0.5">
+                    <span>Tecnologia · Ao vivo</span>
                 </div>
-                <div class="text-sm font-bold transition-colors text-slate-800 group-hover:text-indigo-600">#NioCortexLaunch</div>
-                <div class="text-[10px] text-slate-400">12.5K posts</div>
+                <div class="text-sm font-bold text-slate-900 group-hover:text-indigo-600">Lançamento NioCortex</div>
+                <div class="text-[11px] text-slate-500">12.4K posts</div>
             </a>
 
-            <a href="#" class="block cursor-pointer group">
-                <div class="flex justify-between text-[10px] text-slate-500 mb-0.5">
-                    <span>Educação</span>
+            <a href="#" class="block group">
+                <div class="flex justify-between text-[11px] text-slate-500 mb-0.5">
+                    <span>Educação · Brasil</span>
                 </div>
-                <div class="text-sm font-bold transition-colors text-slate-800 group-hover:text-indigo-600">Volta às Aulas</div>
-                <div class="text-[10px] text-slate-400">5.3K posts</div>
+                <div class="text-sm font-bold text-slate-900 group-hover:text-indigo-600">Volta às Aulas 2026</div>
+                <div class="text-[11px] text-slate-500">50K posts</div>
             </a>
         </div>
+        
+        <a href="#" class="block mt-4 text-sm font-medium text-indigo-600 hover:text-indigo-700">Mostrar mais</a>
+    </div>
 
-        <a href="{% url 'yourlife_social:explore' %}" class="block mt-4 text-xs font-medium text-indigo-600 hover:underline">Ver tudo</a>
+    <div class="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-slate-400 px-2">
+        <a href="#" class="hover:underline">Termos de Serviço</a>
+        <a href="#" class="hover:underline">Política de Privacidade</a>
+        <a href="#" class="hover:underline">Acessibilidade</a>
+        <span>© 2026 NioCortex</span>
     </div>
 
 </div>

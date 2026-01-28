@@ -1,66 +1,67 @@
 {% load static %}
 
-<div class="flex flex-col items-center h-full space-y-8">
+<div class="flex flex-col items-center h-full px-2 space-y-6 lg:items-start">
     
-    <a href="{% url 'yourlife_social:home' %}" class="p-3 mb-2 transition-all rounded-full hover:bg-white/20 group backdrop-blur-sm">
-        <div class="text-2xl font-black text-white transition-transform drop-shadow-md group-hover:scale-110">IO</div>
+    <a href="{% url 'yourlife_social:home' %}" class="p-3 mb-2 transition-colors rounded-full hover:bg-white/10 group">
+        <div class="text-3xl font-black text-indigo-600 transition-transform drop-shadow-sm group-hover:scale-105">
+            IO
+        </div>
     </a>
 
-    <nav class="flex flex-col items-center gap-6">
+    <nav class="flex flex-col w-full gap-2">
         
         <a href="{% url 'yourlife_social:home' %}" 
-           class="relative p-3 transition-all rounded-full text-white/80 hover:text-white hover:bg-white/20 group backdrop-blur-sm"
-           title="Início">
-            <i class="text-2xl fas fa-home drop-shadow-sm"></i>
+           class="flex items-center gap-4 p-3 transition-all rounded-full hover:bg-white/60 group backdrop-blur-sm">
+            <i class="text-2xl fas fa-home text-slate-800 group-hover:text-indigo-600"></i>
+            <span class="hidden text-xl font-bold lg:block text-slate-800">Início</span>
         </a>
 
         <a href="{% url 'yourlife_social:explore' %}" 
-           class="p-3 transition-all rounded-full text-white/80 hover:text-white hover:bg-white/20 group backdrop-blur-sm"
-           title="Explorar">
-            <i class="text-2xl fas fa-hashtag drop-shadow-sm"></i>
+           class="flex items-center gap-4 p-3 transition-all rounded-full hover:bg-white/60 group backdrop-blur-sm">
+            <i class="text-2xl fas fa-hashtag text-slate-800 group-hover:text-indigo-600"></i>
+            <span class="hidden text-xl font-medium lg:block text-slate-800">Explorar</span>
         </a>
 
         <a href="{% url 'yourlife_social:groups_list' %}" 
-           class="p-3 transition-all rounded-full text-white/80 hover:text-white hover:bg-white/20 group backdrop-blur-sm"
-           title="Comunidades">
-            <i class="text-2xl fas fa-users drop-shadow-sm"></i>
+           class="flex items-center gap-4 p-3 transition-all rounded-full hover:bg-white/60 group backdrop-blur-sm">
+            <i class="text-2xl fas fa-users text-slate-800 group-hover:text-indigo-600"></i>
+            <span class="hidden text-xl font-medium lg:block text-slate-800">Comunidades</span>
         </a>
 
         <a href="{% url 'yourlife_social:events_list' %}" 
-           class="p-3 transition-all rounded-full text-white/80 hover:text-white hover:bg-white/20 group backdrop-blur-sm"
-           title="Eventos">
-            <i class="text-2xl fas fa-calendar-alt drop-shadow-sm"></i>
+           class="flex items-center gap-4 p-3 transition-all rounded-full hover:bg-white/60 group backdrop-blur-sm">
+            <i class="text-2xl far fa-calendar-alt text-slate-800 group-hover:text-indigo-600"></i>
+            <span class="hidden text-xl font-medium lg:block text-slate-800">Eventos</span>
         </a>
-        
-        <div class="w-8 h-px my-1 bg-white/20"></div>
 
         {% if 'ALUNO' in user.role or 'PROFESSOR' in user.role %}
         <a href="{% if 'PROFESSOR' in user.role %}{% url 'lumenios:dashboard_professor' %}{% else %}{% url 'lumenios:dashboard_aluno' %}{% endif %}" 
-           class="p-3 transition-all rounded-full text-white/80 hover:text-white hover:bg-white/20 group backdrop-blur-sm"
-           title="Espaço Escolar">
-            <i class="text-2xl fas fa-graduation-cap drop-shadow-sm"></i>
+           class="flex items-center gap-4 p-3 mt-2 transition-all rounded-full hover:bg-blue-50/80 group backdrop-blur-sm">
+            <i class="text-2xl fas fa-graduation-cap text-slate-800 group-hover:text-blue-600"></i>
+            <span class="hidden text-xl font-medium lg:block text-slate-800">Escola</span>
         </a>
         {% endif %}
 
         <a href="{% url 'yourlife_social:settings_theme' %}" 
-           class="p-3 transition-all rounded-full text-white/80 hover:text-white hover:bg-white/20 group backdrop-blur-sm"
-           title="Configurações">
-            <i class="text-2xl fas fa-cog drop-shadow-sm"></i>
+           class="flex items-center gap-4 p-3 transition-all rounded-full hover:bg-white/60 group backdrop-blur-sm">
+            <i class="text-2xl fas fa-cog text-slate-800 group-hover:text-indigo-600"></i>
+            <span class="hidden text-xl font-medium lg:block text-slate-800">Ajustes</span>
         </a>
-        
+
         <a href="{% url 'yourlife_social:logout' %}" 
-           class="p-3 transition-all rounded-full text-white/80 hover:text-red-400 hover:bg-white/20 group backdrop-blur-sm"
-           title="Sair">
-            <i class="text-2xl fas fa-sign-out-alt drop-shadow-sm"></i>
+           class="flex items-center gap-4 p-3 mt-4 transition-all rounded-full hover:bg-red-50/80 group backdrop-blur-sm">
+            <i class="text-2xl fas fa-sign-out-alt text-slate-800 group-hover:text-red-600"></i>
+            <span class="hidden text-xl font-medium lg:block text-slate-800 group-hover:text-red-600">Sair</span>
         </a>
 
     </nav>
 
-    <div class="mt-4">
+    <div class="flex justify-center w-full mt-8 lg:justify-start">
         <button onclick="document.getElementById('createPostModal').showModal()" 
-                class="flex items-center justify-center w-12 h-12 text-white transition-all bg-indigo-600 border rounded-full shadow-lg hover:bg-indigo-500 hover:shadow-indigo-500/50 active:scale-95 border-white/20">
-            <i class="text-xl fas fa-plus"></i>
+                class="w-14 h-14 lg:w-[90%] lg:h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center active:scale-95">
+            <i class="text-xl fas fa-feather-alt lg:hidden"></i>
+            <span class="hidden text-lg font-bold lg:inline">Publicar</span>
         </button>
     </div>
-    
+
 </div>

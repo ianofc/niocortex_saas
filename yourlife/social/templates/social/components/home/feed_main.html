@@ -2,14 +2,14 @@
 
 <div x-data="{ feedTab: 'foryou' }" class="relative w-full">
 
-    <div class="sticky top-0 z-20 mb-4 border-b shadow-sm backdrop-blur-xl bg-white/70 border-white/40 rounded-b-xl">
+    <div class="sticky top-0 z-20 mb-4 border-b backdrop-blur-md bg-white/70 border-white/50 rounded-b-xl">
         <div class="flex w-full">
             <button @click="feedTab = 'foryou'" 
                     hx-get="{% url 'yourlife_social:home_feed_foryou' %}"
                     hx-target="#feed-content-list"
                     hx-swap="innerHTML"
-                    class="relative flex-1 py-4 text-sm font-bold transition-colors"
-                    :class="feedTab === 'foryou' ? 'text-slate-900' : 'text-slate-500 hover:text-slate-700'">
+                    class="flex-1 py-4 text-[15px] font-bold transition-colors relative"
+                    :class="feedTab === 'foryou' ? 'text-slate-900' : 'text-slate-500 hover:bg-white/40'">
                 Para você
                 <div x-show="feedTab === 'foryou'" class="absolute bottom-0 w-12 h-1 -translate-x-1/2 bg-indigo-600 rounded-full left-1/2"></div>
             </button>
@@ -18,37 +18,37 @@
                     hx-get="{% url 'yourlife_social:home_feed_following' %}"
                     hx-target="#feed-content-list"
                     hx-swap="innerHTML"
-                    class="relative flex-1 py-4 text-sm font-bold transition-colors"
-                    :class="feedTab === 'following' ? 'text-slate-900' : 'text-slate-500 hover:text-slate-700'">
+                    class="flex-1 py-4 text-[15px] font-bold transition-colors relative"
+                    :class="feedTab === 'following' ? 'text-slate-900' : 'text-slate-500 hover:bg-white/40'">
                 Seguindo
                 <div x-show="feedTab === 'following'" class="absolute bottom-0 w-12 h-1 -translate-x-1/2 bg-indigo-600 rounded-full left-1/2"></div>
             </button>
         </div>
     </div>
 
-    <div class="p-4 mb-6 border shadow-sm bg-white/80 backdrop-blur-md border-white/60 rounded-2xl">
+    <div class="p-4 mb-6 border shadow-sm bg-white/80 backdrop-blur-sm border-white/60 rounded-2xl">
         <div class="flex gap-3">
             <div class="shrink-0">
                  {% if request.user.avatar %}
                     <img src="{{ request.user.avatar.url }}" class="object-cover w-10 h-10 rounded-full ring-2 ring-white">
                 {% else %}
-                    <div class="flex items-center justify-center w-10 h-10 font-bold border border-white rounded-full bg-slate-200 text-slate-500">
+                    <div class="flex items-center justify-center w-10 h-10 text-sm font-bold text-indigo-600 bg-indigo-100 rounded-full">
                         {{ request.user.first_name|first }}
                     </div>
                 {% endif %}
             </div>
             <div class="flex-1">
                 <button onclick="document.getElementById('createPostModal').showModal()" 
-                        class="w-full text-left py-2.5 px-4 bg-white/50 hover:bg-white text-slate-500 rounded-full text-sm border border-transparent hover:border-indigo-200 transition-all shadow-inner">
+                        class="w-full text-left py-2.5 px-4 bg-slate-100/80 hover:bg-white text-slate-500 rounded-full text-sm border border-transparent hover:border-indigo-200 transition-all cursor-text shadow-inner">
                     O que está acontecendo?!
                 </button>
                 <div class="flex items-center justify-between px-1 mt-3">
-                    <div class="flex gap-1 text-indigo-500">
-                        <button onclick="document.getElementById('createPostModal').showModal()" class="p-2 transition-colors rounded-full hover:bg-indigo-50"><i class="far fa-image"></i></button>
-                        <button onclick="document.getElementById('createPostModal').showModal()" class="p-2 transition-colors rounded-full hover:bg-indigo-50"><i class="fas fa-poll-h"></i></button>
-                        <button onclick="document.getElementById('createPostModal').showModal()" class="p-2 transition-colors rounded-full hover:bg-indigo-50"><i class="far fa-smile"></i></button>
+                    <div class="flex gap-2 text-indigo-500">
+                        <button onclick="document.getElementById('createPostModal').showModal()" class="p-2 transition-colors rounded-full hover:bg-indigo-50" title="Imagem"><i class="far fa-image"></i></button>
+                        <button onclick="document.getElementById('createPostModal').showModal()" class="p-2 transition-colors rounded-full hover:bg-indigo-50" title="Vídeo"><i class="fas fa-video"></i></button>
+                        <button onclick="document.getElementById('createPostModal').showModal()" class="p-2 transition-colors rounded-full hover:bg-indigo-50" title="Emoji"><i class="far fa-smile"></i></button>
                     </div>
-                    <button onclick="document.getElementById('createPostModal').showModal()" class="px-5 py-1.5 bg-indigo-600 text-white font-bold rounded-full text-sm hover:bg-indigo-700 hover:shadow-lg transition-all active:scale-95">
+                    <button onclick="document.getElementById('createPostModal').showModal()" class="px-5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-full text-sm shadow-md transition-all active:scale-95">
                         Postar
                     </button>
                 </div>
@@ -56,12 +56,12 @@
         </div>
     </div>
 
-    <div id="feed-content-list" class="min-h-screen space-y-5">
+    <div id="feed-content-list" class="space-y-4">
         {% include 'social/components/home/feed_list_content.html' with posts=posts %}
     </div>
     
     <div class="flex justify-center py-10 htmx-indicator">
-       <span class="loading loading-spinner loading-md text-white/80"></span>
+       <span class="text-indigo-600 loading loading-spinner loading-md"></span>
    </div>
 
 </div>
