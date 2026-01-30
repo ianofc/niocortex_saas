@@ -5,12 +5,14 @@ app_name = 'yourlife_social'
 
 urlpatterns = [
     # Feed & Home
-    path('feed/', feed.home_feed_foryou, name='home'),
+    path('', feed.home_feed_foryou, name='home'),
+    path('feed/', feed.home_feed_foryou, name='feed_home'),
     path('feed/foryou/', feed.home_feed_foryou, name='home_feed_foryou'),
     path('feed/following/', feed.home_feed_following, name='home_feed_following'),
     
-    # Recursos Extras (Reels, Chat, etc)
+    # Recursos Extras
     path('reels/', feed.reels_view, name='reels'),
+    path('explore/', feed.explore_view, name='explore'),
     path('talkio/', chat.talkio_view, name='talkio_app'),
     
     # Auth
@@ -18,15 +20,14 @@ urlpatterns = [
     path('logout/', auth.logout_view, name='logout'),
     path('register/', auth.register_view, name='register'),
     
-    # Configurações (Aliases para evitar erro nos templates)
+    # Configurações
     path('settings/', general.settings_view, name='settings'),
     path('settings/p/', general.settings_view, name='settings_page'),
     path('settings/theme/', general.settings_theme, name='settings_theme'),
     path('support/', general.support_view, name='support'),
     path('support/p/', general.support_view, name='support_page'),
-    path('explore/', general.search_pinterest, name='explore'),
     
-    # Perfil
+    # Perfil (ESSENCIAL PARA O ERRO ATUAL)
     path('profile/me/', profile.meu_perfil, name='meu_perfil'),
     path('profile/<str:username>/', profile.profile_detail, name='profile_detail'),
     

@@ -1,11 +1,62 @@
-{% for post in posts %}
-    {% include 'social/feed/post_card.html' %}
-{% empty %}
-    <div class="p-8 text-center bg-white border border-gray-200 shadow-sm rounded-xl">
-        <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full">
-            <i class="text-2xl text-gray-400 fas fa-newspaper"></i>
+{% load static %}
+
+<div class="hidden w-full space-y-10 skeleton-wrapper">
+    {% for i in "123" %}
+    <div class="p-8 rounded-[2.5rem] bg-white/40 border border-white/60 backdrop-blur-2xl shadow-sm">
+        <div class="flex items-center gap-4 mb-6">
+            <div class="w-13 h-13 rounded-2xl bg-slate-200/40 skeleton-pulse"></div>
+            <div class="flex-1 space-y-3">
+                <div class="w-32 h-3 rounded-full bg-slate-200/50 skeleton-pulse"></div>
+                <div class="w-20 h-2 rounded-full bg-slate-100/40 skeleton-pulse"></div>
+            </div>
         </div>
-        <h3 class="text-lg font-bold text-gray-800">Nada por aqui ainda</h3>
-        <p class="mt-2 text-sm text-gray-500">Comece a seguir pessoas ou participe de comunidades.</p>
+        <div class="px-1 mb-6 space-y-3">
+            <div class="w-full h-3 rounded-full bg-slate-100/40 skeleton-pulse"></div>
+            <div class="w-4/5 h-3 rounded-full bg-slate-100/40 skeleton-pulse"></div>
+        </div>
+        <div class="h-64 w-full rounded-[2rem] bg-slate-50/30 skeleton-shimmer skeleton-pulse border border-white/40"></div>
     </div>
-{% endfor %}
+    {% endfor %}
+</div>
+
+<div class="w-full space-y-10 real-content">
+    {% if posts %}
+        {% for post in posts %}
+            <div class="feed-item-anim" style="animation-delay: 0.{{ forloop.counter }}s">
+                {% include 'social/components/home/post_card.html' with post=post %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="flex flex-col items-center justify-center py-32 text-center">
+            <div class="relative mb-6">
+                <div class="absolute inset-0 bg-indigo-200 blur-3xl opacity-20 animate-pulse"></div>
+                <div class="relative flex items-center justify-center w-24 h-24 text-indigo-400 bg-white border rounded-full shadow-xl border-indigo-50">
+                    <i class="text-4xl fa-solid fa-wind animate-bounce"></i>
+                </div>
+            </div>
+            <h3 class="text-sm font-black tracking-[0.2em] uppercase text-slate-400">Silêncio no Horizonte</h3>
+            <p class="max-w-xs mt-3 font-medium leading-relaxed text-slate-400">
+                Parece que não há novas histórias por aqui. Que tal seguir algumas pessoas?
+            </p>
+            <a href="{% url 'yourlife_social:explore' %}" class="mt-8 px-8 py-3 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-slate-200 hover:bg-indigo-600 transition-all">
+                Descobrir Pessoas
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    /* Animação Staggered (entrada em cascata elegante) */
+    .feed-item-anim {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: slideInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes slideInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>

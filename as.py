@@ -1,361 +1,205 @@
 import os
 
-print("🔥 INICIANDO SUPER SCRIPT DE CORREÇÃO UI/UX - YOURLIFE...")
+# 1. Corrigindo yourlife/social/urls.py
+# Garante que 'reels', 'meu_perfil', 'explore' e 'home' existam
+urls_content = """from django.urls import path
+from .views import feed, auth, profile, general, groups, events, interactions, chat
 
-# ==============================================================================
-# 1. MAPEAMENTO DE ARQUIVOS
-# ==============================================================================
-BASE_DIR = "yourlife/social/templates/social"
+app_name = 'yourlife_social'
 
-FILES_TO_WRITE = {
-    # 1. HOME: O container principal (Fundo Transparente)
-    f"{BASE_DIR}/feed/home.html": """{% extends 'social/layout/base_useryourlife.html' %}
-{% load static %}
-
-{% block extra_css %}
-<style>
-    /* Ocultar scrollbar mantendo funcionalidade */
-    .scrollbar-hide::-webkit-scrollbar { display: none; }
-    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-</style>
-{% endblock %}
-
-{% block content %}
-<div class="min-h-screen bg-transparent">
+urlpatterns = [
+    # Feed & Home
+    path('', feed.home_feed_foryou, name='home'),
+    path('feed/', feed.home_feed_foryou, name='feed_home'),
+    path('feed/foryou/', feed.home_feed_foryou, name='home_feed_foryou'),
+    path('feed/following/', feed.home_feed_following, name='home_feed_following'),
     
-    <div class="flex justify-center w-full mx-auto max-w-[1300px]">
-        
-        <aside class="sticky top-0 hidden h-screen md:flex flex-col items-end w-[80px] lg:w-[250px] shrink-0 pt-6 pb-4 pr-2">
-            <div class="w-full h-full">
-                {% include 'social/components/home/left_sidebar.html' %}
-            </div>
-        </aside>
-
-        <main class="flex-1 max-w-[600px] w-full mx-0 md:mx-4 lg:mx-8 min-h-screen pb-20">
-            {% include 'social/components/home/stories_bar.html' %}
-            {% include 'social/components/home/feed_main.html' %}
-        </main>
-
-        <aside class="sticky top-0 hidden h-screen lg:block w-[320px] shrink-0 pt-6 pl-2 overflow-y-auto scrollbar-hide">
-            {% include 'social/components/home/right_sidebar.html' %}
-        </aside>
-
-    </div>
-</div>
-{% endblock %}
-""",
-
-    # 2. LEFT SIDEBAR: Navegação Limpa (Com correção do Logout)
-    f"{BASE_DIR}/components/home/left_sidebar.html": """{% load static %}
-
-<div class="flex flex-col items-center h-full px-2 space-y-6 lg:items-start">
+    # Recursos Extras
+    path('reels/', feed.reels_view, name='reels'),
+    path('explore/', feed.explore_view, name='explore'),
+    path('talkio/', chat.talkio_view, name='talkio_app'),
     
-    <a href="{% url 'yourlife_social:home' %}" class="p-3 mb-2 transition-colors rounded-full hover:bg-white/10 group">
-        <div class="text-3xl font-black text-indigo-600 transition-transform drop-shadow-sm group-hover:scale-105">
-            IO
-        </div>
-    </a>
-
-    <nav class="flex flex-col w-full gap-2">
-        
-        <a href="{% url 'yourlife_social:home' %}" 
-           class="flex items-center gap-4 p-3 transition-all rounded-full hover:bg-white/60 group backdrop-blur-sm">
-            <i class="text-2xl fas fa-home text-slate-800 group-hover:text-indigo-600"></i>
-            <span class="hidden text-xl font-bold lg:block text-slate-800">Início</span>
-        </a>
-
-        <a href="{% url 'yourlife_social:explore' %}" 
-           class="flex items-center gap-4 p-3 transition-all rounded-full hover:bg-white/60 group backdrop-blur-sm">
-            <i class="text-2xl fas fa-hashtag text-slate-800 group-hover:text-indigo-600"></i>
-            <span class="hidden text-xl font-medium lg:block text-slate-800">Explorar</span>
-        </a>
-
-        <a href="{% url 'yourlife_social:groups_list' %}" 
-           class="flex items-center gap-4 p-3 transition-all rounded-full hover:bg-white/60 group backdrop-blur-sm">
-            <i class="text-2xl fas fa-users text-slate-800 group-hover:text-indigo-600"></i>
-            <span class="hidden text-xl font-medium lg:block text-slate-800">Comunidades</span>
-        </a>
-
-        <a href="{% url 'yourlife_social:events_list' %}" 
-           class="flex items-center gap-4 p-3 transition-all rounded-full hover:bg-white/60 group backdrop-blur-sm">
-            <i class="text-2xl far fa-calendar-alt text-slate-800 group-hover:text-indigo-600"></i>
-            <span class="hidden text-xl font-medium lg:block text-slate-800">Eventos</span>
-        </a>
-
-        {% if 'ALUNO' in user.role or 'PROFESSOR' in user.role %}
-        <a href="{% if 'PROFESSOR' in user.role %}{% url 'lumenios:dashboard_professor' %}{% else %}{% url 'lumenios:dashboard_aluno' %}{% endif %}" 
-           class="flex items-center gap-4 p-3 mt-2 transition-all rounded-full hover:bg-blue-50/80 group backdrop-blur-sm">
-            <i class="text-2xl fas fa-graduation-cap text-slate-800 group-hover:text-blue-600"></i>
-            <span class="hidden text-xl font-medium lg:block text-slate-800">Escola</span>
-        </a>
-        {% endif %}
-
-        <a href="{% url 'yourlife_social:settings_theme' %}" 
-           class="flex items-center gap-4 p-3 transition-all rounded-full hover:bg-white/60 group backdrop-blur-sm">
-            <i class="text-2xl fas fa-cog text-slate-800 group-hover:text-indigo-600"></i>
-            <span class="hidden text-xl font-medium lg:block text-slate-800">Ajustes</span>
-        </a>
-
-        <a href="{% url 'yourlife_social:logout' %}" 
-           class="flex items-center gap-4 p-3 mt-4 transition-all rounded-full hover:bg-red-50/80 group backdrop-blur-sm">
-            <i class="text-2xl fas fa-sign-out-alt text-slate-800 group-hover:text-red-600"></i>
-            <span class="hidden text-xl font-medium lg:block text-slate-800 group-hover:text-red-600">Sair</span>
-        </a>
-
-    </nav>
-
-    <div class="flex justify-center w-full mt-8 lg:justify-start">
-        <button onclick="document.getElementById('createPostModal').showModal()" 
-                class="w-14 h-14 lg:w-[90%] lg:h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center active:scale-95">
-            <i class="text-xl fas fa-feather-alt lg:hidden"></i>
-            <span class="hidden text-lg font-bold lg:inline">Publicar</span>
-        </button>
-    </div>
-
-</div>
-""",
-
-    # 3. FEED MAIN: Header Glass e Feed Limpo
-    f"{BASE_DIR}/components/home/feed_main.html": """{% load static %}
-
-<div x-data="{ feedTab: 'foryou' }" class="relative w-full">
-
-    <div class="sticky top-0 z-20 mb-4 border-b backdrop-blur-md bg-white/70 border-white/50 rounded-b-xl">
-        <div class="flex w-full">
-            <button @click="feedTab = 'foryou'" 
-                    hx-get="{% url 'yourlife_social:home_feed_foryou' %}"
-                    hx-target="#feed-content-list"
-                    hx-swap="innerHTML"
-                    class="flex-1 py-4 text-[15px] font-bold transition-colors relative"
-                    :class="feedTab === 'foryou' ? 'text-slate-900' : 'text-slate-500 hover:bg-white/40'">
-                Para você
-                <div x-show="feedTab === 'foryou'" class="absolute bottom-0 w-12 h-1 -translate-x-1/2 bg-indigo-600 rounded-full left-1/2"></div>
-            </button>
-            
-            <button @click="feedTab = 'following'"
-                    hx-get="{% url 'yourlife_social:home_feed_following' %}"
-                    hx-target="#feed-content-list"
-                    hx-swap="innerHTML"
-                    class="flex-1 py-4 text-[15px] font-bold transition-colors relative"
-                    :class="feedTab === 'following' ? 'text-slate-900' : 'text-slate-500 hover:bg-white/40'">
-                Seguindo
-                <div x-show="feedTab === 'following'" class="absolute bottom-0 w-12 h-1 -translate-x-1/2 bg-indigo-600 rounded-full left-1/2"></div>
-            </button>
-        </div>
-    </div>
-
-    <div class="p-4 mb-6 border shadow-sm bg-white/80 backdrop-blur-sm border-white/60 rounded-2xl">
-        <div class="flex gap-3">
-            <div class="shrink-0">
-                 {% if request.user.avatar %}
-                    <img src="{{ request.user.avatar.url }}" class="object-cover w-10 h-10 rounded-full ring-2 ring-white">
-                {% else %}
-                    <div class="flex items-center justify-center w-10 h-10 text-sm font-bold text-indigo-600 bg-indigo-100 rounded-full">
-                        {{ request.user.first_name|first }}
-                    </div>
-                {% endif %}
-            </div>
-            <div class="flex-1">
-                <button onclick="document.getElementById('createPostModal').showModal()" 
-                        class="w-full text-left py-2.5 px-4 bg-slate-100/80 hover:bg-white text-slate-500 rounded-full text-sm border border-transparent hover:border-indigo-200 transition-all cursor-text shadow-inner">
-                    O que está acontecendo?!
-                </button>
-                <div class="flex items-center justify-between px-1 mt-3">
-                    <div class="flex gap-2 text-indigo-500">
-                        <button onclick="document.getElementById('createPostModal').showModal()" class="p-2 transition-colors rounded-full hover:bg-indigo-50" title="Imagem"><i class="far fa-image"></i></button>
-                        <button onclick="document.getElementById('createPostModal').showModal()" class="p-2 transition-colors rounded-full hover:bg-indigo-50" title="Vídeo"><i class="fas fa-video"></i></button>
-                        <button onclick="document.getElementById('createPostModal').showModal()" class="p-2 transition-colors rounded-full hover:bg-indigo-50" title="Emoji"><i class="far fa-smile"></i></button>
-                    </div>
-                    <button onclick="document.getElementById('createPostModal').showModal()" class="px-5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-full text-sm shadow-md transition-all active:scale-95">
-                        Postar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="feed-content-list" class="space-y-4">
-        {% include 'social/components/home/feed_list_content.html' with posts=posts %}
-    </div>
+    # Auth
+    path('login/', auth.login_view, name='login'),
+    path('logout/', auth.logout_view, name='logout'),
+    path('register/', auth.register_view, name='register'),
     
-    <div class="flex justify-center py-10 htmx-indicator">
-       <span class="text-indigo-600 loading loading-spinner loading-md"></span>
-   </div>
-
-</div>
-""",
-
-    # 4. POST CARD: Lógica de Imagem Corrigida e Visual Limpo
-    f"{BASE_DIR}/feed/post_card.html": """{% load static %}
-
-<div class="mb-4 overflow-hidden transition-shadow duration-200 bg-white border border-gray-100 shadow-sm rounded-2xl hover:shadow-md">
+    # Configurações
+    path('settings/', general.settings_view, name='settings'),
+    path('settings/p/', general.settings_view, name='settings_page'),
+    path('settings/theme/', general.settings_theme, name='settings_theme'),
+    path('support/', general.support_view, name='support'),
+    path('support/p/', general.support_view, name='support_page'),
     
-    <div class="flex items-start justify-between p-4">
-        <div class="flex gap-3">
-            <a href="{% url 'yourlife_social:profile_detail' post.autor.username %}" class="shrink-0 group">
-                {% if post.autor.avatar %}
-                    <img src="{{ post.autor.avatar.url }}" class="object-cover w-10 h-10 transition-all rounded-full ring-2 ring-transparent group-hover:ring-indigo-100">
-                {% else %}
-                    <div class="flex items-center justify-center w-10 h-10 text-xs font-bold rounded-full bg-slate-200 text-slate-500">
-                        {{ post.autor.first_name|first }}
-                    </div>
-                {% endif %}
-            </a>
-            
-            <div class="flex flex-col">
-                <a href="{% url 'yourlife_social:profile_detail' post.autor.username %}" class="font-bold text-slate-900 hover:underline text-[15px] leading-tight">
-                    {{ post.autor.get_full_name|default:post.autor.username }}
-                </a>
-                <div class="flex items-center gap-1 text-xs text-slate-500">
-                    <span>@{{ post.autor.username }}</span>
-                    <span>·</span>
-                    <span>{{ post.data_criacao|timesince }}</span>
-                </div>
-            </div>
-        </div>
-        
-        {% if not post.is_system_event %}
-        <button class="p-2 transition-colors rounded-full text-slate-400 hover:text-indigo-600 hover:bg-indigo-50">
-            <i class="fas fa-ellipsis-h"></i>
-        </button>
-        {% endif %}
-    </div>
+    # Perfil (ESSENCIAL PARA O ERRO ATUAL)
+    path('profile/me/', profile.meu_perfil, name='meu_perfil'),
+    path('profile/<str:username>/', profile.profile_detail, name='profile_detail'),
+    
+    # Interações
+    path('post/<int:post_id>/like/', interactions.toggle_like, name='toggle_like'),
+    path('post/<int:post_id>/comment/', interactions.add_comment, name='add_comment'),
 
-    {% if post.conteudo %}
-        <div class="px-4 pb-3">
-            <p class="text-[15px] text-slate-900 whitespace-pre-line leading-relaxed">{{ post.conteudo }}</p>
-        </div>
-    {% endif %}
-
-    {% if post.imagem %}
-    <div class="w-full mt-1 bg-slate-50 border-y border-slate-100">
-        {% if post.is_system_event %}
-            <img src="{% static post.imagem %}" class="w-full h-auto max-h-[550px] object-contain mx-auto" alt="Imagem do Sistema">
-        {% else %}
-            <img src="{{ post.imagem.url }}" class="w-full h-auto max-h-[550px] object-cover" alt="Foto do Post">
-        {% endif %}
-    </div>
-    {% endif %}
-
-    <div class="flex items-center justify-between px-4 py-3 text-slate-500">
-        
-        <button hx-post="{% url 'yourlife_social:toggle_like' post.id %}" 
-                hx-target="#like-cnt-{{ post.id }}"
-                class="flex items-center gap-2 transition-colors group hover:text-pink-600">
-            <div class="p-2 transition-colors rounded-full group-hover:bg-pink-50">
-                <i class="text-lg far fa-heart"></i>
-            </div>
-            <span id="like-cnt-{{ post.id }}" class="text-xs font-bold">{{ post.total_likes|default:"0" }}</span>
-        </button>
-        
-        <button class="flex items-center gap-2 transition-colors group hover:text-blue-500">
-            <div class="p-2 transition-colors rounded-full group-hover:bg-blue-50">
-                <i class="text-lg far fa-comment"></i>
-            </div>
-            <span class="text-xs font-bold">{{ post.total_comentarios|default:"0" }}</span>
-        </button>
-        
-        <button class="flex items-center gap-2 transition-colors group hover:text-green-500">
-            <div class="p-2 transition-colors rounded-full group-hover:bg-green-50">
-                <i class="text-lg far fa-share-square"></i>
-            </div>
-        </button>
-        
-    </div>
-
-</div>
-""",
-
-    # 5. RIGHT SIDEBAR: Minimalista, Clean, Glass
-    f"{BASE_DIR}/components/home/right_sidebar.html": """{% load static %}
-
-<div class="space-y-6 w-full max-w-[300px]">
-
-    <div class="relative group">
-        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-            <i class="fas fa-search text-slate-400 group-focus-within:text-indigo-600"></i>
-        </div>
-        <input type="text" 
-               class="block w-full py-3 pr-4 leading-5 transition-shadow bg-white border rounded-full shadow-sm pl-11 border-slate-200 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
-               placeholder="Buscar no YourLife">
-    </div>
-
-    <div class="p-4 border shadow-sm bg-white/80 backdrop-blur-md border-white/60 rounded-2xl">
-        <h3 class="mb-3 text-sm font-bold text-slate-800">Identidade</h3>
-        <div class="flex items-center gap-3">
-            <div class="flex items-center justify-center w-10 h-10 text-indigo-600 bg-indigo-100 rounded-xl">
-                <i class="fas fa-qrcode"></i>
-            </div>
-            <div>
-                <p class="text-sm font-bold text-slate-900">{{ request.user.first_name }}</p>
-                <p class="text-[10px] text-slate-500 uppercase font-bold">{{ request.user.role }}</p>
-            </div>
-        </div>
-        <a href="{% url 'core:carteirinha_digital' %}" class="block w-full py-2 mt-3 text-xs font-bold text-center transition-colors rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700">
-            Ver Carteirinha
-        </a>
-    </div>
-
-    <div class="p-4 border shadow-sm bg-white/80 backdrop-blur-md border-white/60 rounded-2xl">
-        <h3 class="mb-4 text-lg font-black text-slate-800">O que está acontecendo</h3>
-        
-        <div class="space-y-4">
-            <a href="#" class="block group">
-                <div class="flex justify-between text-[11px] text-slate-500 mb-0.5">
-                    <span>Tecnologia · Ao vivo</span>
-                </div>
-                <div class="text-sm font-bold text-slate-900 group-hover:text-indigo-600">Lançamento NioCortex</div>
-                <div class="text-[11px] text-slate-500">12.4K posts</div>
-            </a>
-
-            <a href="#" class="block group">
-                <div class="flex justify-between text-[11px] text-slate-500 mb-0.5">
-                    <span>Educação · Brasil</span>
-                </div>
-                <div class="text-sm font-bold text-slate-900 group-hover:text-indigo-600">Volta às Aulas 2026</div>
-                <div class="text-[11px] text-slate-500">50K posts</div>
-            </a>
-        </div>
-        
-        <a href="#" class="block mt-4 text-sm font-medium text-indigo-600 hover:text-indigo-700">Mostrar mais</a>
-    </div>
-
-    <div class="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-slate-400 px-2">
-        <a href="#" class="hover:underline">Termos de Serviço</a>
-        <a href="#" class="hover:underline">Política de Privacidade</a>
-        <a href="#" class="hover:underline">Acessibilidade</a>
-        <span>© 2026 NioCortex</span>
-    </div>
-
-</div>
+    path('groups/', groups.groups_list, name='groups_list'),
+    path('events/', events.events_list, name='events_list'),
+]
 """
-}
 
-# ==============================================================================
-# 2. EXECUÇÃO DA ESCRITA
-# ==============================================================================
+# 2. Corrigindo yourlife/social/views/profile.py
+# Garante que a view 'meu_perfil' exista
+profile_views_content = """from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 
-def write_file(filepath, content):
-    # Cria o diretório se não existir
-    directory = os.path.dirname(filepath)
-    if directory and not os.path.exists(directory):
-        os.makedirs(directory)
-        print(f"📁 Diretório criado: {directory}")
+User = get_user_model()
+
+@login_required
+def meu_perfil(request):
+    # Redireciona para o perfil do usuário logado
+    return redirect('yourlife_social:profile_detail', username=request.user.username)
+
+@login_required
+def profile_detail(request, username):
+    profile_user = get_object_or_404(User, username=username)
+    is_me = (request.user == profile_user)
     
+    context = {
+        'profile_user': profile_user,
+        'is_me': is_me,
+        # Adicione outros contextos necessários aqui
+    }
+    return render(request, 'social/profile/profile_detail.html', context)
+"""
+
+# 3. Corrigindo yourlife/social/views/feed.py
+# Garante que 'reels_view' e 'explore_view' existam
+feed_views_content = """from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from ..models import Post
+
+@login_required
+def home_feed_foryou(request):
+    # Tenta pegar posts, se o modelo existir
     try:
-        with open(filepath, "w", encoding="utf-8") as f:
-            f.write(content)
-        print(f"✅ Arquivo atualizado com sucesso: {filepath}")
-    except Exception as e:
-        print(f"❌ Erro ao escrever {filepath}: {e}")
+        posts = Post.objects.all().order_by('-created_at')
+    except:
+        posts = []
+        
+    return render(request, 'social/feed/home.html', {
+        'posts': posts, 
+        'filter_type': 'foryou'
+    })
 
-if __name__ == "__main__":
-    for path, code in FILES_TO_WRITE.items():
-        write_file(path, code)
+@login_required
+def home_feed_following(request):
+    return render(request, 'social/feed/home.html', {'filter_type': 'following', 'posts': []})
+
+@login_required
+def reels_view(request):
+    return render(request, 'social/reels/index.html')
+
+@login_required
+def explore_view(request):
+    return render(request, 'social/search/explore.html')
+"""
+
+# 4. Corrigindo navbar right (core/templates/core/components/navbar/right.html)
+# Garante que o link aponte corretamente para 'yourlife_social:meu_perfil'
+navbar_right_content = """{% load static %}
+
+{% if '/social/' in request.path %}
+    {% with zios_greeting="E aí! Eu sou o Zios AI. 😎 Pronto para ver o que tá rolando na YourLife?" zios_role="social" %}
+    <div id="zios-context" data-greeting="{{ zios_greeting }}" data-role="{{ zios_role }}" style="display:none;"></div>
+    {% endwith %}
+{% else %}
+    {% with zios_greeting="Bem-vindo ao NioCortex." zios_role="admin" %}
+    <div id="zios-context" data-greeting="{{ zios_greeting }}" data-role="{{ zios_role }}" style="display:none;"></div>
+    {% endwith %}
+{% endif %}
+
+<div class="flex items-center justify-end flex-1 gap-3 md:gap-4" x-data="{ profileOpen: false }">
+
+    <button @click="$dispatch('toggle-switcher')" 
+            class="flex items-center justify-center w-10 h-10 transition-all border rounded-full group bg-white/5 hover:bg-white/10 border-white/10 text-slate-400 hover:text-white"
+            title="NioCortex Apps">
+        <i class="text-lg transition-transform fas fa-th group-hover:rotate-90"></i>
+    </button>
+
+    <button @click="$store.nav.toggle('zios')" 
+            class="flex items-center justify-center w-10 h-10 transition-all border rounded-full bg-white/5 hover:bg-white/10 border-white/10 group"
+            title="Assistente IA">
+        <i class="text-xl text-purple-400 transition fas fa-brain group-hover:text-purple-500 animate-pulse"></i>
+    </button>
+
+    <a href="{% url 'yourlife_social:talkio_app' %}" 
+            class="flex items-center justify-center w-10 h-10 transition-all border rounded-full bg-white/5 hover:bg-white/10 border-white/10"
+            title="Talkio Messenger">
+        <img src="{% static 'imgs/talkio/Talkio_logo.png' %}" class="w-6 h-6 opacity-90 hover:opacity-100">
+    </a>
     
-    print("\n🎉 SUPER SCRIPT CONCLUÍDO!")
-    print("👉 Fundo home.html definido como 'bg-transparent'.")
-    print("👉 Link de Logout corrigido para '{% url 'yourlife_social:logout' %}'")
-    print("👉 Lógica de Imagem no Post Card corrigida (Static/Media).")
-    print("👉 UI/UX limpa, minimalista e focada no conteúdo.")
-    print("⚠️ Recarregue a página (Ctrl+F5) para ver as alterações.")
+    <div class="relative">
+        <button @click="profileOpen = !profileOpen" 
+                class="flex items-center gap-2 py-1 pl-1 pr-3 transition-all border rounded-full bg-white/5 hover:bg-white/10 border-white/10">
+            
+            <img src="{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}https://ui-avatars.com/api/?name={{ user.first_name }}&background=random&color=fff{% endif %}" 
+                 class="object-cover w-8 h-8 border-2 rounded-full shadow-sm border-white/20">
+            
+            <i class="fas fa-chevron-down text-[10px] text-slate-400 transition-transform duration-300" 
+               :class="profileOpen ? 'rotate-180' : ''"></i>
+        </button>
+        
+        <div x-show="profileOpen" @click.away="profileOpen = false" x-cloak
+             class="absolute top-14 right-0 w-72 bg-[#1A1F2C] rounded-2xl shadow-2xl z-[120] border border-white/10 overflow-hidden"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0">
+             
+            <div class="p-4 border-b border-white/5 bg-white/5">
+                <p class="font-bold leading-tight text-white">{{ user.get_full_name }}</p>
+                <a href="{% url 'yourlife_social:meu_perfil' %}" class="text-xs font-bold text-purple-400 hover:text-purple-300">Ver Perfil Social</a>
+            </div>
+            
+            <div class="p-2 space-y-1">
+                <a href="{% url 'yourlife_social:settings_page' %}" class="block px-3 py-2 text-sm font-medium hover:bg-white/5 rounded-xl text-slate-300 hover:text-white">
+                    <i class="w-5 fas fa-cog text-slate-500"></i> Configurações
+                </a>
+                <a href="{% url 'yourlife_social:support_page' %}" class="block px-3 py-2 text-sm font-medium hover:bg-white/5 rounded-xl text-slate-300 hover:text-white">
+                    <i class="w-5 fas fa-life-ring text-slate-500"></i> Suporte
+                </a>
+            </div>
+            
+            <div class="p-2 border-t border-white/5">
+                <a href="{% url 'yourlife_social:logout' %}" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-400 hover:bg-red-500/10 rounded-xl">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'core/js/navbar.js' %}"></script>
+"""
+
+# Função auxiliar para escrever arquivos
+def write_file(path, content):
+    try:
+        # Garante que o diretório exista
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'w', encoding='utf-8') as f:
+            f.write(content)
+        print(f"[OK] Arquivo atualizado: {path}")
+    except Exception as e:
+        print(f"[ERRO] Falha ao escrever {path}: {str(e)}")
+
+# Caminhos dos arquivos
+base_dir = os.getcwd()
+path_urls = os.path.join(base_dir, 'yourlife', 'social', 'urls.py')
+path_views_profile = os.path.join(base_dir, 'yourlife', 'social', 'views', 'profile.py')
+path_views_feed = os.path.join(base_dir, 'yourlife', 'social', 'views', 'feed.py')
+path_navbar_right = os.path.join(base_dir, 'core', 'templates', 'core', 'components', 'navbar', 'right.html')
+
+# Executando escritas
+print("--- Iniciando correção automática de Rotas e Views ---")
+write_file(path_urls, urls_content)
+write_file(path_views_profile, profile_views_content)
+write_file(path_views_feed, feed_views_content)
+write_file(path_navbar_right, navbar_right_content)
+print("--- Concluído. Reinicie o servidor Django. ---")

@@ -6,4 +6,6 @@ python manage.py runserver
 
 docker run -d -p 6379:6379 --name redis-niocortex redis
 
+docker start redis-niocortex
+
 pip install -r requirements.txt

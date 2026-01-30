@@ -2,33 +2,61 @@
 {% load static %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/extras.css' %}">
 <style>
-    /* Ocultar scrollbar mantendo funcionalidade */
-    .scrollbar-hide::-webkit-scrollbar { display: none; }
-    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    /* FUNDO ÚNICO E CONTÍNUO */
+    .aurora-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background: #fcfcfd;
+        overflow: hidden;
+    }
+
+    /* O BLOCO QUE DÁ A SENSAÇÃO DE MÁSCARA ÚNICA */
+    .main-viewport {
+        position: relative;
+        z-index: 10;
+        width: 100%;
+        min-height: 100vh;
+        display: block; /* Remove o flex que limita */
+    }
+
+    /* O FEED AGORA É O CENTRO EXPANSÍVEL */
+    .feed-container-fluid {
+        width: 100%;
+        padding-left: 110px; /* Espaço do Dock */
+        padding-right: 380px; /* Espaço da Sidebar */
+        padding-top: 40px;
+        transition: all 0.5s ease;
+    }
+
+    @media (max-width: 1280px) {
+        .feed-container-fluid { padding-right: 20px; }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-transparent">
+<div class="aurora-canvas">
+    <div class="absolute top-[-10%] left-[-5%] w-[800px] h-[800px] bg-indigo-200/40 rounded-full mix-blend-multiply filter blur-[120px] animate-blob"></div>
+    <div class="absolute top-[10%] right-[-5%] w-[700px] h-[700px] bg-purple-200/40 rounded-full mix-blend-multiply filter blur-[120px] animate-blob animation-delay-2000"></div>
+    <div class="absolute bottom-[-10%] left-[20%] w-[900px] h-[900px] bg-blue-100/40 rounded-full mix-blend-multiply filter blur-[120px] animate-blob animation-delay-4000"></div>
+</div>
+
+<div class="main-viewport scrollbar-hide">
     
-    <div class="flex justify-center w-full mx-auto max-w-[1300px]">
-        
-        <aside class="sticky top-0 hidden h-screen md:flex flex-col items-end w-[80px] lg:w-[250px] shrink-0 pt-6 pb-4 pr-2">
-            <div class="w-full h-full">
-                {% include 'social/components/home/left_sidebar.html' %}
+    {% include 'social/components/home/left_sidebar.html' %}
+    
+    <div class="feed-container-fluid">
+        <div class="w-full max-w-[850px] mx-auto"> {% include 'social/components/home/stories_bar.html' %}
+            
+            <div id="main-feed-area" class="mt-10">
+                {% include 'social/components/home/feed_main.html' %}
             </div>
-        </aside>
-
-        <main class="flex-1 max-w-[600px] w-full mx-0 md:mx-4 lg:mx-8 min-h-screen pb-20">
-            {% include 'social/components/home/stories_bar.html' %}
-            {% include 'social/components/home/feed_main.html' %}
-        </main>
-
-        <aside class="sticky top-0 hidden h-screen lg:block w-[320px] shrink-0 pt-6 pl-2 overflow-y-auto scrollbar-hide">
-            {% include 'social/components/home/right_sidebar.html' %}
-        </aside>
-
+        </div>
     </div>
+
+    {% include 'social/components/home/right_sidebar.html' %}
 </div>
 {% endblock %}
