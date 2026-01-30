@@ -10,8 +10,11 @@ urlpatterns = [
     path('register/', auth.register_view, name='register'),
     
     # --- Roteador Principal ---
-    path('dashboard/', auth.dashboard_router_view, name='dashboard'), # Rota central
+    path('dashboard/', auth.dashboard_router_view, name='dashboard'), 
     
+    # --- Dashboard Específico do Aluno (A rota que faltava) ---
+    path('aluno/dashboard/', aluno.aluno_dashboard, name='aluno_dashboard'),
+
     # --- Ferramentas do Aluno ---
     path('carteirinha/', aluno.carteirinha_digital, name='carteirinha_digital'),
     path('boletim/', aluno.boletim_view, name='boletim'),
