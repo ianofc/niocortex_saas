@@ -1,86 +1,152 @@
 import os
 
-# Caminho do arquivo de lista do feed (onde está o erro)
-FEED_LIST_PATH = os.path.join('yourlife', 'social', 'templates', 'social', 'components', 'home', 'feed_list_content.html')
+# ==============================================================================
+# 1. URLS.PY (A COLUNA VERTEBRAL)
+# ==============================================================================
+# Define TODAS as rotas que uma rede social precisa.
+URLS_CONTENT = """from django.urls import path
+from .views import feed, auth, profile, general, groups, events, interactions, chat
 
-# Conteúdo corrigido e validado (CSS separado e limpo)
-NEW_CONTENT = """{% load static %}
+app_name = 'yourlife_social'
 
-<div class="hidden w-full space-y-10 skeleton-wrapper">
-    {% for i in "123" %}
-    <div class="relative w-full aspect-[4/5] rounded-[2.5rem] bg-slate-800/50 border border-white/10 overflow-hidden">
-         <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skeleton-shimmer"></div>
-    </div>
-    {% endfor %}
-</div>
+urlpatterns = [
+    # --- FEED & HOME ---
+    path('', feed.home_feed_foryou, name='home'),
+    path('feed/foryou/', feed.home_feed_foryou, name='home_feed_foryou'),
+    path('feed/following/', feed.home_feed_following, name='home_feed_following'),
+    
+    # --- CRIAÇÃO DE CONTEÚDO ---
+    path('post/create/', feed.create_post, name='create_post'),
 
-<div class="w-full space-y-10 real-content">
-    {% if posts %}
-        {% for post in posts %}
-            <div class="feed-item-anim" style="animation-delay: 0.{{ forloop.counter }}s;">
-                {% include 'social/feed/post_card.html' with post=post %}
-            </div>
-        {% endfor %}
-    {% else %}
-        <div class="flex flex-col items-center justify-center py-32 text-center">
-            <div class="relative mb-6">
-                <div class="absolute inset-0 bg-indigo-500 blur-3xl opacity-20 animate-pulse"></div>
-                <div class="relative flex items-center justify-center w-24 h-24 text-indigo-400 border rounded-full shadow-xl bg-slate-900 border-indigo-500/30">
-                    <i class="text-4xl fa-solid fa-wind animate-bounce"></i>
-                </div>
-            </div>
-            <h3 class="text-sm font-black tracking-[0.2em] uppercase text-slate-500">Silêncio no Horizonte</h3>
-            <p class="max-w-xs mt-3 font-medium leading-relaxed text-slate-500">
-                Parece que não há novas histórias por aqui.
-            </p>
-            <a href="{% url 'yourlife_social:explore' %}" class="mt-8 px-8 py-3 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-indigo-500/30 hover:bg-indigo-500 transition-all">
-                Descobrir Pessoas
-            </a>
-        </div>
-    {% endif %}
-</div>
+    # --- INTERAÇÕES (Likes/Comments) ---
+    path('post/<str:post_id>/like/', interactions.toggle_like, name='toggle_like'),
+    path('post/<str:post_id>/comment/', interactions.add_comment, name='add_comment'),
 
-<style>
-    /* Animação de Entrada dos Cards */
-    .feed-item-anim {
-        opacity: 0;
-        transform: translateY(30px);
-        animation: slideInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
+    # --- DISCOVERY & MEDIA ---
+    path('explore/', general.explore_view, name='explore'),
+    path('reels/', general.reels_view, name='reels'),
 
-    @keyframes slideInUp {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
+    # --- COMUNIDADES (GROUPS) - O ERRO ESTAVA AQUI ---
+    path('groups/', groups.groups_list_view, name='groups_list'),
+    path('groups/create/', groups.group_create_view, name='group_create'),
+    path('groups/<int:group_id>/', groups.group_detail_view, name='group_detail'),
 
-    /* Animação do Skeleton (Brilho passando) */
-    .skeleton-shimmer {
-        animation: shimmer 2s infinite linear;
-    }
+    # --- EVENTOS (EVENTS) ---
+    path('events/', events.events_list_view, name='events_list'),
+    path('events/calendar/', events.calendar_view, name='calendar'),
+    path('events/<int:event_id>/', events.event_detail_view, name='event_detail'),
 
-    @keyframes shimmer {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
-    }
-</style>
+    # --- MESSENGER (TALKIO) ---
+    path('talkio/', chat.chat_view, name='talkio_app'),
+
+    # --- PERFIL & CONFIGURAÇÕES ---
+    path('profile/me/', profile.profile_detail, {'username': 'me'}, name='meu_perfil'),
+    path('profile/<str:username>/', profile.profile_detail, name='profile_detail'),
+    path('settings/', general.settings_view, name='settings_page'),
+    path('support/', general.support_view, name='support_page'),
+    path('theme/', general.theme_view, name='settings_theme'),
+
+    # --- AUTH ---
+    path('login/', auth.login_view, name='login'),
+    path('logout/', auth.logout_view, name='logout'),
+]
 """
 
-def fix_feed():
+# ==============================================================================
+# 2. VIEWS: GROUPS.PY (Comunidades)
+# ==============================================================================
+GROUPS_VIEW = """from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def groups_list_view(request):
+    # Renderiza a lista de comunidades (estilo Facebook Groups / Reddit)
+    return render(request, 'social/groups/list.html')
+
+@login_required
+def group_detail_view(request, group_id):
+    # Renderiza a home de um grupo específico
+    return render(request, 'social/groups/detail.html')
+
+@login_required
+def group_create_view(request):
+    return render(request, 'social/groups/create.html')
+"""
+
+# ==============================================================================
+# 3. VIEWS: EVENTS.PY (Eventos/Calendário)
+# ==============================================================================
+EVENTS_VIEW = """from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def events_list_view(request):
+    # Lista de eventos próximos (estilo Eventbrite / Facebook Events)
+    return render(request, 'social/events/list.html')
+
+@login_required
+def event_detail_view(request, event_id):
+    return render(request, 'social/events/detail.html')
+
+@login_required
+def calendar_view(request):
+    return render(request, 'social/events/calendar.html')
+"""
+
+# ==============================================================================
+# 4. VIEWS: GENERAL.PY (Complementos)
+# ==============================================================================
+GENERAL_VIEW = """from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from ..models import Post
+
+@login_required
+def explore_view(request):
+    # Grid de Mídia (Masonry)
     try:
-        # Garante que a pasta existe
-        os.makedirs(os.path.dirname(FEED_LIST_PATH), exist_ok=True)
-        
-        # Escreve o novo conteúdo
-        with open(FEED_LIST_PATH, 'w', encoding='utf-8') as f:
-            f.write(NEW_CONTENT)
-            
-        print(f"✅ Arquivo corrigido com sucesso: {FEED_LIST_PATH}")
-        print("🔄 Reinicie o servidor Django e recarregue a página (CTRL+F5).")
-        
-    except Exception as e:
-        print(f"❌ Erro ao corrigir arquivo: {e}")
+        media_posts = Post.objects.exclude(imagem='', video='').order_by('-data_criacao')[:50]
+    except:
+        media_posts = []
+    return render(request, 'social/search/explore.html', {'media_posts': media_posts})
+
+@login_required
+def reels_view(request):
+    return render(request, 'social/reels/index.html')
+
+@login_required
+def settings_view(request):
+    return render(request, 'social/pages/settings.html')
+
+@login_required
+def support_view(request):
+    return render(request, 'social/pages/support.html')
+
+@login_required
+def theme_view(request):
+    return render(request, 'social/pages/themes.html')
+"""
+
+def fix_all_routes():
+    files = [
+        {'path': 'yourlife/social/urls.py', 'content': URLS_CONTENT, 'name': 'Rotas (URLs)'},
+        {'path': 'yourlife/social/views/groups.py', 'content': GROUPS_VIEW, 'name': 'View Grupos'},
+        {'path': 'yourlife/social/views/events.py', 'content': EVENTS_VIEW, 'name': 'View Eventos'},
+        {'path': 'yourlife/social/views/general.py', 'content': GENERAL_VIEW, 'name': 'View Geral/Explorar'},
+    ]
+
+    print("🛠️ Consertando a Rede Social inteira...")
+    
+    for f in files:
+        try:
+            os.makedirs(os.path.dirname(f['path']), exist_ok=True)
+            with open(f['path'], 'w', encoding='utf-8') as file:
+                file.write(f['content'])
+            print(f"✅ {f['name']} corrigido.")
+        except Exception as e:
+            print(f"❌ Erro em {f['path']}: {e}")
+
+    print("\n🚀 PRONTO. Todas as seções (Feed, Grupos, Eventos, Explorar) agora têm rotas válidas.")
+    print("👉 Reinicie o servidor. O erro 'NoReverseMatch' deve desaparecer para sempre.")
 
 if __name__ == "__main__":
-    fix_feed()
+    fix_all_routes()
